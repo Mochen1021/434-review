@@ -3888,3 +3888,475 @@ try{
 console.log('[434] 修复完成：今日任务 / 第一轮 / 例子 / 自测');
 })();
 </script>
+<!-- ================= 手机/平板适配 · 第 1/2 段 ================= -->
+<!-- 贴在文件最后，第 2 段之前 -->
+<style id="imxMobileCSS">
+/* 顶部两个小按钮 */
+#imxMenu{display:none;flex:none;width:36px;height:36px;border-radius:10px;background:#f1f4fa;color:#33415c;font-size:18px;line-height:1;border:0;cursor:pointer}
+#imxMore{flex:none;margin-left:4px;width:34px;height:34px;border-radius:10px;background:#f1f4fa;color:#33415c;font-size:18px;line-height:1;border:0;cursor:pointer}
+button,a{touch-action:manipulation}
+html{-webkit-text-size-adjust:100%}
+
+/* 抽屉遮罩 */
+#imxNavMask{display:none;position:fixed;inset:0;background:rgba(16,22,36,.42);z-index:9240}
+body.imx-nav-open #imxNavMask{display:block}
+body.imx-nav-open{overflow:hidden}
+
+/* 口令门帘 */
+body.imx-locked .app{visibility:hidden}
+#imxGate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#eef3ff 0%,#f7f9ff 45%,#eaf0ff 100%)}
+#imxGate .gcard{width:100%;max-width:340px;background:#fff;border-radius:18px;box-shadow:0 24px 70px rgba(20,35,80,.18);padding:26px 22px;text-align:center}
+#imxGate .gicon{width:52px;height:52px;margin:0 auto 12px;border-radius:14px;background:#eef3ff;color:#3665f3;display:grid;place-items:center;font-size:24px}
+#imxGate h2{margin:0 0 6px;font-size:17px;color:#1f2a44}
+#imxGate p{margin:0 0 16px;font-size:12px;color:#8a96ad}
+#imxGate input{width:100%;height:46px;box-sizing:border-box;border:1px solid #dfe6f3;border-radius:11px;padding:0 12px;font-size:16px;outline:none;text-align:center;letter-spacing:2px}
+#imxGate input:focus{border-color:#3665f3;box-shadow:0 0 0 3px rgba(54,101,243,.12)}
+#imxGate button{width:100%;height:46px;margin-top:10px;border:0;border-radius:11px;background:#3665f3;color:#fff;font-size:15px;font-weight:600}
+#imxGate .gerr{min-height:18px;margin-top:8px;font-size:12px;color:#e02424}
+#imxGate .gtip{margin-top:6px;font-size:11px;color:#a8b2c6}
+#imxGate .gcard.shake{animation:imxShake .32s}
+@keyframes imxShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+/* 更多面板 */
+#imxSheetMask{position:fixed;inset:0;background:rgba(16,22,36,.42);z-index:9400;display:none}
+body.imx-sheet-open #imxSheetMask{display:block}
+#imxSheet{position:fixed;left:50%;bottom:0;transform:translateX(-50%) translateY(110%);z-index:9500;width:min(430px,94vw);background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -12px 50px rgba(12,20,40,.25);transition:transform .26s;padding-bottom:calc(10px + env(safe-area-inset-bottom));}
+body.imx-sheet-open #imxSheet{transform:translateX(-50%) translateY(0)}
+#imxSheet .ish{display:flex;align-items:center;padding:14px 18px;border-bottom:1px solid #eef1f7}
+#imxSheet .ish b{font-size:14px;color:#1f2a44}
+#imxSheet .ish .ix{margin-left:auto;border:0;background:#f1f4fa;color:#5a6a86;width:28px;height:28px;border-radius:9px;font-size:16px}
+#imxSheet .ibody{padding:12px 16px 16px}
+#imxSheet .ibtn{display:block;width:100%;margin-bottom:8px;padding:13px 14px;border:1px solid #dfe6f3;border-radius:11px;background:#fff;color:#22304d;font-size:14px;font-weight:600;text-align:left}
+#imxSheet .ibtn:active{background:#f3f6fc}
+#imxSheet .ibtn.ghost{font-weight:500;color:#5a6a86;background:#fafbff}
+#imxSheet .itip{margin:8px 2px 0;font-size:11px;line-height:1.7;color:#8a96ad}
+
+/* 平板：两栏，右栏收起 */
+@media (max-width:1180px){
+  .body{grid-template-columns:238px minmax(0,1fr)}
+  .right{display:none}
+}
+
+/* 手机：单栏 + 底部导航 + 抽屉 */
+@media (max-width:900px){
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  .app{height:100vh;height:100dvh}
+  .top{height:52px;flex:0 0 52px;padding:0 10px;gap:8px}
+  .brand{font-size:15px;overflow:hidden;text-overflow:ellipsis}
+  .brand small{display:none}
+  .gwrap{display:none}
+  .dcount{font-size:12px;margin-left:auto;white-space:nowrap}
+  .dcount b{font-size:16px}
+  #imxMenu{display:grid;place-items:center;order:-1}
+  .body{display:block;overflow:hidden}
+  .left{
+    position:fixed;left:0;top:0;bottom:0;width:82vw;max-width:330px;z-index:9300;
+    display:flex;flex-direction:column;transform:translateX(-103%);transition:transform .26s ease;
+    box-shadow:0 0 40px rgba(15,25,50,.18);background:var(--card);
+  }
+  body.imx-nav-open .left{transform:translateX(0)}
+  .left .searchbox input{font-size:16px}
+  .main{height:calc(100vh - 52px);height:calc(100dvh - 52px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 12px calc(86px + env(safe-area-inset-bottom))}
+  .tabs{
+    position:fixed;left:0;right:0;bottom:0;top:auto;z-index:9000;
+    display:flex;gap:2px;overflow-x:auto;overflow-y:hidden;
+    padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+    background:#fff;border-top:1px solid var(--line);
+    box-shadow:0 -4px 20px rgba(20,30,60,.06);
+    -webkit-overflow-scrolling:touch;
+  }
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:1 0 auto;min-width:62px;min-height:46px;padding:6px 8px;font-size:12px;border-radius:10px}
+  .tabs button.on{box-shadow:none}
+  .view{max-width:none}
+  .h1{font-size:18px}
+  .h2{margin:18px 0 8px}
+  .panel{padding:12px 13px;border-radius:11px}
+  .kpis{grid-template-columns:repeat(2,1fr);gap:8px}
+  .kpi{padding:10px 12px}
+  .kpi b{font-size:20px}
+  .task{padding:11px 12px;gap:10px}
+  .task .tx b{font-size:13.5px}
+  .task .btn.sm{flex:none;padding:8px 12px;font-size:13px}
+  .fcWrap{padding-top:2px}
+  .fc{min-height:0;padding:18px 16px;border-radius:14px}
+  .fc .q{font-size:18px;line-height:1.55}
+  .fc .a{font-size:14px;line-height:1.85}
+  .fcFoot{
+    position:sticky;bottom:calc(58px + env(safe-area-inset-bottom));
+    background:linear-gradient(rgba(245,247,251,0),var(--bg) 35%);
+    padding:8px 0 4px;margin-top:10px;max-width:none;
+  }
+  .fcFoot button{padding:14px 0;font-size:15px;border-radius:12px}
+  .view table{display:block;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .detail .bodytext{padding:14px 14px;font-size:14.5px;line-height:1.9}
+  input,textarea,select{font-size:16px !important}
+  .imx-dock{
+    left:8px;right:8px;bottom:calc(68px + env(safe-area-inset-bottom)) !important;
+    justify-content:center;border-radius:12px;padding:4px;
+  }
+  .imx-dock button{font-size:11px;padding:8px 8px}
+  .imx-pill{bottom:calc(126px + env(safe-area-inset-bottom))}
+  .imx-panel.wide{left:0;top:0;width:100vw;height:100vh;height:100dvh;max-height:none;border-radius:0;transform:none}
+  .imx-panel.side{left:0;right:0;top:auto;bottom:0;width:100vw;height:86vh;height:86dvh;border-radius:18px 18px 0 0}
+  .imx-q{font-size:15px}
+  .imx-ta{font-size:16px}
+  .imx-result .imx-big{font-size:40px}
+}
+</style>
+
+<script>
+(function(){
+'use strict';
+var M = window.IMXM = window.IMXM || {};
+if(M._s1) return; M._s1 = 1;
+
+/* ---- 口令：想改就改这一行 ---- */
+var PASS = '434review';
+var GATE_KEY = 'imx434_gate';
+
+/* ---- meta：让 iPhone 全屏、适配刘海 ---- */
+function addMeta(name, content){
+  if(document.querySelector('meta[name="' + name + '"]')) return;
+  var m = document.createElement('meta');
+  m.setAttribute('name', name); m.setAttribute('content', content);
+  document.head.appendChild(m);
+}
+try{
+  var vp = document.querySelector('meta[name="viewport"]');
+  if(vp && vp.content.indexOf('viewport-fit') < 0) vp.content += ',viewport-fit=cover';
+  addMeta('apple-mobile-web-app-capable','yes');
+  addMeta('apple-mobile-web-app-status-bar-style','default');
+  addMeta('apple-mobile-web-app-title','434');
+  addMeta('theme-color','#ffffff');
+}catch(e){}
+
+/* ---- 口令门帘 ---- */
+M.gate = function(){
+  var ok = false;
+  try{ ok = localStorage.getItem(GATE_KEY) === 'ok'; }catch(e){}
+  if(ok) return;
+
+  document.body.classList.add('imx-locked');
+  var g = document.createElement('div');
+  g.id = 'imxGate';
+  g.innerHTML =
+    '<div class="gcard" id="imxGateCard">' +
+      '<div class="gicon">🔒</div>' +
+      '<h2>434 复习台</h2>' +
+      '<p>输入访问口令</p>' +
+      '<input id="imxGateInput" type="password" autocomplete="off" placeholder="口令">' +
+      '<button id="imxGateBtn">进 入</button>' +
+      '<div class="gerr" id="imxGateErr"></div>' +
+      '<div class="gtip">只在本设备记住，换设备要再输一次</div>' +
+    '</div>';
+  document.body.appendChild(g);
+
+  var input = document.getElementById('imxGateInput');
+  var btn = document.getElementById('imxGateBtn');
+  var err = document.getElementById('imxGateErr');
+  var card = document.getElementById('imxGateCard');
+
+  function submit(){
+    if(input.value === PASS){
+      try{ localStorage.setItem(GATE_KEY, 'ok'); }catch(e){}
+      document.body.classList.remove('imx-locked');
+      g.parentNode.removeChild(g);
+    }else{
+      err.textContent = '口令不对';
+      card.classList.remove('shake');
+      void card.offsetWidth;
+      card.classList.add('shake');
+      input.value = '';
+      input.focus();
+    }
+  }
+  btn.onclick = submit;
+  input.onkeydown = function(e){ if(e.key === 'Enter') submit(); };
+  setTimeout(function(){ try{ input.focus(); }catch(e){} }, 120);
+};
+
+/* ---- 手机目录抽屉 ---- */
+M.menu = function(){
+  var top = document.querySelector('.top');
+  if(!top) return;
+
+  var menu = document.createElement('button');
+  menu.id = 'imxMenu'; menu.type = 'button'; menu.innerHTML = '☰';
+  menu.setAttribute('aria-label','目录');
+  top.insertBefore(menu, top.firstChild);
+
+  var more = document.createElement('button');
+  more.id = 'imxMore'; more.type = 'button'; more.innerHTML = '⋯';
+  more.setAttribute('aria-label','更多');
+  top.appendChild(more);
+  more.onclick = function(){ if(M.sheet) M.sheet.open(); };
+
+  var mask = document.createElement('div');
+  mask.id = 'imxNavMask';
+  document.body.appendChild(mask);
+
+  menu.onclick = function(){ document.body.classList.toggle('imx-nav-open'); };
+  mask.onclick = function(){ document.body.classList.remove('imx-nav-open'); };
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') document.body.classList.remove('imx-nav-open'); });
+
+  var tree = document.getElementById('tree');
+  if(tree){
+    tree.addEventListener('click', function(e){
+      var t = e.target;
+      if(t && t.closest && t.closest('.tkp')) document.body.classList.remove('imx-nav-open');
+    });
+  }
+};
+
+M.gate();
+M.menu();
+})();
+</script>
+<!-- ================= 手机/平板适配 · 第 2/2 段 ================= -->
+<!-- 紧接第 1 段之后贴 -->
+<script>
+(function(){
+'use strict';
+var M = window.IMXM = window.IMXM || {};
+if(M._s2) return; M._s2 = 1;
+
+var CORE = 'imx434_v1', PLUS = 'imx434_plus_v1', ROLL = 'imx434_rollback';
+
+function read(key){
+  try{ var s = localStorage.getItem(key); return s ? JSON.parse(s) : null; }catch(e){ return null; }
+}
+function write(key, obj){
+  try{ localStorage.setItem(key, JSON.stringify(obj)); }catch(e){ alert('存储空间不足，导出后清理一下'); }
+}
+
+/* ---------- 合并：核心进度 ---------- */
+function mergeCore(a, b){
+  var out = Object.assign({v:1,kp:{},wrong:[],log:[],days:{}}, a || {});
+  out.kp = Object.assign({}, out.kp || {});
+  out.wrong = (out.wrong || []).slice();
+  out.log = (out.log || []).slice();
+  out.days = Object.assign({}, out.days || {});
+  if(!b) return out;
+
+  var kp = b.kp || {};
+  Object.keys(kp).forEach(function(id){
+    var x = out.kp[id], y = kp[id] || {};
+    if(!x){ out.kp[id] = y; return; }
+    x.m = Math.max(x.m||0, y.m||0);
+    x.seen = Math.max(x.seen||0, y.seen||0);
+    x.ok = Math.max(x.ok||0, y.ok||0);
+    x.err = Math.max(x.err||0, y.err||0);
+    x.star = !!(x.star || y.star);
+    if((y.last||0) >= (x.last||0)){ x.last = y.last || x.last; x.due = (y.due != null ? y.due : x.due); }
+  });
+
+  (b.wrong || []).forEach(function(id){ if(out.wrong.indexOf(id) < 0) out.wrong.push(id); });
+
+  var seen = {}, logs = out.log.concat(b.log || []);
+  out.log = logs.filter(function(l){
+    var k = (l && l.t) + '_' + (l && l.id);
+    if(seen[k]) return false;
+    seen[k] = 1; return true;
+  }).sort(function(p,q){ return (p.t||0) - (q.t||0); }).slice(-2000);
+
+  Object.keys(b.days || {}).forEach(function(d){ out.days[d] = Math.max(out.days[d]||0, b.days[d]||0); });
+  if(!out.created || (b.created && b.created < out.created)) out.created = b.created || out.created;
+  return out;
+}
+
+/* ---------- 合并：增强包进度 ---------- */
+function mergePlus(a, b){
+  if(!b) return a;
+  a = a || {};
+  a.p = Object.assign({}, a.p || {});
+  a.ex = Object.assign({}, a.ex || {});
+  a.tasks = a.tasks || {date:'', done:[]};
+  if(!a.tasks.done) a.tasks.done = [];
+
+  Object.keys(b.p || {}).forEach(function(id){
+    var x = a.p[id], y = b.p[id] || {};
+    if(!x){ a.p[id] = y; return; }
+    x.n = Math.max(x.n||0, y.n||0);
+    x.ok = Math.max(x.ok||0, y.ok||0);
+    x.bad = Math.max(x.bad||0, y.bad||0);
+    if((y.last||0) > (x.last||0)) x.last = y.last;
+  });
+
+  Object.keys(b.ex || {}).forEach(function(id){
+    if(!a.ex[id] && b.ex[id]) a.ex[id] = b.ex[id];
+  });
+
+  if(b.tasks && a.tasks.date === b.tasks.date){
+    (b.tasks.done || []).forEach(function(id){ if(a.tasks.done.indexOf(id) < 0) a.tasks.done.push(id); });
+  }else if(b.tasks && b.tasks.date && b.tasks.date > (a.tasks.date || '')){
+    a.tasks = b.tasks;
+  }
+  return a;
+}
+
+/* ---------- 导出 ---------- */
+function exportAll(){
+  var payload = {
+    app: '434复习台',
+    v: 1,
+    exportedAt: Date.now(),
+    core: read(CORE),
+    plus: read(PLUS)
+  };
+  var name = '434进度_' + new Date().toISOString().slice(0,10) + '.json';
+  var blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
+
+  try{
+    var file = new File([blob], name, {type:'application/json'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file], title:'434 进度备份'}).catch(function(err){
+        if(!err || err.name !== 'AbortError') download(blob, name);
+      });
+      return;
+    }
+  }catch(e){}
+  download(blob, name);
+}
+function download(blob, name){
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+
+/* ---------- 导入 ---------- */
+function parsePayload(o){
+  if(!o) return null;
+  if(o.core && (o.core.kp || o.core.v)) return {core:o.core, plus:o.plus || null};
+  if(o.kp) return {core:o, plus:null};
+  return null;
+}
+function importFile(file){
+  var r = new FileReader();
+  r.onload = function(){
+    try{
+      var pay = parsePayload(JSON.parse(r.result));
+      if(!pay){ alert('这不是 434 的进度文件'); return; }
+
+      try{
+        localStorage.setItem(ROLL, JSON.stringify({core:read(CORE), plus:read(PLUS), at:Date.now()}));
+      }catch(e){}
+
+      var merged = mergeCore(read(CORE) || {}, pay.core || {});
+      write(CORE, merged);
+
+      if(pay.plus){
+        var mp = mergePlus(read(PLUS) || {}, pay.plus);
+        write(PLUS, mp);
+      }
+
+      alert('导入成功：进度已合并，不会覆盖原有记录。');
+      location.reload();
+    }catch(err){
+      alert('导入失败：' + err.message);
+    }
+  };
+  r.readAsText(file);
+}
+
+/* ---------- 更多面板 ---------- */
+M.sheet = {
+  open: function(){
+    var mask = document.getElementById('imxSheetMask');
+    if(!mask){
+      mask = document.createElement('div'); mask.id = 'imxSheetMask';
+      mask.onclick = M.sheet.close;
+      document.body.appendChild(mask);
+
+      var sh = document.createElement('div'); sh.id = 'imxSheet';
+      sh.innerHTML =
+        '<div class="ish"><b>更多</b><button class="ix" data-close="1">×</button></div>' +
+        '<div class="ibody">' +
+          '<button class="ibtn" data-act="export">导出全部进度</button>' +
+          '<button class="ibtn" data-act="import">导入并合并进度</button>' +
+          '<button class="ibtn ghost" data-act="rollback">撤销上次导入</button>' +
+          '<button class="ibtn ghost" data-act="lock">锁定本设备</button>' +
+          '<input type="file" id="imxFileIn" accept=".json,application/json" hidden>' +
+          '<p class="itip">手机和电脑打开同一个网址。电脑点“导出”，把 JSON 发到手机，手机点“导入并合并”。只合并不覆盖，两边背过的都会留下。</p>' +
+        '</div>';
+      document.body.appendChild(sh);
+
+      var input = sh.querySelector('#imxFileIn');
+      input.onchange = function(){
+        var f = this.files && this.files[0];
+        if(f) importFile(f);
+        this.value = '';
+      };
+
+      sh.addEventListener('click', function(e){
+        var t = e.target;
+        var c = t.closest ? t.closest('[data-close]') : null;
+        if(c){ M.sheet.close(); return; }
+        var b = t.closest ? t.closest('[data-act]') : null;
+        if(!b) return;
+        var act = b.getAttribute('data-act');
+        if(act === 'export') exportAll();
+        else if(act === 'import') input.click();
+        else if(act === 'rollback'){
+          var roll = read(ROLL);
+          if(!roll){ alert('没有可撤销的导入记录'); return; }
+          if(!confirm('恢复到上一次导入之前？')) return;
+          if(roll.core) write(CORE, roll.core);
+          if(roll.plus) write(PLUS, roll.plus);
+          location.reload();
+        }
+        else if(act === 'lock'){
+          try{ localStorage.removeItem('imx434_gate'); }catch(e){}
+          location.reload();
+        }
+      });
+    }
+    document.body.classList.add('imx-sheet-open');
+  },
+  close: function(){ document.body.classList.remove('imx-sheet-open'); }
+};
+
+/* 桌面端也保留“更多”按钮 */
+var more = document.getElementById('imxMore');
+if(more) more.onclick = function(){ M.sheet.open(); };
+
+console.log('[434] 手机适配 + 门帘 + 进度合并 已生效');
+})();
+</script>
+<!-- ================= 倒计时修正（贴最后） ================= -->
+<script>
+(function(){
+'use strict';
+/* 初试：2026-12-19 */
+var EXAM_TS = new Date(2026, 11, 19, 0, 0, 0).getTime();
+
+function daysLeft(){
+  return Math.max(0, Math.ceil((EXAM_TS - Date.now()) / 86400000));
+}
+function fixDays(){
+  var d = daysLeft();
+  var el = document.getElementById('dcount');
+  if(el) el.innerHTML = '距初试 <b>' + d + '</b> 天';
+
+  var ms = document.querySelectorAll('#view .muted');
+  for(var i = 0; i < ms.length; i++){
+    if(ms[i].textContent.indexOf('距初试') >= 0){
+      ms[i].textContent = ms[i].textContent.replace(/距初试\s*\d+\s*天/, '距初试 ' + d + ' 天');
+    }
+  }
+}
+
+var X = window.IMX434;
+if(X){
+  X.daysLeft = daysLeft;
+  X.fixDays = fixDays;
+}
+
+fixDays();
+setTimeout(fixDays, 300);
+setTimeout(fixDays, 1200);
+})();
+</script>
