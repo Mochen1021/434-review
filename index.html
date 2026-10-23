@@ -4360,3 +4360,266 @@ setTimeout(fixDays, 300);
 setTimeout(fixDays, 1200);
 })();
 </script>
+<!-- ================= 云同步 · 自动拉取/合并/上传 ================= -->
+<script>
+(function(){
+'use strict';
+var M = window.IMXM = window.IMXM || {};
+if(M._sync) return; M._sync = 1;
+
+var CORE='imx434_v1', PLUS='imx434_plus_v1', CFG='imx434_sync_cfg';
+var timer=null, busy=false, suppress=false;
+
+function readJSON(k){ try{ var s=localStorage.getItem(k); return s?JSON.parse(s):null; }catch(e){ return null; } }
+function cfg(){ try{ return JSON.parse(localStorage.getItem(CFG)||'{}')||{}; }catch(e){ return {}; } }
+function saveCfg(c){ try{ localStorage.setItem(CFG, JSON.stringify(c)); }catch(e){} }
+
+/* UTF-8 <-> base64 */
+function b64enc(str){
+  var bytes=new TextEncoder().encode(str), bin='';
+  for(var i=0;i<bytes.length;i++) bin+=String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function b64dec(b64){
+  var bin=atob(String(b64||'').replace(/\s/g,''));
+  var bytes=new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+/* 合并规则：取大、取晚、并集 */
+function mergeCore(a,b){
+  var out=Object.assign({v:1,kp:{},wrong:[],log:[],days:{}}, a||{});
+  out.kp=Object.assign({}, out.kp||{});
+  out.wrong=(out.wrong||[]).slice();
+  out.log=(out.log||[]).slice();
+  out.days=Object.assign({}, out.days||{});
+  if(!b) return out;
+  var kp=b.kp||{};
+  Object.keys(kp).forEach(function(id){
+    var x=out.kp[id], y=kp[id]||{};
+    if(!x){ out.kp[id]=y; return; }
+    x.m=Math.max(x.m||0,y.m||0);
+    x.seen=Math.max(x.seen||0,y.seen||0);
+    x.ok=Math.max(x.ok||0,y.ok||0);
+    x.err=Math.max(x.err||0,y.err||0);
+    x.star=!!(x.star||y.star);
+    if((y.last||0)>=(x.last||0)){ x.last=y.last||x.last; x.due=(y.due!=null?y.due:x.due); }
+  });
+  (b.wrong||[]).forEach(function(id){ if(out.wrong.indexOf(id)<0) out.wrong.push(id); });
+  var seen={}, logs=out.log.concat(b.log||[]);
+  out.log=logs.filter(function(l){
+    var k=(l&&l.t)+'_'+(l&&l.id);
+    if(seen[k]) return false; seen[k]=1; return true;
+  }).sort(function(p,q){ return (p.t||0)-(q.t||0); }).slice(-2000);
+  Object.keys(b.days||{}).forEach(function(d){ out.days[d]=Math.max(out.days[d]||0,b.days[d]||0); });
+  if(!out.created || (b.created && b.created<out.created)) out.created=b.created||out.created;
+  return out;
+}
+function mergePlus(a,b){
+  if(!b) return a;
+  a=a||{}; a.p=Object.assign({},a.p||{}); a.ex=Object.assign({},a.ex||{});
+  a.tasks=a.tasks||{date:'',done:[]};
+  if(!a.tasks.done) a.tasks.done=[];
+  Object.keys(b.p||{}).forEach(function(id){
+    var x=a.p[id], y=b.p[id]||{};
+    if(!x){ a.p[id]=y; return; }
+    x.n=Math.max(x.n||0,y.n||0); x.ok=Math.max(x.ok||0,y.ok||0); x.bad=Math.max(x.bad||0,y.bad||0);
+    if((y.last||0)>(x.last||0)) x.last=y.last;
+  });
+  Object.keys(b.ex||{}).forEach(function(id){ if(!a.ex[id] && b.ex[id]) a.ex[id]=b.ex[id]; });
+  if(b.tasks && a.tasks.date===b.tasks.date){
+    (b.tasks.done||[]).forEach(function(id){ if(a.tasks.done.indexOf(id)<0) a.tasks.done.push(id); });
+  }else if(b.tasks && b.tasks.date && b.tasks.date>(a.tasks.date||'')){
+    a.tasks=b.tasks;
+  }
+  return a;
+}
+function normalize(o){
+  if(!o) return null;
+  if(o.core || o.plus) return {core:o.core||{}, plus:o.plus||null};
+  if(o.kp) return {core:o, plus:null};
+  return null;
+}
+
+/* GitHub API */
+function headers(c,json){
+  var h={'Authorization':'Bearer '+c.token,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  if(json) h['Content-Type']='application/json';
+  return h;
+}
+function api(c){ return 'https://api.github.com/repos/'+c.repo+'/contents/progress.json'; }
+
+async function ghGet(c){
+  var r=await fetch(api(c)+'?ref='+encodeURIComponent(c.branch||'main'),{headers:headers(c),cache:'no-store'});
+  if(r.status===404) return null;
+  if(r.status===401) throw new Error('Token 无效或过期');
+  if(r.status===403) throw new Error('没有权限，检查 Contents 是否设为 Read and write');
+  if(!r.ok) throw new Error('读取失败 HTTP '+r.status);
+  var j=await r.json();
+  var txt='';
+  try{ txt=b64dec(j.content||''); }catch(e){}
+  var obj={};
+  try{ obj=txt?JSON.parse(txt):{}; }catch(e){}
+  return {sha:j.sha, data:obj};
+}
+async function ghPut(c,data,sha){
+  var body={message:'434 sync '+new Date().toISOString(),content:b64enc(JSON.stringify(data)),branch:c.branch||'main'};
+  if(sha) body.sha=sha;
+  var r=await fetch(api(c),{method:'PUT',headers:headers(c,true),body:JSON.stringify(body)});
+  if(r.status===409 || r.status===422){
+    var g=await ghGet(c);
+    var remote=g?normalize(g.data):null;
+    var merged={
+      v:1, updatedAt:Date.now(),
+      core:mergeCore(data.core||{}, remote?remote.core:null),
+      plus:mergePlus(data.plus||{}, remote?remote.plus:null)
+    };
+    var b2={message:'434 sync merge',content:b64enc(JSON.stringify(merged)),branch:c.branch||'main'};
+    if(g && g.sha) b2.sha=g.sha;
+    r=await fetch(api(c),{method:'PUT',headers:headers(c,true),body:JSON.stringify(b2)});
+    data.core=merged.core; data.plus=merged.plus;
+  }
+  if(!r.ok) throw new Error('写入失败 HTTP '+r.status);
+}
+
+/* 写到本机并刷新界面 */
+function applyMerged(m){
+  suppress=true;
+  try{ S=m.core; }catch(e){}
+  try{ localStorage.setItem(CORE,JSON.stringify(m.core)); }catch(e){}
+  if(m.plus){ try{ localStorage.setItem(PLUS,JSON.stringify(m.plus)); }catch(e){} }
+  try{ if(window.IMX434) window.IMX434.P=m.plus||window.IMX434.P; }catch(e){}
+  try{ if(typeof route==='function') route(typeof UI!=='undefined'?UI.tab:'today'); }catch(e){}
+  try{ if(typeof updateHeader==='function') updateHeader(); }catch(e){}
+  setTimeout(function(){ suppress=false; },800);
+}
+
+/* 同步：先拉、合并、再推 */
+async function syncNow(reason){
+  var c=cfg();
+  if(!c.repo || !c.token){ setStatus('云同步：未设置'); return; }
+  if(busy) return;
+  busy=true; setStatus('云同步：同步中…');
+  try{
+    var g=await ghGet(c);
+    var remote=g?normalize(g.data):null;
+    var local={core:readJSON(CORE)||{},plus:readJSON(PLUS)||{}};
+    var merged={
+      v:1, updatedAt:Date.now(),
+      core:mergeCore(local.core, remote?remote.core:null),
+      plus:mergePlus(local.plus, remote?remote.plus:null)
+    };
+    var changed=JSON.stringify(merged.core)!==JSON.stringify(local.core) || JSON.stringify(merged.plus)!==JSON.stringify(local.plus);
+    if(changed) applyMerged(merged);
+    await ghPut(c,merged,g?g.sha:null);
+    c.last=Date.now(); saveCfg(c);
+    setStatus('云同步：已同步 '+new Date(c.last).toLocaleTimeString());
+  }catch(e){
+    setStatus('云同步失败：'+(e.message||e));
+  }
+  busy=false;
+}
+
+/* 答题/保存后 2.5 秒自动推 */
+function schedule(){
+  if(suppress) return;
+  var c=cfg();
+  if(!c.auto || !c.repo || !c.token) return;
+  clearTimeout(timer);
+  timer=setTimeout(function(){ syncNow('auto'); },2500);
+}
+function wrapSave(obj,name){
+  try{
+    if(obj && typeof obj[name]==='function' && !obj[name].__sync){
+      var old=obj[name];
+      obj[name]=function(){ var r=old.apply(this,arguments); schedule(); return r; };
+      obj[name].__sync=1;
+    }
+  }catch(e){}
+}
+wrapSave(window,'save');
+if(window.IMX434) wrapSave(window.IMX434,'save');
+
+/* ---------- 设置界面 ---------- */
+function setStatus(t){
+  var el=document.getElementById('imxSyncStatus');
+  if(el) el.textContent=t;
+}
+function updateStatus(){
+  var c=cfg();
+  if(!c.repo || !c.token){ setStatus('云同步：未设置（点上面填写）'); return; }
+  setStatus('云同步：'+c.repo+(c.auto?' · 自动':' · 手动')+(c.last?' · 上次 '+new Date(c.last).toLocaleString():''));
+}
+function openSettings(){
+  var c=cfg();
+  var mask=document.getElementById('imxSyncMask');
+  if(!mask){
+    var st=document.createElement('style');
+    st.textContent='#imxSyncMask{position:fixed;inset:0;background:rgba(16,22,36,.45);z-index:9700;display:none;align-items:center;justify-content:center;padding:18px}#imxSyncMask.on{display:flex}#imxSyncBox{width:100%;max-width:400px;max-height:88vh;overflow:auto;background:#fff;border-radius:16px;padding:18px;box-shadow:0 24px 70px rgba(12,20,40,.3)}#imxSyncBox h3{margin:0 0 12px;font-size:16px}#imxSyncBox label{display:block;margin:10px 0 4px;font-size:12px;color:#5a6a86}#imxSyncBox input{width:100%;box-sizing:border-box;height:42px;border:1px solid #dfe6f3;border-radius:10px;padding:0 10px;font-size:16px;outline:none}#imxSyncBox input:focus{border-color:#3665f3}#imxSyncBox .ck{display:flex;align-items:center;gap:8px;font-size:13px;color:#33415c;margin-top:12px}#imxSyncBox .ck input{width:auto;height:auto}#imxSyncBox .row{display:flex;gap:8px;margin-top:16px}#imxSyncBox .row button{flex:1;height:42px;border:0;border-radius:10px;background:#3665f3;color:#fff;font-size:14px;font-weight:600}#imxSyncBox .row button.ghost{background:#f1f4fa;color:#5a6a86}#imxSyncBox .tip{margin:10px 0 0;font-size:11px;line-height:1.6;color:#8a96ad}';
+    document.head.appendChild(st);
+
+    mask=document.createElement('div'); mask.id='imxSyncMask';
+    mask.innerHTML=
+      '<div id="imxSyncBox">'+
+        '<h3>云同步设置</h3>'+
+        '<label>仓库（用户名/仓库名）</label><input id="imxRepo" placeholder="mochen1021/434-sync">'+
+        '<label>Token（github_pat_…）</label><input id="imxToken" type="password" placeholder="只保存在本机">'+
+        '<label>分支</label><input id="imxBranch" placeholder="main">'+
+        '<label class="ck"><input id="imxAuto" type="checkbox" checked> 自动同步（推荐）</label>'+
+        '<div class="row"><button id="imxSyncSave">保存并同步</button><button id="imxSyncClose" class="ghost">关闭</button></div>'+
+        '<p class="tip">Token 只存在这台设备，不会写进网页。私有仓库里的 progress.json 会自动创建。</p>'+
+      '</div>';
+    document.body.appendChild(mask);
+    mask.onclick=function(e){ if(e.target===mask) close(); };
+    document.getElementById('imxSyncClose').onclick=close;
+    document.getElementById('imxSyncSave').onclick=function(){
+      var repo=(document.getElementById('imxRepo').value||'').trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/+$/,'');
+      var token=(document.getElementById('imxToken').value||'').trim();
+      var branch=(document.getElementById('imxBranch').value||'main').trim()||'main';
+      var auto=document.getElementById('imxAuto').checked;
+      if(repo.indexOf('/')<0){ alert('仓库要写成 用户名/仓库名'); return; }
+      if(!token){ alert('请填 Token'); return; }
+      saveCfg({repo:repo,token:token,branch:branch,auto:auto,last:(cfg().last||0)});
+      close();
+      syncNow('manual');
+    };
+  }
+  document.getElementById('imxRepo').value=c.repo||'';
+  document.getElementById('imxToken').value=c.token||'';
+  document.getElementById('imxBranch').value=c.branch||'main';
+  document.getElementById('imxAuto').checked=c.auto!==false;
+  mask.classList.add('on');
+  function close(){ mask.classList.remove('on'); }
+}
+
+/* 把入口塞进“更多”面板 */
+function injectSheet(){
+  var body=document.querySelector('#imxSheet .ibody');
+  if(!body) return;
+  if(!document.getElementById('imxSyncEntry')){
+    var b=document.createElement('button');
+    b.className='ibtn'; b.id='imxSyncEntry'; b.textContent='云同步设置';
+    var tip=body.querySelector('.itip');
+    if(tip) body.insertBefore(b,tip); else body.appendChild(b);
+    b.onclick=openSettings;
+    var s=document.createElement('p');
+    s.className='itip'; s.id='imxSyncStatus';
+    body.insertBefore(s,b.nextSibling);
+  }
+  updateStatus();
+}
+if(M.sheet && M.sheet.open){
+  var oo=M.sheet.open;
+  M.sheet.open=function(){ oo.apply(M.sheet,arguments); setTimeout(injectSheet,0); };
+}
+
+/* 启动：首次拉取、回到页面时拉取、联网时补传 */
+setTimeout(function(){ if(cfg().auto) syncNow('load'); },1500);
+document.addEventListener('visibilitychange',function(){ if(!document.hidden && cfg().auto) syncNow('visible'); });
+window.addEventListener('online',function(){ if(cfg().auto) syncNow('online'); });
+
+window.IMXSYNC={ syncNow:syncNow, openSettings:openSettings };
+console.log('[434] 云同步已加载');
+})();
+</script>
