@@ -1,0 +1,3890 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>434 复习台 · 山东大学国际商务</title>
+<style>
+:root{
+  --bg:#f5f7fb; --card:#fff; --line:#e5e8f0; --text:#1f2534; --sub:#727b8f;
+  --pri:#3665f3; --pri2:#eaf0ff; --ok:#16a34a; --warn:#d99400; --bad:#e02424;
+  --s:#e02424; --a:#d97706; --b:#2f7de1; --c:#8b95a8;
+  --r:12px; --sh:0 1px 2px rgba(16,24,40,.04),0 4px 14px rgba(16,24,40,.05);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.65 -apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font:inherit}
+
+/* ---------- 布局 ---------- */
+.app{height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.top{
+  height:58px;flex:0 0 58px;display:flex;align-items:center;gap:24px;
+  padding:0 18px;background:var(--card);border-bottom:1px solid var(--line);z-index:5;
+}
+.brand{font-size:16px;font-weight:700;letter-spacing:.3px;white-space:nowrap}
+.brand i{color:var(--pri);font-style:normal}
+.brand small{font-size:12px;font-weight:400;color:var(--sub);margin-left:8px}
+
+.gwrap{flex:1;display:flex;align-items:center;gap:12px;max-width:520px}
+.gbar{flex:1;height:8px;background:#eef1f7;border-radius:99px;overflow:hidden}
+.gbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#4f7cf7,#7aa2ff);transition:width .35s}
+.gtxt{font-size:12px;color:var(--sub);white-space:nowrap;min-width:88px}
+
+.dcount{font-size:13px;color:var(--sub);white-space:nowrap}
+.dcount b{color:var(--bad);font-size:18px;margin:0 2px}
+
+.body{flex:1;display:grid;grid-template-columns:268px minmax(0,1fr) 248px;overflow:hidden}
+
+/* ---------- 左栏 ---------- */
+.left{background:var(--card);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+.searchbox{padding:10px;border-bottom:1px solid var(--line)}
+.searchbox input{
+  width:100%;height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px;
+  background:#fafbfd;outline:none;
+}
+.searchbox input:focus{border-color:var(--pri);background:#fff}
+
+.tree{flex:1;overflow:auto;padding:6px 8px 20px}
+.tnode{margin:2px 0}
+.tmod{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 10px;border-radius:8px;font-weight:600;cursor:pointer;user-select:none;
+}
+.tmod:hover{background:#f3f6fc}
+.tmod .cnt{font-size:11px;color:var(--sub);font-weight:400}
+.tchs{display:none;margin-left:6px}
+.tmod.open + .tchs{display:block}
+.tch{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:5px 10px;border-radius:6px;font-size:13px;color:#3b4357;cursor:pointer;
+}
+.tch:hover{background:#f3f6fc}
+.tch .cnt{font-size:11px;color:var(--sub)}
+.tkp{
+  display:block;padding:4px 10px 4px 22px;font-size:12.5px;color:#5b6478;
+  border-radius:6px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tkp:hover{background:#eef3ff;color:var(--pri)}
+.tkp.on{background:var(--pri2);color:var(--pri);font-weight:600}
+.tkp em{font-style:normal;font-size:10px;padding:0 4px;border-radius:4px;color:#fff;margin-right:4px}
+
+/* ---------- 中栏 ---------- */
+.main{overflow:auto;padding:0 22px 40px}
+.tabs{
+  position:sticky;top:0;z-index:4;display:flex;gap:4px;
+  padding:12px 0 10px;background:linear-gradient(var(--bg) 70%,rgba(245,247,251,0));
+}
+.tabs button{
+  padding:7px 14px;border-radius:9px;font-size:13.5px;color:#5b6478;
+}
+.tabs button:hover{background:#eaeefb;color:var(--pri)}
+.tabs button.on{background:var(--pri);color:#fff;box-shadow:0 2px 8px rgba(54,101,243,.28)}
+
+.view{max-width:860px}
+.h1{font-size:20px;font-weight:700;margin:6px 0 4px}
+.h2{font-size:15px;font-weight:700;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.h2::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--pri)}
+.muted{color:var(--sub);font-size:13px}
+
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:14px 16px;margin-bottom:14px}
+.panel h3{margin:0 0 10px;font-size:13px;font-weight:700;color:#3b4357}
+
+/* ---------- 徽标 ---------- */
+.lv{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.5px;color:#fff;padding:1px 6px;border-radius:5px;vertical-align:2px}
+.lv.s{background:var(--s)} .lv.a{background:var(--a)} .lv.b{background:var(--b)} .lv.c{background:var(--c)}
+.ty{display:inline-block;font-size:11px;color:var(--sub);border:1px solid var(--line);border-radius:5px;padding:0 6px;margin-left:6px}
+.src{display:inline-block;font-size:11px;color:var(--sub);margin-left:6px}
+
+/* ---------- 组件 ---------- */
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.btn{
+  padding:8px 14px;border-radius:9px;border:1px solid var(--line);background:#fff;
+  font-size:13px;color:#3b4357;transition:.15s;
+}
+.btn:hover{border-color:#c9d4f0;background:#f7f9ff}
+.btn.pri{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.pri:hover{background:#2a55dc}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.warn{background:var(--warn);border-color:var(--warn);color:#fff}
+.btn.bad{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:7px}
+
+/* ---------- 今日台 ---------- */
+.task{
+  display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border:1px solid var(--line);
+  border-radius:var(--r);background:var(--card);margin-bottom:10px;box-shadow:var(--sh);
+}
+.task .idx{
+  flex:0 0 26px;height:26px;border-radius:8px;background:var(--pri2);color:var(--pri);
+  display:grid;place-items:center;font-weight:700;font-size:12.5px;
+}
+.task .tx{flex:1;min-width:0}
+.task .tx b{display:block;font-size:14px;margin-bottom:2px}
+.task .tx span{font-size:12px;color:var(--sub)}
+.task .why{font-size:11px;color:var(--warn);margin-top:3px}
+
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;box-shadow:var(--sh)}
+.kpi b{display:block;font-size:22px;line-height:1.2}
+.kpi span{font-size:12px;color:var(--sub)}
+
+/* ---------- 闪卡 ---------- */
+.fcWrap{display:flex;flex-direction:column;align-items:center;padding-top:8px}
+.fc{
+  width:100%;max-width:700px;min-height:320px;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;box-shadow:0 8px 30px rgba(30,45,90,.08);padding:26px 28px;
+  display:flex;flex-direction:column;cursor:pointer;transition:.2s;
+}
+.fc:hover{box-shadow:0 12px 38px rgba(30,45,90,.12)}
+.fc .fctop{display:flex;align-items:center;gap:8px;margin-bottom:16px}
+.fc .q{font-size:20px;font-weight:700;line-height:1.5;margin-bottom:16px}
+.fc .a{
+  font-size:14.5px;line-height:1.9;color:#39415570;border-top:1px dashed var(--line);
+  padding-top:16px;white-space:pre-wrap;
+}
+.fc .a.show{color:#394155}
+.fc .hint{margin-top:auto;font-size:12px;color:var(--sub);text-align:center;padding-top:18px}
+.fcFoot{display:flex;gap:10px;margin-top:18px;width:100%;max-width:700px}
+.fcFoot button{flex:1;padding:12px 0;border-radius:11px;font-weight:600;font-size:14px;border:1px solid var(--line);background:#fff}
+.fcFoot .no{border-color:#f3c2c2;color:var(--bad);background:#fff7f7}
+.fcFoot .mid{border-color:#f0dcae;color:var(--warn);background:#fffdf5}
+.fcFoot .yes{border-color:#bde5c8;color:var(--ok);background:#f5fdf7}
+
+/* ---------- 错题 ---------- */
+.wrongItem{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--card);margin-bottom:8px}
+.wrongItem .tx{flex:1;min-width:0}
+.wrongItem b{font-size:13.5px}
+.wrongItem span{font-size:12px;color:var(--sub)}
+
+/* ---------- 详情 ---------- */
+.detail .t{font-size:22px;font-weight:700;margin:4px 0 8px}
+.detail .bodytext{font-size:15px;line-height:2;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;white-space:pre-wrap;margin-top:12px}
+
+/* ---------- 右栏 ---------- */
+.right{background:var(--card);border-left:1px solid var(--line);padding:12px;overflow:auto}
+.right .panel{box-shadow:none;border:none;padding:0 0 14px;margin-bottom:14px;border-bottom:1px solid var(--line)}
+.right .panel:last-child{border-bottom:none}
+.prog{display:flex;flex-direction:column;gap:9px}
+.prow{font-size:12px}
+.prow .pt{display:flex;justify-content:space-between;margin-bottom:3px;color:#4a5368}
+.prow .pb{height:6px;background:#eef1f7;border-radius:99px;overflow:hidden}
+.prow .pb i{display:block;height:100%;border-radius:99px;background:var(--pri);transition:width .4s}
+.prow .pb i.s{background:var(--s)}
+.btncol{display:flex;flex-direction:column;gap:8px}
+.btncol .btn{width:100%;text-align:left}
+
+/* ---------- 滚动条 ---------- */
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#d6dbe7;border-radius:9px;border:2px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-thumb:hover{background:#bcc5d8;background-clip:content-box}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ---------- 响应 ---------- */
+@media(max-width:1180px){
+  .body{grid-template-columns:238px minmax(0,1fr)}
+  .right{display:none}
+}
+@media(max-width:820px){
+  .body{grid-template-columns:1fr}
+  .left{display:none}
+  .main{padding:0 14px 30px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">434 <i>复习台</i><small>山大 · 国际商务专业基础</small></div>
+    <div class="gwrap">
+      <div class="gbar"><i id="gbar"></i></div>
+      <div class="gtxt" id="gtxt">0 / 0 已掌握</div>
+    </div>
+    <div class="dcount" id="dcount">距初试 <b>--</b> 天</div>
+  </header>
+
+  <div class="body">
+
+    <aside class="left">
+      <div class="searchbox">
+        <input id="search" placeholder="搜索考点 / 关键词…">
+      </div>
+      <div class="tree" id="tree"></div>
+    </aside>
+
+    <main class="main">
+      <nav class="tabs" id="tabs">
+        <button data-tab="today" class="on">今日台</button>
+        <button data-tab="outline">提纲</button>
+        <button data-tab="card">闪卡</button>
+        <button data-tab="wrong">错题本</button>
+        <button data-tab="stat">数据</button>
+      </nav>
+      <section class="view" id="view"></section>
+    </main>
+
+    <aside class="right">
+      <div class="panel">
+        <h3>模块进度</h3>
+        <div class="prog" id="modprog"></div>
+      </div>
+      <div class="panel">
+        <h3>数据</h3>
+        <div class="btncol">
+          <button class="btn sm" id="btnExport">导出备份</button>
+          <button class="btn sm" id="btnImport">导入备份</button>
+          <button class="btn sm" id="btnReset">清空重来</button>
+        </div>
+        <input type="file" id="fileIn" accept=".json" hidden>
+      </div>
+      <div class="panel">
+        <h3>快捷键</h3>
+        <div class="muted" style="font-size:12px;line-height:1.9">
+          空格 / 回车：翻卡<br>
+          1：忘了　2：模糊　3：记得<br>
+          /：聚焦搜索
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+<script>
+/* ==================================================================
+   434 复习台 · 核心层
+   数据 → 状态 → 权重 → 事件 → 插件
+   ================================================================== */
+
+/* ---------- 1. 知识点数据 ----------
+   id  : 唯一标识（不要改）
+   m   : 模块 0国贸 1投资 2金融 3运营
+   ch  : 章节
+   t   : 标题（树里显示）
+   lv  : S/A/B/C 优先级
+   ty  : 名解/简答/论述/计算
+   q   : 闪卡正面
+   a   : 闪卡背面（\n 换行）
+   src : 真题出处
+------------------------------------------------------------------ */
+const DATA = [
+/* ========== 一、国际贸易 ========== */
+{id:'t01',m:0,ch:'第1章 国际贸易理论',t:'绝对优势理论',lv:'S',ty:'名解',src:'19论述',
+ q:'绝对优势理论',
+ a:'亚当·斯密提出。一国在某产品上劳动生产率高于别国，即具有绝对优势；反之则为绝对劣势。各国应专业化生产并出口具有绝对优势的产品，进口不具优势的产品，结果比什么都自己生产更有利。'},
+
+{id:'t02',m:0,ch:'第1章 国际贸易理论',t:'比较优势理论',lv:'S',ty:'论述',src:'19论述',
+ q:'比较优势理论（李嘉图）',
+ a:'核心：两利相权取其重，两弊相权取其轻。即使一国在两种产品上均处绝对劣势，仍可专业化生产劣势相对较小的产品，通过交换双方获益。\n评价：①奠定自由贸易的理论基础；②假设苛刻（2×2、要素不流动、技术不变、完全竞争），未解释贸易利益在国与国之间的分配。'},
+
+{id:'t03',m:0,ch:'第1章 国际贸易理论',t:'要素禀赋论 H-O',lv:'S',ty:'简答',src:'14简答',
+ q:'要素禀赋论（H-O 模型）',
+ a:'①核心结论：一国应出口密集使用其相对丰裕要素生产的产品，进口密集使用其相对稀缺要素生产的产品。\n②逻辑链条：要素禀赋差异→要素价格差异→产品成本差异→比较优势→国际贸易。\n③评价：奠定了现代国际贸易理论的基础；但假设要素不能流动、技术相同，遭到里昂惕夫之谜的挑战。'},
+
+{id:'t04',m:0,ch:'第1章 国际贸易理论',t:'里昂惕夫之谜',lv:'B',ty:'名解',src:'—',
+ q:'里昂惕夫之谜（里昂惕夫悖论）',
+ a:'按 H-O 模型，资本丰裕的美国应出口资本密集型产品、进口劳动密集型产品。里昂惕夫用投入产出法检验发现，美国出口的劳动密集型产品多于进口，进口的资本密集型产品多于出口，结论与要素禀赋论相反，故称悖论。'},
+
+{id:'t05',m:0,ch:'第1章 国际贸易理论',t:'产品生命周期理论',lv:'S',ty:'名解',src:'17名解·20简答·21简答',
+ q:'产品生命周期理论',
+ a:'弗农提出。产品像生物一样经历创新、成熟、标准化三个阶段：\n①创新阶段：技术垄断，发明国生产并满足国内外需求；\n②成熟阶段：技术扩散，国外开始模仿生产，发明国出口下降；\n③标准化阶段：技术物化于设备，成本成为竞争关键，生产转移至低成本国家。\n评价：从技术角度解释了为何投资、能否投资、投向何处；但不能量化时间差，也难以解释美国以外的 FDI。'},
+
+{id:'t06',m:0,ch:'第1章 国际贸易理论',t:'产业内贸易的原因',lv:'S',ty:'简答',src:'23简答·25简答',
+ q:'产业内贸易的原因',
+ a:'①产品差异化：同一产业内不同规格、质量、品牌的产品形成双向需求；\n②规模经济：扩大市场以降低单位成本；\n③消费者偏好的多样性；\n④跨国公司的全球价值链分工，中间品多次跨境。'},
+
+{id:'t07',m:0,ch:'第1章 国际贸易理论',t:'战略性贸易政策',lv:'S',ty:'简答',src:'15简答·23论述',
+ q:'战略性贸易政策理论',
+ a:'在不完全竞争市场中，政府运用补贴或出口鼓励，扶持具有规模经济、外部经济或大量租金的产业，扩大本国厂商的国际市场份额，把超额利润从外国厂商转移给本国厂商。\n评价：①突破完全竞争假设；②但易引发报复，且政府难以识别战略性产业，补贴可能被浪费。'},
+
+{id:'t08',m:0,ch:'第2章 贸易政策与壁垒',t:'名义/有效关税率',lv:'S',ty:'计算',src:'16名解·20名解·24计算',
+ q:'名义关税率与有效保护率（含公式）',
+ a:'名义保护率＝海关按税则征收的关税税率。\n有效保护率 E＝(V′－V)/V，V 为零关税时单位产品附加值，V′ 为征税后的附加值。\n关键结论：最终产品名义税率＞原材料名义税率时，有效保护率＞名义税率；反之则小于。\n政策含义：对原材料征关税等于向使用该原料的国内产业征税。'},
+
+{id:'t09',m:0,ch:'第2章 贸易政策与壁垒',t:'非关税壁垒',lv:'S',ty:'名解',src:'14名解·18简答',
+ q:'非关税壁垒',
+ a:'关税以外一切限制进口的措施。分两类：\n①直接：进口配额、自动出口限制、进口许可证；\n②间接：外汇管制、进口押金、国家垄断、政府采购、国内税、国产化要求、技术标准、绿色壁垒。\n影响：数量限制扭曲价格机制，保护效果确定且隐蔽，易引发报复。'},
+
+{id:'t10',m:0,ch:'第2章 贸易政策与壁垒',t:'进口配额',lv:'S',ty:'名解',src:'15名解',
+ q:'进口配额',
+ a:'一国在一定时期内对某些商品的进口数量或金额加以限制，限额内允许进口，超过限额则不准进口或征收高额关税。分全球配额与国别配额；禁止性配额与关税配额。'},
+
+{id:'t11',m:0,ch:'第2章 贸易政策与壁垒',t:'绿色贸易壁垒',lv:'S',ty:'名解',src:'14·21',
+ q:'绿色贸易壁垒',
+ a:'进口国以保护自然资源、生态环境和人类健康为由，通过严格的环保技术标准、绿色标志、绿色包装、绿色检疫和绿色补贴等，限制外国产品进口的措施。具有两重性：形式上顺应环保要求，实质上是新型非关税壁垒。'},
+
+{id:'t12',m:0,ch:'第2章 贸易政策与壁垒',t:'贸易救济',lv:'S',ty:'名解',src:'25名解',
+ q:'贸易救济',
+ a:'一国依据国际贸易规则对进口产品采取的三种措施：\n①反倾销：针对低于正常价值销售；\n②反补贴：针对外国政府补贴；\n③保障措施：针对进口激增造成严重损害。\n须经调查程序，受 WTO 规则约束。'},
+
+{id:'t13',m:0,ch:'第2章 贸易政策与壁垒',t:'出口信贷',lv:'S',ty:'名解',src:'18名解',
+ q:'出口信贷',
+ a:'一国银行为鼓励本国商品出口，对本国出口商、外国进口商或进口方银行提供的贷款。分卖方信贷（贷给本国出口商）与买方信贷（贷给外国进口商或银行）。通常用于成套设备、船舶、飞机等大额交易。'},
+
+{id:'t14',m:0,ch:'第2章 贸易政策与壁垒',t:'自由贸易区',lv:'S',ty:'名解',src:'18名解',
+ q:'自由贸易区（FTA）',
+ a:'两个或两个以上国家通过协议，相互取消进口关税及同等效力的措施而形成的区域经济一体化组织。特征：①成员间商品自由流动；②无共同对外关税；③须以原产地规则区分成员与非成员国产品。'},
+
+{id:'t15',m:0,ch:'第2章 贸易政策与壁垒',t:'倾销与外汇倾销',lv:'B',ty:'名解',src:'—',
+ q:'商品倾销与外汇倾销',
+ a:'商品倾销：以低于国内市场价格甚至低于成本的价格向国外大量抛售。\n外汇倾销：以压低本币汇率的方式促进出口、抑制进口。生效条件：①贬值幅度大于国内物价上涨；②出口需求弹性大；③他国不同时等幅贬值。'},
+
+{id:'t16',m:0,ch:'第2章 贸易政策与壁垒',t:'海关税则 / 从量税',lv:'A',ty:'名解',src:'22名解·19名解',
+ q:'海关税则 / 从量税',
+ a:'海关税则：一国对进出口商品计征关税的规章和对应税商品系统分类的税率表。分单式与复式。\n从量税：按进口商品的数量、重量、容量等计量单位计征的关税，税额＝数量×单位税额。'},
+
+{id:'t17',m:0,ch:'第3章 货物与服务贸易',t:'服务贸易四种方式',lv:'S',ty:'简答',src:'15简答·21简答',
+ q:'国际服务贸易的四种提供方式（GATS）',
+ a:'①跨境交付：自一成员境内向另一成员境内提供服务（如跨境电信、网络服务）；\n②境外消费：在一成员境内向另一成员消费者提供服务（如外国游客、留学生）；\n③商业存在：通过在他成员境内设立商业机构提供服务（如设银行、律师事务所），是最主要方式；\n④自然人流动：以自然人身份进入他成员境内提供服务（如外国律师驻华）。'},
+
+{id:'t18',m:0,ch:'第3章 货物与服务贸易',t:'服务外包',lv:'B',ty:'名解',src:'16论述',
+ q:'服务外包',
+ a:'企业将价值链中原本由自身提供的、基础性的、共性的、非核心的 IT 业务及基于 IT 的业务流程剥离出来，外包给外部专业服务商完成的经济活动。基于信息网络技术，目的是重组价值链、优化资源配置、增强核心竞争力。'},
+
+{id:'t19',m:0,ch:'第4章 区域一体化与 WTO',t:'区域经济一体化',lv:'S',ty:'名解',src:'15名解·18论述',
+ q:'区域经济一体化',
+ a:'区域内或区域间的国家通过书面文件，逐步取消关税与非关税壁垒，实现货物、服务和生产要素的自由流动，进而协调产业、财政与货币政策，并建立超国家机构的过程。\n六种形式（由低到高）：优惠贸易安排→自由贸易区→关税同盟→共同市场→经济同盟→完全经济一体化。'},
+
+{id:'t20',m:0,ch:'第4章 区域一体化与 WTO',t:'贸易创造与贸易转移',lv:'S',ty:'论述',src:'15论述·18名解',
+ q:'贸易创造效应与贸易转移效应',
+ a:'贸易创造：成员国间取消关税后，原先由国内高成本生产供应的商品，被成员国内低成本进口替代，贸易量扩大，资源效率改善、福利提高。\n贸易转移：对外统一关税使进口来源从低成本非成员国转向高成本成员国，资源配置恶化，福利损失。\n净福利＝贸易创造－贸易转移。'},
+
+{id:'t21',m:0,ch:'第4章 区域一体化与 WTO',t:'WTO 基本原则',lv:'S',ty:'论述',src:'16论述',
+ q:'世界贸易组织的基本原则',
+ a:'①非歧视原则：最惠国待遇＋国民待遇；\n②互惠原则；\n③透明度原则；\n④关税保护与关税减让、取消数量限制原则；\n⑤公平贸易原则（反倾销、反补贴）；\n⑥对发展中国家优惠原则；\n⑦例外条款：幼稚产业保护、关税同盟与自贸区例外、保障条款。'},
+
+{id:'t22',m:0,ch:'第4章 区域一体化与 WTO',t:'最惠国待遇',lv:'S',ty:'名解',src:'24名解',
+ q:'最惠国待遇',
+ a:'一成员现在或将来给予任何第三方的优惠、特权与豁免，应立即无条件地给予其他成员方。分无条件与有条件两种。作用：把双边互惠推广为多边，使贸易机会均等。'},
+
+{id:'t23',m:0,ch:'第4章 区域一体化与 WTO',t:'GATS 主要内容',lv:'S',ty:'论述',src:'17论述',
+ q:'《服务贸易总协定》（GATS）的主要内容',
+ a:'①最惠国待遇（一般义务，不仅适用服务也适用提供者）；\n②国民待遇（承诺义务，重实际效果）；\n③透明度；\n④发展中国家特别待遇；\n⑤对歧视性措施的规定（支付与转移、政府采购、补贴）；\n⑥国内规定；\n⑦市场准入与逐步自由化；\n⑧争端解决。'},
+
+{id:'t24',m:0,ch:'第4章 区域一体化与 WTO',t:'外贸发展战略',lv:'A',ty:'简答',src:'—',
+ q:'进口替代战略与出口导向战略',
+ a:'进口替代：以高关税、数量限制、本币高估保护本国工业，用国产品替代进口。优点：建立工业基础、扩大就业、节约外汇；缺点：受国内市场限制、效率低、出口受阻。\n出口导向：以出口带动工业化，本币贬值、鼓励出口。优点：获得规模经济、增加就业与外汇；缺点：易受外部冲击传导。'},
+
+/* ========== 二、国际直接投资 ========== */
+{id:'i01',m:1,ch:'第1章 FDI 与跨国公司理论',t:'垄断优势论',lv:'S',ty:'论述',src:'16名解·17论述',
+ q:'海默的垄断优势理论',
+ a:'①核心：市场不完全是对外直接投资的根本原因，企业垄断优势是获利的条件。若市场完全有效，FDI 不可能发生。\n②市场不完全的四个方面：产品市场、要素市场、规模经济、政府政策。\n③垄断优势：技术、管理经验、资金、信息、规模经济、全球销售网络。\n评价：开创了以 FDI 为对象的独立研究领域；但以美国为样本，无法解释发展中国家对外投资，且偏静态、忽视区位因素。'},
+
+{id:'i02',m:1,ch:'第1章 FDI 与跨国公司理论',t:'国际生产折衷理论 OLI',lv:'S',ty:'论述',src:'24名解·23论述',
+ q:'邓宁的国际生产折衷理论（OLI）',
+ a:'①所有权优势 O：企业拥有而他国企业没有或难以获得的优势（技术、管理、规模、资金），是投资的必要条件；\n②内部化优势 I：通过内部交易避免市场不完全带来的成本，也是必要条件；\n③区位优势 L：东道国不可移动的要素禀赋与政策环境，决定投资的地理方向，是充分条件。\n组合：只有 O → 技术许可；O＋I → 出口；O＋I＋L → 对外直接投资。\n评价：集大成，提供综合分析框架；但创新不足。'},
+
+{id:'i03',m:1,ch:'第1章 FDI 与跨国公司理论',t:'小岛清边际产业扩张论',lv:'S',ty:'简答',src:'18简答',
+ q:'小岛清边际产业扩张论',
+ a:'①对外直接投资应从本国已处于或即将处于比较劣势的产业（边际产业）依次进行；\n②这些边际产业恰是东道国具有或潜在具有比较优势的产业；\n③两国在投资与引致贸易中互补获益。\n三点突破：摒弃市场不完全论点、摒弃垄断优势论点、主张贸易创造型而非贸易替代型。'},
+
+{id:'i04',m:1,ch:'第1章 FDI 与跨国公司理论',t:'投资周期论',lv:'A',ty:'名解',src:'—',
+ q:'邓宁的投资周期论',
+ a:'国际生产折衷理论的动态化。一国国际投资地位与经济发展水平相关，人均 GNP 越高，对外投资净额越大。四阶段：①无 O、L、I，资本净流入；②L 增强；③O 增强；④三者齐备，资本净输出。'},
+
+{id:'i05',m:1,ch:'第1章 FDI 与跨国公司理论',t:'内部化理论',lv:'B',ty:'名解',src:'—',
+ q:'内部化理论',
+ a:'巴克利与卡森提出。市场不完全使中间产品（技术、知识、管理技能）外部交易成本高且难以定价，企业通过对外投资将交易内部化，以降低交易成本、保护垄断优势。'},
+
+{id:'i06',m:1,ch:'第2章 FDI 类型与决策',t:'水平型 / 垂直型 FDI',lv:'S',ty:'简答',src:'14简答·16名解·25简答',
+ q:'水平型与垂直型对外直接投资的动机差异',
+ a:'水平型（横向型）：在海外建立与国内生产经营方向一致的子公司，独立完成全部生产销售。动机：绕开贸易壁垒、占领当地市场、降低运输成本。\n垂直型（纵向型）：按生产阶段专业化分工，在海外设立与国内生产有关联的子公司。动机：利用各国要素成本差异、获取资源、提高专业化效率。'},
+
+{id:'i07',m:1,ch:'第2章 FDI 类型与决策',t:'国际直接投资',lv:'S',ty:'名解',src:'17名解·23名解',
+ q:'国际直接投资',
+ a:'投资者在国外创办企业或与当地资本合营企业，涉及资本货物、管理技术等生产要素的直接投入，投资者对所投要素的使用和生产过程拥有直接控制权。核心特征是控制权与经营管理权。形式：创办新企业、购股达到控制比例、利润再投资。'},
+
+{id:'i08',m:1,ch:'第2章 FDI 类型与决策',t:'绿地投资',lv:'S',ty:'论述',src:'16论述',
+ q:'绿地投资及其优缺点',
+ a:'在东道国兴建全新企业，形成新的生产能力。\n优点：①可按全球战略选择规模与区位；②对子公司有完全控制权；③技术、工艺不外溢。\n缺点：①筹建量大、周期长、资金要求高；②面临较高政治与社会风险；③需自行开拓市场，管理人才短缺。'},
+
+{id:'i09',m:1,ch:'第2章 FDI 类型与决策',t:'跨国并购',lv:'S',ty:'论述',src:'15名解·18论述',
+ q:'跨国并购及其优缺点',
+ a:'一国企业通过一定渠道与支付手段，购买另一国企业全部或足以行使控制权的股份，从而实施实际或完全控制。\n优点：①快速进入，获得现成的生产设施、渠道与品牌；②获取技术与管理经验；③绕过壁垒、缩短周期。\n缺点：①估值与溢价风险；②整合困难、文化冲突；③东道国审查与政治阻力。'},
+
+{id:'i10',m:1,ch:'第2章 FDI 类型与决策',t:'国际合资企业',lv:'S',ty:'论述',src:'15论述·17论述',
+ q:'国际合资企业的特点',
+ a:'①双方共同出资、共同经营、共担风险、共享利润；\n②按股权比例分配控制权与收益；\n③可借助当地伙伴的市场渠道、政府关系与本土经验；\n④易产生控制权、技术转让与利润分配方面的冲突。'},
+
+{id:'i11',m:1,ch:'第2章 FDI 类型与决策',t:'独资 / 合作企业',lv:'A',ty:'名解',src:'14名解·18名解',
+ q:'国际独资企业 / 国际合作企业',
+ a:'国际独资企业：投资者在东道国单独出资设立、独立经营、自负盈亏的企业，全部股权归投资者所有，控制权完整但风险自担。\n国际合作企业：双方以契约方式约定投资条件、收益分配与风险承担，不按股权比例，属契约式合营。'},
+
+{id:'i12',m:1,ch:'第3章 跨国公司',t:'跨国经营指数',lv:'A',ty:'名解',src:'18名解·23名解',
+ q:'跨国经营指数（TNI）',
+ a:'衡量企业跨国程度的综合指标，为三项比率的算术平均：\nTNI＝(国外资产/总资产＋国外销售额/总销售额＋国外雇员数/雇员总数)/3×100%。\n数值越高，说明企业跨国经营程度越深。'},
+
+{id:'i13',m:1,ch:'第3章 跨国公司',t:'跨国公司特点',lv:'S',ty:'简答',src:'21·22·23',
+ q:'跨国公司的经营特点',
+ a:'①以实力雄厚的大公司为主体，通过 FDI 或收购在多国设立子公司；\n②有完整决策体系与最高决策中心，子公司服从全局；\n③从全球战略出发安排经营活动，全球寻市场、定点生产、定点销售；\n④资金与技术实力强，信息传递快，可快速跨国转移资金；\n⑤在特定产品或地区具有不同程度的垄断性。'},
+
+{id:'i14',m:1,ch:'第3章 跨国公司',t:'母公司法律特征',lv:'S',ty:'简答',src:'19名解',
+ q:'跨国公司母公司的法律特征',
+ a:'①是依母国法律设立的独立法人；\n②拥有子公司的股权，能实际控制子公司的经营决策；\n③对子公司的债务原则上以出资额为限承担责任；\n④统一制定全球战略并分配资源；\n⑤在法律上母子公司各自独立，但经济上是一个整体。'},
+
+{id:'i15',m:1,ch:'第3章 跨国公司',t:'对外投资保险制度',lv:'A',ty:'名解',src:'15名解',
+ q:'对外投资保险制度',
+ a:'资本输出国政府对本国投资者在海外可能遭遇的政治风险（征收、战争、汇兑限制）提供保险的制度，由国家专门机构承保，属于政策性保险，旨在鼓励对外投资。'},
+
+{id:'i16',m:1,ch:'第3章 跨国公司',t:'转移价格',lv:'B',ty:'论述',src:'—',
+ q:'国际转移价格及其动因',
+ a:'跨国公司内部母子公司、子公司之间购销商品、提供劳务、转让无形资产时使用的内部价格，不受市场供求影响。\n动因：①避税（转移至低税率国家）；②规避政治风险；③规避外汇风险与外汇管制；④争夺与控制市场。'},
+
+{id:'i17',m:1,ch:'第4章 母国与东道国效应',t:'中国对外投资的母国产业结构效应',lv:'S',ty:'论述',src:'14论述',
+ q:'中国对外直接投资对母国的产业结构效应',
+ a:'①资源补缺效应：获取国内短缺的能源与原材料，缓解瓶颈；\n②产业转移效应：把成熟或边际产业转移出去，为国内产业升级腾出空间；\n③技术反向溢出：通过并购获取先进技术、品牌与管理经验，反哺国内；\n④出口带动效应：带动设备、零部件出口；\n⑤风险：短期资本外流、产业空心化、就业转移。'},
+
+/* ========== 三、国际金融 ========== */
+{id:'f01',m:2,ch:'第1章 国际收支',t:'国际收支',lv:'B',ty:'名解',src:'—',
+ q:'国际收支',
+ a:'一国居民与非居民在一定时期内全部经济交易的系统记录，是流量概念。平衡表含经常账户、资本与金融账户、错误与遗漏账户。'},
+
+{id:'f02',m:2,ch:'第1章 国际收支',t:'马歇尔-勒纳条件与 J 曲线',lv:'S',ty:'名解',src:'15名解',
+ q:'马歇尔-勒纳条件与 J 曲线效应',
+ a:'马歇尔-勒纳条件：在进出口供给弹性无穷大的前提下，只有出口需求弹性与进口需求弹性之和的绝对值大于 1，本币贬值才能改善贸易收支。\nJ 曲线：贬值后贸易收支先恶化、后改善，因存在认识、决策、生产与交货时滞，短期内弹性之和小于 1，中长期大于 1。'},
+
+{id:'f03',m:2,ch:'第2章 国际储备',t:'国际储备',lv:'B',ty:'名解',src:'18简答',
+ q:'国际储备及其适度性',
+ a:'一国货币当局持有的、用于对外支付、平衡国际收支和维持汇率稳定的资产。构成：黄金储备、外汇储备、在 IMF 的储备头寸、SDR。\n适度性衡量：①进口比例法（储备/年进口额）；②债务比例法；③机会成本—收益法。'},
+
+{id:'f04',m:2,ch:'第3章 汇率制度',t:'布雷顿森林体系',lv:'S',ty:'简答',src:'15简答',
+ q:'布雷顿森林体系的主要内容及缺陷',
+ a:'内容：①双挂钩：美元与黄金挂钩，各国货币与美元挂钩；②可调整的固定汇率制；③IMF 提供辅助储备；④取消经常项目外汇管制；⑤稀缺货币条款。\n缺陷：①特里芬难题——美元供给与信心的内在矛盾；②固定汇率难以调节国际收支失衡；③美国可输出通胀。'},
+
+{id:'f05',m:2,ch:'第3章 汇率制度',t:'特里芬难题',lv:'B',ty:'名解',src:'—',
+ q:'特里芬难题',
+ a:'以一国货币作为主要国际储备资产，必然陷入两难：要满足各国清偿能力需美国长期逆差，但这会削弱美元信心；若保持收支平衡，则国际储备供应不足。矛盾不可克服，终致体系崩溃。'},
+
+{id:'f06',m:2,ch:'第3章 汇率制度',t:'固定 vs 浮动汇率制',lv:'S',ty:'论述',src:'19论述·22论述',
+ q:'固定汇率制与浮动汇率制的优缺点比较',
+ a:'固定汇率：\n优点：汇率稳定，促进贸易投资；防止投机；形成外部约束，抑制通胀；具名义锚作用。\n缺点：易输入通胀；货币政策丧失独立性；易出现内外均衡冲突；需大量储备干预。\n浮动汇率：\n优点：增强货币政策自主性；避免通胀国际传导；自动调节国际收支；无需持有大量储备。\n缺点：汇率波动加大不确定性与外汇风险；易引发投机与资金频繁流动；可能滥用汇率政策。'},
+
+{id:'f07',m:2,ch:'第4章 外汇与汇率',t:'影响汇率变动的因素',lv:'S',ty:'简答',src:'14简答',
+ q:'影响汇率变动的因素',
+ a:'①国际收支状况（直接因素）：顺差→本币升值；\n②通货膨胀率差异：通胀高→本币贬值；\n③利率差异：利率高→资本流入→本币升值；\n④经济增长率差异；\n⑤中央银行干预与市场预期。'},
+
+{id:'f08',m:2,ch:'第4章 外汇与汇率',t:'即期 / 远期汇率',lv:'S',ty:'名解',src:'15名解·17名解',
+ q:'即期汇率 / 远期汇率',
+ a:'即期汇率：买卖双方成交后在两个营业日内办理交割的汇率。\n远期汇率：双方事先约定、在未来一定日期交割的汇率，以即期汇率为基础加减升水或贴水。升水表示远期高于即期，贴水表示低于即期。'},
+
+{id:'f09',m:2,ch:'第4章 外汇与汇率',t:'购买力平价',lv:'S',ty:'名解',src:'14名解',
+ q:'购买力平价理论',
+ a:'汇率由两国货币的购买力之比决定，基础是一价定律。\n绝对购买力平价：e＝P/P*；\n相对购买力平价：汇率变动率＝两国通胀率之差。\n评价：长期解释力较强，短期失效；忽略非贸易品、运输成本与资本流动。'},
+
+{id:'f10',m:2,ch:'第4章 外汇与汇率',t:'汇率超调',lv:'A',ty:'名解',src:'—',
+ q:'汇率超调',
+ a:'多恩布什提出。短期内商品价格具有粘性，货币市场失衡后由利率立即调整吸收冲击，利率超调带动资本流动，使汇率短期变动幅度超过长期均衡水平；长期价格调整后汇率回归均衡。'},
+
+{id:'f11',m:2,ch:'第5章 外汇风险',t:'外汇风险三类型与防范',lv:'S',ty:'论述',src:'14论述·23简答·25简答',
+ q:'外汇风险的类型及其管理措施',
+ a:'①交易风险：汇率变动影响已签合同的应收应付，用远期、期货、期权、货币互换对冲；\n②折算风险（会计风险）：合并报表折算产生账面损益，用资产负债表对冲、货币匹配；\n③经济风险：长期汇率变动影响企业未来现金流与竞争力，用市场多元化、海外投资、成本结构调整。\n其他手段：提前或推迟收付、货币条款、配对管理。'},
+
+{id:'f12',m:2,ch:'第5章 外汇业务',t:'套汇与套利计算',lv:'S',ty:'计算',src:'25计算',
+ q:'套利（含判断与净收益计算）',
+ a:'步骤：\n①算远期汇率是否符合利率平价：远期升贴水率≈两国利差；\n②若偏离，存在套利空间；\n③借低利率货币→即期换成高利率货币→投资→远期卖出本息；\n④净利润＝远期换回金额－应偿还本息。\n注意方向：在利率高的国家投资，同时远期卖出该国货币。'},
+
+{id:'f13',m:2,ch:'第6章 国际金融市场',t:'欧洲货币',lv:'S',ty:'名解',src:'20名解',
+ q:'欧洲货币',
+ a:'在货币发行国境外被存放和借贷的货币，又称离岸货币、境外货币。如欧洲美元即在美国境外流通的美元。注意“欧洲”指“境外”而非地理概念。'},
+
+{id:'f14',m:2,ch:'第6章 国际金融市场',t:'离岸金融市场',lv:'S',ty:'论述',src:'15论述·25论述',
+ q:'离岸金融市场的特征与主要中心',
+ a:'特征：①基本不受所在国法规与税制管制，手续简便、低税免税；②交易货币为境外货币，非居民之间借贷；③有独立的利率体系，存款利率略高、贷款利率略低；④市场范围广、规模大。\n主要中心：伦敦、纽约（IBF）、东京、新加坡、香港、开曼、巴哈马。\n评价：提高资金效率、促进一体化；但削弱各国货币政策效力，加剧金融动荡。'},
+
+{id:'f15',m:2,ch:'第6章 国际金融市场',t:'国际债券分类',lv:'S',ty:'简答',src:'19·21',
+ q:'国际债券的分类',
+ a:'①外国债券：在外国发行、以发行地货币为面值，如美国扬基债券、日本武士债券；\n②欧洲债券：在境外发行、以第三国货币为面值，不一定在欧洲发行。'},
+
+{id:'f16',m:2,ch:'第6章 国际金融市场',t:'国际信贷',lv:'A',ty:'名解',src:'19名解',
+ q:'国际信贷',
+ a:'一国金融机构、政府、企业及国际金融机构在国际市场上向另一国同类机构借出货币资金的信用活动。主要形式：国际金融机构贷款、政府贷款、国际银行贷款。'},
+
+{id:'f17',m:2,ch:'第7章 汇率与货币体系',t:'人民币汇率改革',lv:'S',ty:'论述',src:'17论述·18论述',
+ q:'人民币汇率制度改革历程',
+ a:'①1981—1993：官方汇率与调剂汇率并存的双重汇率；\n②1994：汇率并轨，实行以市场供求为基础的、单一的、有管理的浮动汇率制；\n③2005：参考一篮子货币，实行有管理的浮动，一次性升值 2%；\n④2015 以来：完善中间价形成机制，增强双向浮动弹性。'},
+
+{id:'f18',m:2,ch:'第7章 汇率与货币体系',t:'最优货币区',lv:'S',ty:'名解',src:'24名解',
+ a:'最优货币区是指区内成员国货币相互钉住、汇率固定，对区外联合浮动，且内部与外部均衡能同时实现的地理区域。',
+ q:'最优货币区理论',
+ },
+
+{id:'f19',m:2,ch:'第7章 汇率与货币体系',t:'米德冲突',lv:'S',ty:'名解',src:'23名解',
+ q:'米德冲突',
+ a:'在固定汇率制下，仅用财政或货币政策同时追求内部均衡（充分就业、物价稳定）与外部均衡（国际收支平衡）时，两者政策方向常相反，形成冲突。如国际收支逆差要求紧缩，而国内失业要求扩张。'},
+
+{id:'f20',m:2,ch:'第7章 汇率与货币体系',t:'蒙代尔三角',lv:'A',ty:'名解',src:'19名解',
+ q:'蒙代尔不可能三角',
+ a:'资本自由流动、固定汇率、货币政策独立性三者不可同时兼得，最多只能实现其中两项。要维持固定汇率与资本流动，须放弃货币政策独立性；要保留货币政策独立性，则须允许汇率浮动或管制资本。'},
+
+{id:'f21',m:2,ch:'第8章 国际金融危机',t:'国际金融危机',lv:'B',ty:'简答',src:'22简答',
+ q:'亚洲金融危机的成因',
+ a:'①宏观经济基本面失衡：高增长伴随经常项目逆差、外债过高；\n②金融体系脆弱：银行不良贷款高、监管缺失；\n③资本账户过早开放，短期资本大量流入后抽逃；\n④固定汇率制与政策三角冲突；\n⑤国际投机资本冲击与市场预期的自我实现。'},
+
+/* ========== 四、商务环境与运营 ========== */
+{id:'o01',m:3,ch:'第1章 国际营销',t:'选择国际目标市场的步骤',lv:'S',ty:'简答',src:'24简答',
+ q:'选择国际目标市场的一般步骤',
+ a:'①市场细分：按地理、人口、心理、行为标准划分；\n②评估各细分市场的规模、增长率、竞争强度与进入壁垒；\n③筛选：排除不具吸引力的细分市场；\n④确定目标市场：无差异、差异化或集中化策略；\n⑤市场定位：设计差异化形象并传达。'},
+
+{id:'o02',m:3,ch:'第1章 国际营销',t:'标准化 vs 差异化',lv:'S',ty:'论述',src:'14论述',
+ q:'国际产品标准化策略与差异化策略的适用条件',
+ a:'标准化适用：①产品具有普遍需求，文化差异小；②成本压力大、需规模经济；③技术标准统一；④品牌形象需全球一致。\n差异化适用：①各国需求、法规、使用条件差异大；②地区调适压力高；③竞争本地化程度高；④渠道与媒体环境不同。'},
+
+{id:'o03',m:3,ch:'第1章 国际营销',t:'市场定位',lv:'S',ty:'论述',src:'15论述',
+ q:'如何对国际产品进行市场定位',
+ a:'①识别目标市场的关键属性与竞争者的定位；\n②选择差异化优势：产品、服务、渠道、形象、人员；\n③制定定位策略：避强定位、迎头定位、重新定位；\n④通过营销组合传达定位；\n⑤注意跨文化的可接受性与本地化调整。'},
+
+{id:'o04',m:3,ch:'第1章 国际营销',t:'整合营销传播',lv:'S',ty:'简答',src:'16简答',
+ q:'整合营销传播在国际营销中的作用',
+ a:'①统一各种传播工具（广告、公关、促销、人员推销）的信息口径，形成一致形象；\n②提高传播效率、降低费用；\n③增强品牌认知与顾客忠诚；\n④适应不同国家媒体环境，实现全球统一与本地适应的平衡。'},
+
+{id:'o05',m:3,ch:'第2章 供应链',t:'信息技术对供应链的作用',lv:'S',ty:'简答',src:'25简答',
+ q:'信息技术对供应链的作用',
+ a:'①提高透明度：实时掌握库存、运输与需求信息；\n②降低库存成本：信息共享减少牛鞭效应；\n③优化物流效率与路径；\n④增强预测与响应能力；\n⑤提升供应链韧性，降低中断风险。'},
+
+{id:'o06',m:3,ch:'第2章 供应链',t:'供应链管理',lv:'B',ty:'名解',src:'—',
+ q:'供应链管理',
+ a:'对供应链所涉及组织的集成，以及对物流、信息流、资金流的协同，以满足用户需求、提高整体竞争力。方法是集成与协同，目标是提高整个供应链的效率。'},
+
+{id:'o07',m:3,ch:'第3章 国际会计与税收',t:'国际重复征税',lv:'B',ty:'简答',src:'—',
+ q:'国际重复征税的原因及免除方法',
+ a:'原因：①居民管辖权与地域管辖权重叠；②公民管辖权与地域管辖权重叠；③同种管辖权重叠。\n免除方法：免税法、抵免法（直接/间接）、税收饶让、扣除法、减免法。'}
+];
+
+/* ---------- 2. 模块与常量 ---------- */
+const MODS = ['国际贸易理论与政策','国际直接投资与跨国公司','国际金融','国际商务环境与运营'];
+const LVW  = {S:3, A:2, B:1.5, C:1};
+const INT  = [0, 1, 2, 4, 7, 15, 30];   // 掌握度 0-6 对应的复习间隔（天）
+const DAY  = 86400000;
+const KEY  = 'imx434_v1';
+const EXAM = new Date('2026-12-19T00:00:00');
+
+/* ---------- 3. 状态存取 ---------- */
+let S = null;
+
+function blank(){
+  return {v:1, kp:{}, wrong:[], log:[], days:{}, created:Date.now()};
+}
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return blank();
+    const o = JSON.parse(raw);
+    if(!o || o.v!==1) return blank();
+    o.kp = o.kp || {}; o.wrong = o.wrong || []; o.log = o.log || []; o.days = o.days || {};
+    return o;
+  }catch(e){ return blank(); }
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){ console.warn('存储失败', e); }
+}
+function kps(id){
+  if(!S.kp[id]){
+    S.kp[id] = {m:0, ok:0, err:0, seen:0, last:0, due:0, star:false};
+  }
+  return S.kp[id];
+}
+
+/* ---------- 4. 权重引擎 ---------- */
+/* 权重 = 优先级 × 薄弱系数 × 遗忘系数 × 逾期系数 */
+function weight(k){
+  const s = kps(k.id);
+  const rate = s.seen ? s.err / s.seen : 0.5;
+  const mast = s.m / 6;
+  const over = (s.due && s.due <= Date.now()) ? 1.6 : 1;
+  return (LVW[k.lv] || 1) * (1 + 2*rate) * (1 + 1.5*(1-mast)) * over;
+}
+
+/* 到期判断 */
+function isDue(k){
+  const s = kps(k.id);
+  return !s.due || s.due <= Date.now();
+}
+
+/* 排序：权重降序 */
+function ranked(list){
+  return list.slice().sort((a,b)=> weight(b) - weight(a));
+}
+
+/* ---------- 5. 答题记录（全站唯一入口） ---------- */
+function answer(id, correct){
+  const s = kps(id);
+  s.seen++; s.last = Date.now();
+
+  if(correct){
+    s.ok++;
+    s.m = Math.min(6, s.m + 1);
+    if(s.ok >= 2) S.wrong = S.wrong.filter(x=>x!==id);   // 连对2次出库
+  }else{
+    s.err++; s.ok = 0;
+    s.m = Math.max(0, s.m - 1);
+    if(!S.wrong.includes(id)) S.wrong.unshift(id);
+  }
+
+  s.due = Date.now() + INT[s.m] * DAY;
+
+  // 日志 + 打卡
+  S.log.push({t:Date.now(), id, ok:correct?1:0});
+  if(S.log.length > 3000) S.log = S.log.slice(-2000);
+  const d = new Date(); const key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  S.days[key] = (S.days[key]||0) + 1;
+
+  save();
+  Bus.emit('answer', {id, correct});
+  return s;
+}
+
+/* 标熟 */
+function markMastered(id){
+  const s = kps(id);
+  s.m = 6; s.star = true; s.ok = Math.max(s.ok, 2);
+  s.due = Date.now() + 30*DAY;
+  S.wrong = S.wrong.filter(x=>x!==id);
+  save();
+  Bus.emit('mastered', {id});
+}
+
+/* 取消标熟 */
+function unmark(id){
+  const s = kps(id);
+  s.m = 0; s.star = false; s.due = 0;
+  save();
+  Bus.emit('mastered', {id});
+}
+
+/* ---------- 6. 统计 ---------- */
+function stats(){
+  const total = DATA.length;
+  let mastered=0, learning=0, weak=0, untouched=0;
+  const byMod = [0,1,2,3].map(()=>({total:0, mastered:0}));
+  const byLv  = {S:{t:0,m:0}, A:{t:0,m:0}, B:{t:0,m:0}, C:{t:0,m:0}};
+
+  DATA.forEach(k=>{
+    const s = kps(k.id);
+    byMod[k.m].total++;
+    byLv[k.lv].t++;
+    if(s.m >= 5 || s.star){ mastered++; byMod[k.m].mastered++; byLv[k.lv].m++; }
+    else if(s.seen > 0) learning++;
+    else untouched++;
+    if(s.err > 0) weak++;
+  });
+
+  const seen = DATA.filter(k=>kps(k.id).seen>0).length;
+  const right = S.log.filter(x=>x.ok).length;
+  const acc = S.log.length ? Math.round(right / S.log.length * 100) : 0;
+
+  return {total, mastered, learning, weak, untouched, seen, acc, byMod, byLv,
+          attempts:S.log.length};
+}
+
+/* ---------- 7. 事件总线 ---------- */
+const Bus = {
+  h: {},
+  on(evt, fn){ (this.h[evt] = this.h[evt] || []).push(fn); },
+  emit(evt, data){ (this.h[evt]||[]).forEach(fn=>{ try{ fn(data); }catch(e){ console.error(e); } }); }
+};
+
+/* ---------- 8. 插件接口（不修改旧代码即可扩展） ----------
+   用法：在文件末尾另起一个 <script>，写
+   MOUNT_PLUGIN({
+     id:'hot',
+     title:'热点专题',
+     tab:true,                 // 是否在顶部加一个标签页
+     mount(root){ ... },       // 渲染到 root
+     onAnswer(d){ ... }        // 监听答题事件
+   });
+----------------------------------------------------- */
+const Registry = {
+  mods: [],
+  register(m){
+    if(!m || !m.id) return;
+    if(this.mods.some(x=>x.id===m.id)) return;
+    this.mods.push(m);
+    Bus.on('answer', d => m.onAnswer && m.onAnswer(d));
+    Bus.on('mastered', d => m.onMastered && m.onMastered(d));
+    if(typeof window.__afterRegister === 'function') window.__afterRegister(m);
+  }
+};
+window.MOUNT_PLUGIN = m => Registry.register(m);
+window.Registry = Registry;
+window.Store = {
+  get state(){ return S; },
+  data: DATA, mods: MODS, weight, isDue, ranked, answer, markMastered, unmark, stats, save,
+  byId: id => DATA.find(k=>k.id===id)
+};
+
+/* ---------- 9. 初始化状态 ---------- */
+S = load();
+if(!S.created) S.created = Date.now();
+save();
+</script>
+<script>
+/* ==================================================================
+   434 复习台 · 界面层
+   ================================================================== */
+const $ = s => document.querySelector(s);
+const UI = {tab:'today', cur:null, queue:[], qi:0, flipped:false, q:''};
+
+const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const lvBadge = lv => `<span class="lv ${lv.toLowerCase()}">${lv}</span>`;
+const CN = ['国贸','投资','金融','运营'];
+
+/* ---------- 顶部 ---------- */
+function updateHeader(){
+  const st = stats();
+  const pct = st.total ? Math.round(st.mastered / st.total * 100) : 0;
+  $('#gbar').style.width = pct + '%';
+  $('#gtxt').textContent = st.mastered + ' / ' + st.total + ' 已掌握';
+  const d = Math.ceil((EXAM - Date.now()) / DAY);
+  $('#dcount').innerHTML = '距初试 <b>' + (d > 0 ? d : 0) + '</b> 天';
+  renderModProg(st);
+}
+
+function renderModProg(st){
+  $('#modprog').innerHTML = [0,1,2,3].map(i=>{
+    const o = st.byMod[i];
+    const p = o.total ? Math.round(o.mastered / o.total * 100) : 0;
+    return `<div class="prow">
+      <div class="pt"><span>${CN[i]}</span><span>${o.mastered}/${o.total}</span></div>
+      <div class="pb"><i style="width:${p}%"></i></div>
+    </div>`;
+  }).join('');
+}
+
+/* ---------- 标签页 ---------- */
+function renderTabs(){
+  const base = [
+    ['today','今日台'],['outline','提纲'],['card','闪卡'],['wrong','错题本'],['stat','数据']
+  ];
+  const plugs = Registry.mods.filter(m=>m.tab).map(m=>['plugin:'+m.id, m.title]);
+  const all = base.concat(plugs);
+  $('#tabs').innerHTML = all.map(([k,t])=>
+    `<button data-tab="${k}" class="${UI.tab===k?'on':''}">${t}</button>`
+  ).join('');
+  $('#tabs').querySelectorAll('button').forEach(b=>{
+    b.onclick = ()=> route(b.dataset.tab);
+  });
+}
+
+/* ---------- 路由 ---------- */
+function route(tab, arg){
+  UI.tab = tab;
+  if(arg !== undefined) UI.cur = arg;
+  renderTabs();
+  const v = $('#view');
+  if(tab.startsWith('plugin:')){
+    const m = Registry.mods.find(x=>'plugin:'+x.id === tab);
+    v.innerHTML = '';
+    if(m && m.mount) m.mount(v);
+    else v.innerHTML = '<p class="muted">插件未加载</p>';
+    return;
+  }
+  if(tab === 'today')    renderToday(v);
+  if(tab === 'outline')  renderOutline(v);
+  if(tab === 'card')     renderCard(v);
+  if(tab === 'wrong')    renderWrong(v);
+  if(tab === 'stat')     renderStat(v);
+  updateHeader();
+}
+
+/* ==================================================================
+   树
+   ================================================================== */
+function renderTree(){
+  const q = UI.q.trim().toLowerCase();
+  let list = DATA;
+  if(q){
+    list = DATA.filter(k =>
+      k.t.toLowerCase().includes(q) ||
+      k.a.toLowerCase().includes(q) ||
+      k.ch.toLowerCase().includes(q)
+    );
+  }
+  const groups = [0,1,2,3].map(m=>({m, chs:{}}));
+  list.forEach(k=>{
+    const g = groups[k.m];
+    (g.chs[k.ch] = g.chs[k.ch] || []).push(k);
+  });
+
+  $('#tree').innerHTML = groups.map(g=>{
+    const all = DATA.filter(k=>k.m===g.m);
+    if(!all.length) return '';
+    const chKeys = Object.keys(g.chs);
+    if(q && !chKeys.length) return '';
+    const done = all.filter(k=>kps(k.id).m>=5).length;
+    return `<div class="tnode">
+      <div class="tmod open" data-m="${g.m}">
+        <span>${CN[g.m]} · ${MODS[g.m].slice(4) || MODS[g.m]}</span>
+        <span class="cnt">${done}/${all.length}</span>
+      </div>
+      <div class="tchs">
+        ${chKeys.map(ch=>{
+          const arr = g.chs[ch];
+          const d2 = arr.filter(k=>kps(k.id).m>=5).length;
+          return `<div class="tch" data-ch="${esc(ch)}">
+            <span>${esc(ch)}</span><span class="cnt">${d2}/${arr.length}</span>
+          </div>
+          ${arr.map(k=>`<a class="tkp ${UI.cur===k.id?'on':''}" data-id="${k.id}">
+              <em class="lv ${k.lv.toLowerCase()}" style="font-size:9px">${k.lv}</em>${esc(k.t)}
+            </a>`).join('')}`;
+        }).join('')}
+      </div>
+    </div>`;
+  }).join('');
+
+  // 折叠
+  $('#tree').querySelectorAll('.tmod').forEach(el=>{
+    el.onclick = e=>{ el.classList.toggle('open'); };
+  });
+  // 点知识点
+  $('#tree').querySelectorAll('.tkp').forEach(el=>{
+    el.onclick = ()=>{ route('outline', el.dataset.id); };
+  });
+}
+
+/* ==================================================================
+   今日台
+   ================================================================== */
+function todayTasks(){
+  const unseen = ranked(DATA.filter(k=>kps(k.id).seen===0)).slice(0,3);
+  const due    = ranked(DATA.filter(k=>kps(k.id).seen>0 && isDue(k))).slice(0,2);
+  const weak   = ranked(DATA.filter(k=>kps(k.id).err>0)).slice(0,2);
+  const seen = new Set(); const out = [];
+  const push = (k, why)=>{
+    if(!k || seen.has(k.id)) return;
+    seen.add(k.id); out.push({k, why});
+  };
+  weak.forEach(k=> push(k, '薄弱点 · 错误 ' + kps(k.id).err + ' 次'));
+  due.forEach(k=> push(k, '到期复习'));
+  unseen.forEach(k=> push(k, '新考点'));
+  return out.slice(0,6);
+}
+
+function renderToday(v){
+  const st = stats();
+  const tasks = todayTasks();
+  const d = Math.ceil((EXAM - Date.now()) / DAY);
+
+  v.innerHTML = `
+    <h1 class="h1">今日台</h1>
+    <p class="muted">距初试 ${d} 天 · 今天按权重给你排了 ${tasks.length} 项</p>
+
+    <div class="kpis" style="margin:18px 0">
+      <div class="kpi"><b>${st.mastered}</b><span>已掌握</span></div>
+      <div class="kpi"><b>${st.learning}</b><span>学习中</span></div>
+      <div class="kpi"><b>${st.weak}</b><span>薄弱点</span></div>
+      <div class="kpi"><b>${st.acc}%</b><span>正确率</span></div>
+    </div>
+
+    <div class="h2">今日任务</div>
+    ${tasks.map((o,i)=>`
+      <div class="task">
+        <div class="idx">${i+1}</div>
+        <div class="tx">
+          <b>${lvBadge(o.k.lv)} ${esc(o.k.t)}</b>
+          <span>${CN[o.k.m]} · ${esc(o.k.ch)} · ${o.k.ty}</span>
+          <div class="why">${o.why}</div>
+        </div>
+        <button class="btn pri sm" onclick="startCard('${o.k.id}')">开始</button>
+      </div>
+    `).join('') || '<p class="muted">今天的任务清空了，去错题本看看吧。</p>'}
+
+    <div class="h2">快捷</div>
+    <div class="btns">
+      <button class="btn pri" onclick="route('card')">随机闪卡</button>
+      <button class="btn" onclick="route('outline')">浏览提纲</button>
+      <button class="btn" onclick="route('wrong')">错题本（${S.wrong.length}）</button>
+    </div>
+  `;
+}
+
+/* ==================================================================
+   提纲
+   ================================================================== */
+function renderOutline(v){
+  if(UI.cur){
+    const k = DATA.find(x=>x.id===UI.cur);
+    if(k){ renderDetail(v,k); return; }
+  }
+  v.innerHTML = `<h1 class="h1">完整提纲</h1>
+    <p class="muted">共 ${DATA.length} 个考点 · 点任意一行看答案</p>
+    ${[0,1,2,3].map(m=>{
+      const arr = DATA.filter(k=>k.m===m);
+      const done = arr.filter(k=>kps(k.id).m>=5).length;
+      return `<div class="h2">${MODS[m]}　<span class="muted" style="font-weight:400">${done}/${arr.length}</span></div>
+      ${arr.map(k=>{
+        const s = kps(k.id);
+        const dot = s.m>=5 ? 'var(--ok)' : (s.err>0 ? 'var(--bad)' : (s.seen?'var(--warn)':'#d7dce8'));
+        return `<div class="wrongItem" onclick="route('outline','${k.id}')" style="cursor:pointer">
+          <span style="width:8px;height:8px;border-radius:99px;background:${dot};flex:0 0 8px"></span>
+          <div class="tx"><b>${lvBadge(k.lv)} ${esc(k.t)}</b>
+            <span>　${k.ty}${k.src && k.src!=='—' ? '　'+k.src : ''}</span></div>
+        </div>`;
+      }).join('')}`;
+    }).join('')}`;
+}
+
+function renderDetail(v,k){
+  const s = kps(k.id);
+  v.innerHTML = `
+    <div class="detail">
+      <p class="muted" style="margin:0">
+        <a style="color:var(--pri);cursor:pointer" onclick="route('outline',null)">← 返回提纲</a>
+        　${CN[k.m]} · ${esc(k.ch)}
+      </p>
+      <div class="t">${lvBadge(k.lv)} ${esc(k.t)}</div>
+      <div><span class="ty">${k.ty}</span>${k.src && k.src!=='—' ? `<span class="src">真题：${k.src}</span>`:''}
+        <span class="src">掌握度 ${s.m}/6　错 ${s.err} 次</span></div>
+      <div class="bodytext">${esc(k.a)}</div>
+      <div class="btns">
+        <button class="btn pri" onclick="startCard('${k.id}')">背这一张</button>
+        ${s.star
+          ? `<button class="btn" onclick="unmarkM('${k.id}')">取消标熟</button>`
+          : `<button class="btn ok" onclick="markM('${k.id}')">标熟</button>`}
+      </div>
+    </div>`;
+}
+
+function markM(id){ markMastered(id); route('outline', id); }
+function unmarkM(id){ unmark(id); route('outline', id); }
+
+/* ==================================================================
+   闪卡
+   ================================================================== */
+function buildQueue(seedId){
+  const pool = DATA.filter(k=>kps(k.id).err>0 || isDue(k));
+  let ids = ranked(pool.length ? pool : DATA).map(k=>k.id);
+  if(seedId){
+    ids = [seedId].concat(ids.filter(x=>x!==seedId));
+  }
+  UI.queue = ids;
+  UI.qi = 0;
+  UI.flipped = false;
+}
+
+function startCard(id){
+  buildQueue(id);
+  route('card');
+}
+
+function renderCard(v){
+  if(!UI.queue.length) buildQueue();
+  if(UI.qi >= UI.queue.length){ UI.qi = 0; UI.flipped = false; }
+
+  const id = UI.queue[UI.qi];
+  const k = DATA.find(x=>x.id===id);
+  if(!k){ v.innerHTML='<p class="muted">没有可复习的卡片</p>'; return; }
+  const s = kps(k.id);
+
+  v.innerHTML = `
+    <div class="fcWrap">
+      <div style="display:flex;justify-content:space-between;width:100%;max-width:700px;margin-bottom:10px">
+        <span class="muted">第 ${UI.qi+1} / ${UI.queue.length} 张</span>
+        <span class="muted">掌握度 ${s.m}/6　错 ${s.err} 次</span>
+      </div>
+
+      <div class="fc" id="fc">
+        <div class="fctop">${lvBadge(k.lv)}<span class="ty">${k.ty}</span>
+          <span class="src">${CN[k.m]} · ${esc(k.ch)}</span></div>
+        <div class="q">${esc(k.q)}</div>
+        <div class="a ${UI.flipped?'show':''}" id="ans">${UI.flipped?esc(k.a):'（点击卡片或按空格查看答案）'}</div>
+        <div class="hint">${UI.flipped?'按 1 忘了 · 2 模糊 · 3 记得':'空格翻面'}</div>
+      </div>
+
+      <div class="fcFoot">
+        <button class="no"  onclick="gradeCard('no')">忘了 1</button>
+        <button class="mid" onclick="gradeCard('mid')">模糊 2</button>
+        <button class="yes" onclick="gradeCard('yes')">记得 3</button>
+      </div>
+    </div>`;
+
+  $('#fc').onclick = flip;
+}
+
+function flip(){
+  UI.flipped = !UI.flipped;
+  const a = $('#ans');
+  if(!a) return;
+  const k = DATA.find(x=>x.id===UI.queue[UI.qi]);
+  if(UI.flipped){ a.textContent = k.a; a.classList.add('show'); }
+  else { a.textContent = '（点击卡片或按空格查看答案）'; a.classList.remove('show'); }
+}
+
+function gradeCard(level){
+  const id = UI.queue[UI.qi];
+  if(level === 'yes'){
+    answer(id, true);
+  }else if(level === 'no'){
+    answer(id, false);
+  }else{
+    const s = kps(id);
+    s.seen++; s.last = Date.now(); s.ok = 0;
+    s.due = Date.now() + 1*DAY;
+    S.log.push({t:Date.now(), id, ok:0});
+    save();
+    Bus.emit('answer', {id, correct:false, mid:true});
+  }
+  UI.qi++;
+  UI.flipped = false;
+  if(UI.qi >= UI.queue.length) buildQueue();
+  renderCard($('#view'));
+  updateHeader();
+}
+
+/* ==================================================================
+   错题本
+   ================================================================== */
+function renderWrong(v){
+  const arr = S.wrong.map(id=>DATA.find(k=>k.id===id)).filter(Boolean);
+  v.innerHTML = `<h1 class="h1">错题本</h1>
+    <p class="muted">共 ${arr.length} 条 · 连续答对 2 次自动出库</p>
+    ${arr.map(k=>{
+      const s = kps(k.id);
+      return `<div class="wrongItem">
+        <div class="tx"><b>${lvBadge(k.lv)} ${esc(k.t)}</b>
+          <span>　${CN[k.m]} · 错 ${s.err} 次 · 已连对 ${s.ok} 次</span></div>
+        <button class="btn sm pri" onclick="startCard('${k.id}')">重做</button>
+        <button class="btn sm" onclick="rmWrong('${k.id}')">移除</button>
+      </div>`;
+    }).join('') || '<p class="muted">还没有错题。</p>'}`;
+}
+
+function rmWrong(id){ S.wrong = S.wrong.filter(x=>x!==id); save(); route('wrong'); }
+
+/* ==================================================================
+   数据面板
+   ================================================================== */
+function streak(){
+  let n = 0; const d = new Date();
+  for(let i=0;i<400;i++){
+    const key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+    if(S.days[key]) n++;
+    else if(i>0) break;
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+
+function renderStat(v){
+  const st = stats();
+  const lv = ['S','A','B','C'];
+  v.innerHTML = `<h1 class="h1">数据</h1>
+    <div class="kpis" style="margin:18px 0">
+      <div class="kpi"><b>${st.total}</b><span>考点总数</span></div>
+      <div class="kpi"><b>${st.seen}</b><span>已接触</span></div>
+      <div class="kpi"><b>${st.acc}%</b><span>累计正确率</span></div>
+      <div class="kpi"><b>${streak()}</b><span>连续打卡</span></div>
+    </div>
+
+    <div class="h2">优先级进度</div>
+    ${lv.map(x=>{
+      const o = st.byLv[x]; if(!o.t) return '';
+      const p = Math.round(o.m/o.t*100);
+      return `<div class="prow" style="margin-bottom:10px">
+        <div class="pt"><span>${lvBadge(x)} 级</span><span>${o.m}/${o.t}</span></div>
+        <div class="pb"><i style="width:${p}%;background:var(--${x.toLowerCase()})"></i></div>
+      </div>`;
+    }).join('')}
+
+    <div class="h2">模块进度</div>
+    ${[0,1,2,3].map(i=>{
+      const o = st.byMod[i];
+      const p = o.total ? Math.round(o.mastered/o.total*100) : 0;
+      return `<div class="prow" style="margin-bottom:10px">
+        <div class="pt"><span>${MODS[i]}</span><span>${o.mastered}/${o.total}</span></div>
+        <div class="pb"><i style="width:${p}%"></i></div>
+      </div>`;
+    }).join('')}
+
+    <div class="h2">累计答题</div>
+    <p class="muted">${st.attempts} 次　错题本 ${S.wrong.length} 条</p>`;
+}
+
+/* ==================================================================
+   导入导出
+   ================================================================== */
+$('#btnExport').onclick = ()=>{
+  const blob = new Blob([JSON.stringify(S,null,2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '434复习台备份_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click(); URL.revokeObjectURL(a.href);
+};
+
+$('#btnImport').onclick = ()=> $('#fileIn').click();
+
+$('#fileIn').onchange = e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const o = JSON.parse(r.result);
+      if(!o || !o.kp) throw new Error('格式不对');
+      S = Object.assign(blank(), o);
+      save(); route(UI.tab); updateHeader();
+      alert('导入成功');
+    }catch(err){ alert('导入失败：' + err.message); }
+  };
+  r.readAsText(f);
+};
+
+$('#btnReset').onclick = ()=>{
+  if(confirm('清空全部进度？此操作不可撤销。')){
+    S = blank(); save(); route('today'); renderTree(); updateHeader();
+  }
+};
+
+/* ==================================================================
+   搜索 / 快捷键 / 事件
+   ================================================================== */
+$('#search').oninput = e=>{ UI.q = e.target.value; renderTree(); };
+
+document.addEventListener('keydown', e=>{
+  if(e.target.tagName === 'INPUT') {
+    if(e.key === 'Escape') e.target.blur();
+    return;
+  }
+  if(e.key === '/'){
+    e.preventDefault(); $('#search').focus(); return;
+  }
+  if(UI.tab !== 'card') return;
+  if(e.code === 'Space' || e.key === 'Enter'){
+    e.preventDefault(); flip(); return;
+  }
+  if(e.key === '1') gradeCard('no');
+  if(e.key === '2') gradeCard('mid');
+  if(e.key === '3') gradeCard('yes');
+});
+
+Bus.on('answer', ()=>{ updateHeader(); });
+Bus.on('mastered', ()=>{ updateHeader(); });
+
+/* 插件注册后自动刷新标签页 */
+window.__afterRegister = function(){ renderTabs(); };
+
+/* ==================================================================
+   启动
+   ================================================================== */
+renderTree();
+renderTabs();
+route('today');
+updateHeader();
+
+/* ==================================================================
+   插件示例（复制到下方即可扩展，不用改上面任何代码）
+   --------------------------------------------------------------
+   MOUNT_PLUGIN({
+     id:'hot',
+     title:'热点专题',
+     tab:true,
+     mount(root){
+       root.innerHTML = '<h1 class="h1">热点专题</h1><p class="muted">RCEP / 数字贸易 / 投资便利化…</p>';
+     },
+     onAnswer(d){ console.log('答题联动：', d); }
+   });
+   ================================================================== */
+</script>
+</body>
+</html>
+<script>
+/* ==================================================================
+   M2-B  论述骨架 ＋ 排序题
+   ================================================================== */
+
+/* ---------------- 论述骨架 ---------------- */
+(function(){
+  /* 只给小标题，逼你口述展开；答案从已有考点里取 */
+  const SKEL = [
+    {id:'t02', title:'比较优势理论', hint:'先讲提出者，再讲核心口诀，最后评价',
+     pts:['提出者与背景','核心内容（两利相权取其重）','数字例证','贡献','局限','现实意义']},
+    {id:'t03', title:'要素禀赋论（H-O）', hint:'逻辑链一定要说出来',
+     pts:['假设前提','核心结论','逻辑链条：禀赋→要素价格→成本→优势','评价']},
+    {id:'t07', title:'战略性贸易政策理论', hint:'先说前提，再说政策，最后评价',
+     pts:['理论前提（不完全竞争）','政策主张','传导机制（利润转移）','评价：突破与风险']},
+    {id:'t20', title:'区域经济一体化对国际贸易的影响', hint:'创造与转移必须成对出现',
+     pts:['贸易创造效应','贸易转移效应','净福利判断','动态效应','对区外国家的影响']},
+    {id:'t21', title:'WTO 的基本原则', hint:'七条原则＋例外，别漏例外',
+     pts:['非歧视（最惠国＋国民）','互惠','透明度','关税保护与减让','公平贸易','发展中国家优惠','例外条款']},
+    {id:'i01', title:'海默的垄断优势理论', hint:'先破后立：市场不完全→垄断优势',
+     pts:['市场不完全的四个方面','垄断优势的六项来源','结论','贡献','局限']},
+    {id:'i02', title:'邓宁的国际生产折衷理论', hint:'三种优势＋三种组合，这是得分点',
+     pts:['所有权优势 O','内部化优势 I','区位优势 L','三种组合（许可/出口/FDI）','评价']},
+    {id:'i09', title:'跨国并购及其优缺点', hint:'优点缺点各三条，最后加中国实践',
+     pts:['定义','优点 3 条','缺点 3 条','中国企业海外并购的实践']},
+    {id:'i10', title:'国际合资企业的特点', hint:'四个特征＋两类冲突',
+     pts:['共同出资、共担风险','按股权分配控制权','借助当地渠道与关系','控制权与技术冲突']},
+    {id:'i17', title:'中国对外直接投资对母国的产业结构效应', hint:'四条正效应＋一条风险',
+     pts:['资源补缺效应','产业转移效应','技术反向溢出','出口带动效应','风险：空心化']},
+    {id:'f06', title:'固定汇率制与浮动汇率制的优劣', hint:'四块对照，最后给结论',
+     pts:['固定汇率优点','固定汇率缺点','浮动汇率优点','浮动汇率缺点','结论：权衡可信性与灵活性']},
+    {id:'f11', title:'外汇风险的类型与管理', hint:'三类风险各配工具，别混',
+     pts:['交易风险及工具','折算风险及工具','经济风险及工具','其他手段：提前错后、货币条款']},
+    {id:'f17', title:'人民币汇率制度改革历程', hint:'四阶段，每阶段一句措施',
+     pts:['1981—1993 双重汇率','1994 汇率并轨','2005 参考一篮子','2015 以来完善中间价']},
+    {id:'f14', title:'离岸金融市场的特征与影响', hint:'四条特征＋两类影响',
+     pts:['监管宽松、税负低','交易境外货币、非居民之间','独立利率体系','规模大、网络广','积极影响','消极影响']}
+  ];
+
+  const D = {cur:null, show:false, done:0};
+
+  function render(root){
+    if(!D.cur){
+      root.innerHTML = `
+        <h1 class="h1">论述骨架</h1>
+        <p class="muted">只给小标题，你要开口讲。讲完再对答案。</p>
+        <div style="margin-top:16px">
+          ${SKEL.map((s,i)=>{
+            const k = Store.byId(s.id) || {};
+            const st = k.id ? Store.state.kp[k.id] : null;
+            return `<div class="wrongItem" data-i="${i}" style="cursor:pointer">
+              <span class="idx" style="flex:0 0 24px;height:24px;border-radius:7px;
+                background:var(--pri2);color:var(--pri);display:grid;place-items:center;
+                font-weight:700;font-size:12px">${i+1}</span>
+              <div class="tx"><b>${s.title}</b>
+                <span>　${s.pts.length} 个要点${st && st.m>=5 ? '　· 已掌握' : ''}</span></div>
+            </div>`;
+          }).join('')}
+        </div>`;
+      root.querySelectorAll('.wrongItem').forEach(el=>{
+        el.onclick = ()=>{ D.cur = SKEL[+el.dataset.i]; D.show = false; render(root); };
+      });
+      return;
+    }
+
+    const s = D.cur;
+    const k = Store.byId(s.id) || {a:'（暂无答案）'};
+
+    root.innerHTML = `
+      <p class="muted" style="margin:0">
+        <a style="color:var(--pri);cursor:pointer" id="back">← 全部论述</a>
+      </p>
+      <h1 class="h1">${s.title}</h1>
+      <p class="muted">${s.hint}</p>
+
+      <div class="panel" style="margin-top:16px">
+        <h3>骨架（先照着讲一遍）</h3>
+        ${s.pts.map((p,i)=>`
+          <div style="display:flex;gap:10px;padding:7px 0;font-size:15px">
+            <span style="color:var(--pri);font-weight:700">${i+1}</span><span>${p}</span>
+          </div>`).join('')}
+      </div>
+
+      <div class="btns">
+        <button class="btn pri" id="showA">${D.show?'收起答案':'我讲完了，看答案'}</button>
+      </div>
+
+      <div id="full" class="detail" style="${D.show?'':'display:none'}">
+        <div class="bodytext">${k.a}</div>
+        <div class="btns">
+          <button class="btn bad" data-g="no">不会</button>
+          <button class="btn warn" data-g="mid">讲了个大概</button>
+          <button class="btn ok" data-g="yes">讲得很顺</button>
+        </div>
+      </div>`;
+
+    root.querySelector('#back').onclick = ()=>{ D.cur = null; D.show = false; render(root); };
+    root.querySelector('#showA').onclick = ()=>{ D.show = !D.show; render(root); };
+    root.querySelectorAll('[data-g]').forEach(b=>{
+      b.onclick = ()=>{
+        const g = b.dataset.g;
+        Store.answer(s.id, g === 'yes' || g === 'mid');
+        D.done++;
+        D.cur = null; D.show = false;
+        render(root);
+      };
+    });
+  }
+
+  MOUNT_PLUGIN({ id:'skel', title:'论述骨架', tab:true, mount(root){ render(root); } });
+})();
+
+/* ---------------- 排序题 ---------------- */
+(function(){
+  const SEQS = [
+    {id:'t19', title:'区域经济一体化的六种形式（由低到高）',
+     items:['优惠贸易安排','自由贸易区','关税同盟','共同市场','经济同盟','完全经济一体化']},
+    {id:'t05', title:'产品生命周期的三个阶段',
+     items:['创新阶段','成熟阶段','标准化阶段']},
+    {id:'f17', title:'人民币汇率制度的演进顺序',
+     items:['双重汇率并存（1981—1993）','汇率并轨（1994）','参考一篮子货币（2005）','完善中间价机制（2015 以来）']},
+    {id:'o01', title:'选择国际目标市场的步骤',
+     items:['市场细分','评估细分市场','筛选目标市场','确定目标市场策略','市场定位']},
+    {id:'t17', title:'GATS 服务贸易四种方式',
+     items:['跨境交付','境外消费','商业存在','自然人流动']},
+    {id:'i04', title:'邓宁投资周期论的四个阶段',
+     items:['无三种优势，资本净流入','区位优势增强','所有权优势增强','三种优势齐备，资本净输出']},
+    {id:'i01', title:'海默垄断优势论的论证顺序',
+     items:['市场不完全','企业垄断优势','对外直接投资','获取超额利润']},
+    {id:'f06', title:'比较固定与浮动汇率制的维度',
+     items:['汇率稳定性','货币政策独立性','通货膨胀传导','国际收支调节','外汇风险']},
+    {id:'t15', title:'外汇倾销生效的三个条件',
+     items:['贬值幅度大于国内物价上涨','出口需求弹性较大','他国不同时等幅贬值']},
+    {id:'f04', title:'布雷顿森林体系的“双挂钩”',
+     items:['美元与黄金挂钩','各国货币与美元挂钩']}
+  ];
+
+  const D = {cur:null, seq:[], placed:[], err:0};
+
+  function start(){
+    const q = SEQS[Math.floor(Math.random()*SEQS.length)];
+    D.cur = q;
+    D.placed = [];
+    D.err = 0;
+    D.seq = q.items
+      .map((t,i)=>({t, i}))
+      .sort(()=>Math.random()-.5);
+  }
+
+  function render(root){
+    if(!D.cur) start();
+    const q = D.cur;
+    const left = D.seq.filter(x=>!D.placed.includes(x.i));
+
+    root.innerHTML = `
+      <h1 class="h1">排序题</h1>
+      <p class="muted">按正确顺序依次点击 · 目前错误 ${D.err} 次</p>
+
+      <div class="panel" style="margin-top:16px">
+        <h3>${q.title}</h3>
+        <div id="slots" style="display:flex;flex-wrap:wrap;gap:8px;min-height:44px;padding:6px 0">
+          ${D.placed.map((i,idx)=>`
+            <span style="background:#f2fbf5;border:1px solid #bde5c8;color:#166534;
+              padding:7px 12px;border-radius:9px;font-size:14px">
+              ${idx+1}. ${q.items[i]}</span>`).join('')}
+        </div>
+      </div>
+
+      <div id="pool" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+        ${left.map(x=>`
+          <span data-i="${x.i}" style="cursor:pointer;background:#fff;border:1px solid var(--line);
+            padding:9px 14px;border-radius:10px;font-size:14px;box-shadow:var(--sh)">
+            ${x.t}</span>`).join('')}
+      </div>
+
+      <div id="sfoot" style="margin-top:16px"></div>`;
+
+    root.querySelectorAll('#pool span').forEach(el=>{
+      el.onclick = ()=> tap(root, +el.dataset.i);
+    });
+  }
+
+  function tap(root, i){
+    const q = D.cur;
+    const expect = D.placed.length;
+    if(i === expect){
+      D.placed.push(i);
+      render(root);
+      if(D.placed.length === q.items.length) finish(root);
+    }else{
+      D.err++;
+      const el = root.querySelector(`#pool span[data-i="${i}"]`);
+      if(el){
+        el.style.borderColor = 'var(--bad)';
+        el.style.background = '#fff6f6';
+        setTimeout(()=>{ el.style.borderColor='var(--line)'; el.style.background='#fff'; }, 500);
+      }
+      const f = root.querySelector('#sfoot');
+      if(f) f.innerHTML = '<span style="color:var(--bad);font-size:13px">顺序不对，想想第一个应该是什么</span>';
+    }
+  }
+
+  function finish(root){
+    const q = D.cur;
+    Store.answer(q.id, D.err === 0);
+    root.querySelector('#sfoot').innerHTML = `
+      <div class="panel">
+        <b style="color:${D.err===0?'var(--ok)':'var(--warn)'}">
+          ${D.err===0?'✓ 一次全对':'完成，错误 '+D.err+' 次'}</b>
+        <div style="margin-top:8px;font-size:14px;line-height:1.9">
+          ${q.items.map((t,i)=>`${i+1}. ${t}`).join('<br>')}
+        </div>
+      </div>
+      <button class="btn pri" id="snext">下一题</button>`;
+    root.querySelector('#snext').onclick = ()=>{ D.cur = null; start(); render(root); };
+  }
+
+  MOUNT_PLUGIN({ id:'sort', title:'排序题', tab:true, mount(root){ start(); render(root); } });
+})();
+</script>
+<script>
+/* ==================================================================
+   M3  记忆计划（艾宾浩斯）＋ 一页纸导出
+   ================================================================== */
+(function(){
+
+  /* ---------- 艾宾浩斯节点 ----------
+     经典遗忘曲线：20分钟→58%，1小时→44%，9小时→36%，
+     1天→33%，2天→28%，6天→25%，31天→21%
+     本程序的复习间隔 [0,1,2,4,7,15,30] 天即按此设计
+  ------------------------------------- */
+  const CURVE = [
+    {t:'0',   r:100}, {t:'20min', r:58}, {t:'1h', r:44}, {t:'9h', r:36},
+    {t:'1天', r:33},  {t:'2天',  r:28}, {t:'6天', r:25}, {t:'31天', r:21}
+  ];
+  const XS = [0, 40, 80, 120, 160, 200, 240, 280];
+
+  /* ---------- 分桶 ---------- */
+  function buckets(){
+    const now = Date.now();
+    const end = new Date(); end.setHours(23,59,59,999);
+    const out = {over:[], due:[], fresh:[], weak:[]};
+
+    DATA.forEach(k=>{
+      const s = kps(k.id);
+      if(s.seen === 0){ out.fresh.push(k); return; }
+      if(s.err > 0) out.weak.push(k);
+      if(s.due && s.due < now) out.over.push(k);
+      else if(s.due && s.due <= end) out.due.push(k);
+    });
+
+    out.over = ranked(out.over);
+    out.due  = ranked(out.due);
+    out.weak = ranked(out.weak);
+    out.fresh = out.fresh.slice().sort((a,b)=>{
+      const rank = {S:3,A:2,B:1.5,C:1};
+      return (rank[b.lv]||1) - (rank[a.lv]||1);
+    });
+    return out;
+  }
+
+  /* ---------- 生成今日计划 ---------- */
+  function buildPlan(){
+    const b = buckets();
+    const plan = [];
+    const used = new Set();
+    const add = (k, mode, why, min, act)=>{
+      if(!k || used.has(k.id + mode)) return;
+      used.add(k.id + mode);
+      plan.push({k, mode, why, min, act});
+    };
+
+    /* 1. 逾期最先做（艾宾浩斯：逾期越久遗忘越多） */
+    b.over.slice(0,4).forEach((k,i)=>{
+      const d = Math.floor((Date.now() - kps(k.id).due) / DAY);
+      add(k, '闪卡', '逾期 ' + (d>0?d:0) + ' 天，先抢救', 2, `startCard('${k.id}')`);
+    });
+
+    /* 2. 今日到期 */
+    b.due.slice(0,4).forEach(k=>{
+      add(k, '闪卡', '今天到期，按节点复习', 2, `startCard('${k.id}')`);
+    });
+
+    /* 3. 新学：S 级优先 */
+    b.fresh.slice(0,3).forEach(k=>{
+      add(k, '闪卡', '新考点 · ' + k.lv + ' 级', 3, `startCard('${k.id}')`);
+    });
+
+    /* 4. 换形式：打破单一刺激，交替记忆更牢 */
+    plan.push({k:null, mode:'概念对抗', why:'换个形式激活再认，专治混淆',
+               min:4, act:`route('duel')`});
+    plan.push({k:null, mode:'排序题', why:'结构化记忆，适合历程类考点',
+               min:3, act:`route('sort')`});
+    plan.push({k:null, mode:'论述骨架', why:'口述一遍＝主动回忆＋组织加工',
+               min:8, act:`route('skel')`});
+
+    /* 5. 薄弱点收尾 */
+    b.weak.slice(0,2).forEach(k=>{
+      add(k, '提纲默写', '错过的点，合上书自己复述', 3, `route('outline','${k.id}')`);
+    });
+
+    return {plan, b};
+  }
+
+  /* ---------- 曲线图 ---------- */
+  function svgCurve(){
+    const W = 320, H = 130, P = 18;
+    const pts = CURVE.map((c,i)=>{
+      const x = P + XS[i] / 280 * (W - P*2);
+      const y = H - P - (c.r / 100) * (H - P*2);
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+
+    const dots = CURVE.map((c,i)=>{
+      const x = P + XS[i] / 280 * (W - P*2);
+      const y = H - P - (c.r / 100) * (H - P*2);
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#3665f3"/>
+              <text x="${x.toFixed(1)}" y="${(y-7).toFixed(1)}" font-size="8"
+                    fill="#727b8f" text-anchor="middle">${c.r}</text>`;
+    }).join('');
+
+    const labels = ['0','20min','1h','9h','1天','2天','6天','31天']
+      .map((t,i)=>{
+        const x = P + XS[i] / 280 * (W - P*2);
+        return `<text x="${x.toFixed(1)}" y="${H-4}" font-size="8"
+                 fill="#727b8f" text-anchor="middle">${t}</text>`;
+      }).join('');
+
+    return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto">
+      <line x1="${P}" y1="${H-P}" x2="${W-P}" y2="${H-P}" stroke="#e5e8f0"/>
+      <line x1="${P}" y1="${P}" x2="${P}" y2="${H-P}" stroke="#e5e8f0"/>
+      <polyline points="${pts}" fill="none" stroke="#3665f3" stroke-width="2"/>
+      ${dots}${labels}
+    </svg>`;
+  }
+
+  /* ---------- 渲染 ---------- */
+  function render(root){
+    const {plan, b} = buildPlan();
+    const totalMin = plan.reduce((a,p)=>a+p.min, 0);
+
+    root.innerHTML = `
+      <h1 class="h1">记忆计划</h1>
+      <p class="muted">按艾宾浩斯节点自动排的今日清单 · 预计 ${totalMin} 分钟</p>
+
+      <div class="kpis" style="margin:16px 0">
+        <div class="kpi"><b>${b.over.length}</b><span>逾期</span></div>
+        <div class="kpi"><b>${b.due.length}</b><span>今日到期</span></div>
+        <div class="kpi"><b>${b.fresh.length}</b><span>未接触</span></div>
+        <div class="kpi"><b>${b.weak.length}</b><span>薄弱</span></div>
+      </div>
+
+      <div class="h2">今日任务（按顺序做）</div>
+      ${plan.map((p,i)=>`
+        <div class="task">
+          <div class="idx">${i+1}</div>
+          <div class="tx">
+            <b>${p.k ? lvBadge(p.k.lv)+' '+esc(p.k.t) : '【'+p.mode+'】'}</b>
+            <span>${p.mode} · ${p.min} 分钟${p.k ? ' · '+CN[p.k.m] : ''}</span>
+            <div class="why">${p.why}</div>
+          </div>
+          <button class="btn pri sm" onclick="${p.act}">开始</button>
+        </div>`).join('')}
+
+      <div class="h2">遗忘曲线与复习节点</div>
+      <div class="panel">
+        ${svgCurve()}
+        <p class="muted" style="margin:6px 0 0;font-size:12px">
+          不复习时，1 天后只剩约 33%。每次在遗忘临界点复习，曲线会被重新拉回高点，
+          所以本程序的间隔是 0→1→2→4→7→15→30 天。
+        </p>
+      </div>
+
+      <div class="h2">当前复习节奏</div>
+      <div class="panel">
+        <table style="width:100%;font-size:13px;border-collapse:collapse">
+          <tr style="color:#727b8f;text-align:left">
+            <th style="padding:6px 0">掌握度</th><th>下次复习</th><th>含义</th>
+          </tr>
+          ${[0,1,2,3,4,5,6].map(m=>`
+            <tr style="border-top:1px solid #eef1f7">
+              <td style="padding:7px 0">${m}</td>
+              <td>${m===0?'马上':INT[m]+' 天后'}</td>
+              <td class="muted">${
+                m<=1?'刚学 / 常错':m<=3?'初步记住':'稳固'
+              }</td>
+            </tr>`).join('')}
+        </table>
+      </div>
+
+      <div class="btns">
+        <button class="btn pri" onclick="exportOnePage()">导出一页纸（打印）</button>
+      </div>`;
+  }
+
+  /* ---------- 一页纸 ---------- */
+  window.exportOnePage = function(){
+    const list = DATA.filter(k=>{
+      const s = kps(k.id);
+      return k.lv === 'S' || s.err > 0;
+    });
+    const byMod = [0,1,2,3].map(m=>list.filter(k=>k.m===m)).filter(a=>a.length);
+
+    const html = `
+      <html><head><meta charset="utf-8"><title>434 一页纸</title>
+      <style>
+        body{font:12px/1.7 "Microsoft YaHei",sans-serif;color:#111;padding:18px 22px}
+        h1{font-size:17px;margin:0 0 4px}
+        h2{font-size:13px;margin:14px 0 6px;border-bottom:1px solid #ccc;padding-bottom:3px}
+        .i{margin:0 0 7px;page-break-inside:avoid}
+        .n{font-weight:700}
+        .a{color:#222}
+        @media print{ @page{margin:12mm} }
+      </style></head><body>
+      <h1>434 国际商务专业基础 · 一页纸</h1>
+      <div style="color:#666;font-size:11px">S 级 + 所有薄弱点 · ${list.length} 条</div>
+      ${byMod.map((arr,idx)=>{
+        const m = arr[0].m;
+        return `<h2>${MODS[m]}</h2>` + arr.map(k=>`
+          <div class="i"><span class="n">${k.t}</span>
+          <span class="a">${k.a.replace(/\n/g,'　')}</span></div>`).join('');
+      }).join('')}
+      </body></html>`;
+
+    const w = window.open('', '_blank');
+    if(!w){ alert('浏览器拦截了弹窗，请允许弹窗后重试'); return; }
+    w.document.write(html);
+    w.document.close();
+    setTimeout(()=>w.print(), 400);
+  };
+
+  MOUNT_PLUGIN({ id:'plan', title:'记忆计划', tab:true, mount(root){ render(root); } });
+})();
+</script>
+<script>
+/* ==================================================================
+   M4-A  计算专项（参数随机生成，无限练习）
+   ================================================================== */
+(function(){
+  const rnd = (a,b)=> a + Math.random()*(b-a);
+  const ri  = (a,b)=> Math.floor(rnd(a, b+1));
+  const f2  = x => Math.round(x*100)/100;
+  const f4  = x => Math.round(x*10000)/10000;
+
+  /* ---------- 题型生成器 ---------- */
+  const TYPES = [
+
+    /* 1. 有效保护率 */
+    { key:'erp', name:'有效保护率', id:'t08',
+      gen(){
+        const P  = ri(120, 300);
+        const C  = Math.round(P * rnd(.4, .68));
+        const t  = ri(6, 25);
+        const tm = ri(0, 15);
+        const V  = P - C;
+        const V2 = P*(1+t/100) - C*(1+tm/100);
+        const erp = (V2 - V) / V * 100;
+        return {
+          stem:`某最终产品国内价格 ${P} 元，其中原材料成本 ${C} 元。
+最终品名义关税 ${t}%，原材料名义关税 ${tm}%。
+求该产业的有效保护率（保留两位小数，单位 %）。`,
+          ans: f2(erp), unit:'%', tol:x=>Math.max(0.6, Math.abs(x)*0.03),
+          steps:[
+            `零关税时附加值 V = ${P} − ${C} = ${V} 元`,
+            `征税后附加值 V′ = ${P}×1.${String(t).padStart(2,'0')} − ${C}×${(1+tm/100).toFixed(4)} = ${f2(V2)} 元`,
+            `有效保护率 E = (V′ − V)/V = (${f2(V2)} − ${V})/${V} = ${f2(erp)}%`,
+            `判断：最终品税率 ${t}% ${t>tm?'＞':'＜'} 原材料税率 ${tm}%，所以有效保护率 ${erp>t?'大于':'小于'} 名义税率 ${t}%`
+          ]
+        };
+      }},
+
+    /* 2. 套利净收益 */
+    { key:'arb', name:'套利净收益', id:'f12',
+      gen(){
+        const e  = f4(rnd(6.8, 7.4));
+        const idr = ri(3, 6) / 100;
+        const ifr = ri(1, 4) / 100;
+        const n  = [3,6,12][ri(0,2)];
+        const dev = rnd(-0.008, 0.014);            // 远期相对平价的偏离
+        const par = e * (1 + idr*n/12) / (1 + ifr*n/12);
+        const f  = f4(par * (1 + dev));
+        const profit = 100 * (f/e*(1+ifr*n/12) - (1+idr*n/12));  // 万元
+        return {
+          stem:`即期汇率 USD/CNY = ${e}，${n} 个月远期汇率 = ${f}。
+人民币年利率 ${(idr*100).toFixed(2)}%，美元年利率 ${(ifr*100).toFixed(2)}%。
+以 100 万元人民币为本金，操作路径固定为：
+借人民币 → 即期换成美元 → 美元存款 ${n} 个月 → 远期换回人民币 → 归还本息。
+求净利润（万元，保留 3 位小数；亏损则为负）。`,
+          ans: Math.round(profit*1000)/1000, unit:'万元',
+          tol:x=>Math.max(0.05, Math.abs(x)*0.06),
+          steps:[
+            `借入本息和 = 100 × (1 + ${(idr*100).toFixed(2)}% × ${n}/12) = ${f2(100*(1+idr*n/12))} 万元`,
+            `即期换汇 = 100 / ${e} = ${f4(100/e)} 万美元`,
+            `美元存款本息 = ${f4(100/e)} × (1 + ${(ifr*100).toFixed(2)}% × ${n}/12) = ${f4(100/e*(1+ifr*n/12))} 万美元`,
+            `远期换回人民币 = ${f4(100/e*(1+ifr*n/12))} × ${f} = ${f2(100/e*(1+ifr*n/12)*f)} 万元`,
+            `净利润 = 换回金额 − 本息和 = ${Math.round(profit*1000)/1000} 万元`,
+            `结论：${profit>0?'存在套利空间，按此路径可获利':'无套利空间，此路径亏损，反向操作才成立'}`
+          ]
+        };
+      }},
+
+    /* 3. 利率平价求远期汇率 */
+    { key:'irp', name:'利率平价求远期', id:'f08',
+      gen(){
+        const e  = f4(rnd(6.6, 7.5));
+        const idr = ri(3, 7) / 100;
+        const ifr = ri(1, 5) / 100;
+        const n  = [3,6,12][ri(0,2)];
+        const f  = e * (1 + idr*n/12) / (1 + ifr*n/12);
+        return {
+          stem:`即期汇率 USD/CNY = ${e}。
+人民币年利率 ${(idr*100).toFixed(2)}%，美元年利率 ${(ifr*100).toFixed(2)}%。
+按利率平价理论，求 ${n} 个月远期汇率 USD/CNY（保留 4 位小数）。`,
+          ans: f4(f), unit:'', tol:x=>Math.max(0.002, Math.abs(x)*0.002),
+          steps:[
+            `利率平价：F = S × (1 + i本 × n/12) / (1 + i外 × n/12)`,
+            `F = ${e} × (1 + ${(idr*100).toFixed(2)}% × ${n}/12) / (1 + ${(ifr*100).toFixed(2)}% × ${n}/12)`,
+            `F = ${e} × ${f4(1+idr*n/12)} / ${f4(1+ifr*n/12)} = ${f4(f)}`,
+            `判断：本币利率${idr>ifr?'高于':'低于'}外币利率，美元远期${idr>ifr?'升水':'贴水'}`
+          ]
+        };
+      }},
+
+    /* 4. 相对购买力平价 */
+    { key:'ppp', name:'相对购买力平价', id:'f09',
+      gen(){
+        const e0 = f4(rnd(6.5, 7.6));
+        const pd = ri(2, 8) / 100;
+        const pf = ri(1, 5) / 100;
+        const e1 = e0 * (1 + pd) / (1 + pf);
+        return {
+          stem:`年初 USD/CNY = ${e0}。
+中国当年通货膨胀率 ${(pd*100).toFixed(1)}%，美国 ${(pf*100).toFixed(1)}%。
+按相对购买力平价，求年末汇率 USD/CNY（保留 4 位小数）。`,
+          ans: f4(e1), unit:'', tol:x=>Math.max(0.002, Math.abs(x)*0.002),
+          steps:[
+            `相对购买力平价：E₁ = E₀ × (1 + π本) / (1 + π外)`,
+            `E₁ = ${e0} × ${f4(1+pd)} / ${f4(1+pf)} = ${f4(e1)}`,
+            `判断：本国通胀${pd>pf?'高于':'低于'}外国，本币${pd>pf?'贬值':'升值'}`
+          ]
+        };
+      }}
+  ];
+
+  /* ---------- 状态 ---------- */
+  const S2 = {type:0, cur:null, done:0, right:0, show:false};
+
+  function next(){
+    S2.cur = TYPES[S2.type].gen();
+    S2.show = false;
+  }
+
+  function render(root){
+    if(!S2.cur) next();
+    const q = S2.cur;
+    const t = TYPES[S2.type];
+
+    root.innerHTML = `
+      <h1 class="h1">计算专项</h1>
+      <p class="muted">本轮 ${S2.done} 题 · 正确 ${S2.right} 题
+        · 正确率 ${S2.done?Math.round(S2.right/S2.done*100):0}%</p>
+
+      <div class="btns" style="margin:12px 0 16px">
+        ${TYPES.map((x,i)=>`
+          <button class="btn sm ${i===S2.type?'pri':''}" data-t="${i}">${x.name}</button>
+        `).join('')}
+      </div>
+
+      <div class="panel">
+        <div style="font-size:14.5px;line-height:2;white-space:pre-wrap">${q.stem}</div>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:center;margin-top:14px">
+        <input id="cin" placeholder="输入答案${q.unit?'（'+q.unit+'）':''}"
+          style="flex:1;height:42px;padding:0 14px;border:1px solid var(--line);
+                 border-radius:10px;font-size:15px;outline:none">
+        <button class="btn pri" id="csub" style="height:42px">提交</button>
+        <button class="btn" id="cskip" style="height:42px">看解析</button>
+      </div>
+
+      <div id="cout" style="margin-top:16px"></div>`;
+
+    root.querySelectorAll('[data-t]').forEach(b=>{
+      b.onclick = ()=>{ S2.type = +b.dataset.t; next(); render(root); };
+    });
+
+    const inp = root.querySelector('#cin');
+    inp.focus();
+    inp.onkeydown = e=>{ if(e.key === 'Enter') submit(root); };
+    root.querySelector('#csub').onclick = ()=> submit(root);
+    root.querySelector('#cskip').onclick = ()=> reveal(root, null);
+  }
+
+  function submit(root){
+    const q = S2.cur;
+    const raw = root.querySelector('#cin').value.trim().replace(/[，,%\s]/g,'');
+    const val = parseFloat(raw);
+    if(isNaN(val)){ root.querySelector('#cin').focus(); return; }
+    const ok = Math.abs(val - q.ans) <= q.tol(q.ans);
+
+    S2.done++; if(ok) S2.right++;
+    Store.answer(TYPES[S2.type].id, ok);
+    reveal(root, {ok, val});
+  }
+
+  function reveal(root, r){
+    const q = S2.cur;
+    const out = root.querySelector('#cout');
+    const head = r
+      ? `<div class="panel" style="border-color:${r.ok?'#bde5c8':'#f3c2c2'};background:${r.ok?'#f7fdf9':'#fffafa'}">
+           <b style="color:${r.ok?'var(--ok)':'var(--bad)'}">${r.ok?'✓ 正确':'✗ 不对'}
+           </b>　正确答案：<b>${q.ans}${q.unit}</b>
+           ${r.ok?'':'　（你答：'+r.val+'）'}
+         </div>`
+      : `<div class="panel"><b>正确答案：${q.ans}${q.unit}</b></div>`;
+
+    out.innerHTML = head + `
+      <div class="panel">
+        <h3>解题步骤</h3>
+        ${q.steps.map((s,i)=>`
+          <div style="display:flex;gap:10px;padding:6px 0;font-size:14px;line-height:1.9">
+            <span style="color:var(--pri);font-weight:700;flex:0 0 18px">${i+1}</span>
+            <span>${s}</span>
+          </div>`).join('')}
+      </div>
+      <div class="btns">
+        <button class="btn pri" id="cnext">下一题</button>
+        <button class="btn" id="cagain">同类型再来一题</button>
+      </div>`;
+
+    out.querySelector('#cnext').onclick = ()=>{
+      S2.type = (S2.type + 1) % TYPES.length;
+      next(); render(root);
+    };
+    out.querySelector('#cagain').onclick = ()=>{ next(); render(root); };
+  }
+
+  MOUNT_PLUGIN({ id:'calc', title:'计算专项', tab:true, mount(root){ next(); render(root); } });
+})();
+</script>
+<script>
+/* ==================================================================
+   M4-B  默写检验
+   不给选项、不给提示，直接写；按关键词命中率评分
+   ================================================================== */
+
+(function(){
+
+  /* ---------- 评分关键词 ----------
+     用 | 分隔同义词，命中任一即可
+  ------------------------------------ */
+  const KEY = {
+    t01:['亚当·斯密|斯密','绝对优势','劳动生产率','专业化','出口'],
+    t02:['李嘉图','两利相权取其重|两弊相权取其轻','相对劣势','机会成本','自由贸易'],
+    t03:['赫克歇尔|俄林','丰裕要素','稀缺要素','要素价格','比较优势'],
+    t05:['弗农|维农','创新','成熟','标准化','技术扩散'],
+    t06:['产品差异','规模经济','偏好','价值链|分工'],
+    t07:['不完全竞争','补贴','规模经济','利润转移','战略'],
+    t08:['附加值','V′|增值','名义','原材料','大于|小于'],
+    t09:['配额','许可证','外汇管制','技术标准','直接','间接'],
+    t11:['环保|环境','技术标准','非关税','两重性|双重'],
+    t12:['反倾销','反补贴','保障措施','调查|损害'],
+    t13:['卖方信贷','买方信贷','出口商','银行'],
+    t14:['取消关税','共同对外关税|统一关税','原产地'],
+    t17:['跨境交付','境外消费','商业存在','自然人流动'],
+    t19:['关税','生产要素|要素','共同市场','经济同盟|经济联盟','超国家'],
+    t20:['贸易创造','贸易转移','低成本','福利'],
+    t21:['最惠国','国民待遇','互惠','透明度','例外'],
+    t22:['第三国|第三方','无条件','立即','优惠'],
+    t23:['最惠国','国民待遇','透明度','市场准入','争端'],
+    i01:['市场不完全','垄断优势','海默','金德尔伯格|金德贝格','评价|局限'],
+    i02:['所有权','内部化','区位','邓宁','必要条件','充分条件'],
+    i03:['小岛清','边际产业','比较劣势','贸易创造','依次'],
+    i06:['水平|横向','垂直|纵向','市场','成本|要素','壁垒'],
+    i07:['控制权','经营管理权|管理权','创办|新建','再投资'],
+    i08:['新建|兴建','控制','周期长','风险','规模'],
+    i09:['股份|股权','控制','快速|迅速','整合','溢价|估值'],
+    i10:['共同出资','共担风险','股权','当地|本土','冲突'],
+    i13:['全球战略','决策','子公司','垄断','竞争力'],
+    i14:['法人','控制','有限责任|出资额','独立'],
+    i17:['资源','产业转移','技术','出口','空心化|风险'],
+    f04:['双挂钩','固定汇率','IMF|国际货币基金','特里芬'],
+    f06:['稳定','货币政策','通胀|通货膨胀','投机','储备'],
+    f07:['国际收支','通货膨胀|通胀','利率','经济增长','干预'],
+    f08:['两个营业日|两日','交割','升水','贴水'],
+    f09:['一价定律','购买力','绝对','相对','通胀|通货膨胀'],
+    f11:['交易风险','折算风险|会计风险','经济风险','远期|期货|期权','多元化'],
+    f12:['利率平价','远期','利差|利率差','套利','本息'],
+    f13:['境外|离岸','发行国','欧洲美元','存款'],
+    f14:['非居民','境外货币|离岸货币','利率','监管|管制','中心'],
+    f15:['外国债券','欧洲债券','扬基','武士','第三国'],
+    f17:['并轨','一篮子','中间价','有管理|管理浮动','1994|2005'],
+    f18:['钉住','要素流动|要素','蒙代尔','固定','区外'],
+    f19:['内部均衡','外部均衡','固定汇率','冲突','紧缩|扩张'],
+    o01:['细分','评估','筛选','定位','目标市场'],
+    o02:['标准化','差异化|适应','规模经济|成本','文化|需求'],
+    o05:['透明','库存','物流|效率','预测','韧性|风险']
+  };
+
+  /* ---------- 工具 ---------- */
+  const clean = s => String(s).replace(/[^\u4e00-\u9fa5A-Za-z0-9]/g,'');
+  function grams(s){
+    const t = clean(s), set = new Set();
+    for(let i=0;i<t.length-1;i++) set.add(t.slice(i,i+2));
+    return set;
+  }
+  function kwHit(kw, text){
+    return kw.split('|').some(alt => text.includes(clean(alt)));
+  }
+
+  /* ---------- 状态 ---------- */
+  const D = {cur:null, hint:0, onlyS:true, done:0, right:0, res:null};
+
+  function pool(){
+    let list = DATA.filter(k => k.a && k.a.length > 20);
+    if(D.onlyS) list = list.filter(k => k.lv === 'S');
+    return list.length ? list : DATA;
+  }
+  function pick(){
+    const p = pool();
+    /* 优先薄弱、优先低掌握度 */
+    const scored = p.map(k=>{
+      const s = kps(k.id);
+      return {k, w: (s.err*3 + (6-s.m)) * (1 + Math.random())};
+    }).sort((a,b)=>b.w-a.w);
+    return scored[Math.floor(Math.random() * Math.min(6, scored.length))].k;
+  }
+  function next(){ D.cur = pick(); D.hint = 0; D.res = null; }
+
+  /* ---------- 评分 ---------- */
+  function grade(userText){
+    const k = D.cur;
+    const txt = clean(userText);
+    if(!txt) return {score:0, hits:[], miss:[], how:'关键词'};
+
+    const ks = KEY[k.id];
+    if(ks){
+      const hits = [], miss = [];
+      ks.forEach(x => (kwHit(x, txt) ? hits : miss).push(x));
+      let score = hits.length / ks.length * 100;
+      /* 少于 20 字，视为只写了个开头 */
+      if(txt.length < 20) score = Math.min(score, 55);
+      return {score, hits, miss, how:'关键词'};
+    }
+    /* 没有关键词表 → 用二元组覆盖率 */
+    const A = grams(k.a), U = grams(userText);
+    let c = 0; A.forEach(g => { if(U.has(g)) c++; });
+    const recall = A.size ? c / A.size : 0;
+    return {score: Math.round(recall * 100), hits:[], miss:[], how:'覆盖率'};
+  }
+
+  function record(score){
+    const id = D.cur.id;
+    if(score >= 80){ Store.answer(id, true); }
+    else if(score >= 55){
+      const s = kps(id);
+      s.seen++; s.ok = 0; s.last = Date.now();
+      s.due = Date.now() + 1*DAY;
+      Store.save(); Bus.emit('answer', {id, correct:false, mid:true});
+    }else{
+      Store.answer(id, false);
+    }
+  }
+
+  /* ---------- 渲染 ---------- */
+  function render(root){
+    if(!D.cur) next();
+    const k = D.cur;
+    const s = kps(k.id);
+
+    root.innerHTML = `
+      <h1 class="h1">默写检验</h1>
+      <p class="muted">本轮 ${D.done} 题 · 达标 ${D.right} 题
+        · 不给选项，凭记忆写出来</p>
+
+      <div class="btns" style="margin:12px 0 16px">
+        <button class="btn sm ${D.onlyS?'pri':''}" id="tS">只考 S 级</button>
+        <button class="btn sm ${!D.onlyS?'pri':''}" id="tAll">全部考点</button>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <span class="lv ${k.lv.toLowerCase()}">${k.lv}</span>
+          <span class="ty">${k.ty}</span>
+          <span class="src">${CN[k.m]} · ${k.ch}</span>
+          <span class="src">掌握度 ${s.m}/6</span>
+        </div>
+        <div style="font-size:19px;font-weight:700;line-height:1.6">${k.t}</div>
+        <div class="muted" style="margin-top:6px;font-size:12.5px">
+          请完整写出它的内容：定义 + 要点 + （如适用）评价。至少 3 个要点。
+        </div>
+      </div>
+
+      <textarea id="ta" placeholder="在这里默写…（越接近原文得分越高）"
+        style="width:100%;height:170px;margin-top:14px;padding:14px;border:1px solid var(--line);
+               border-radius:12px;font:14px/1.9 inherit;resize:vertical;outline:none"></textarea>
+
+      <div class="btns">
+        <button class="btn pri" id="submit">提交批改</button>
+        <button class="btn" id="hint">提示一个关键词（${D.hint}/2）</button>
+        <button class="btn" id="skip">不会，看答案</button>
+      </div>
+
+      <div id="out" style="margin-top:16px"></div>`;
+
+    const ta = root.querySelector('#ta');
+    ta.focus();
+
+    root.querySelector('#tS').onclick = ()=>{ D.onlyS = true; next(); render(root); };
+    root.querySelector('#tAll').onclick = ()=>{ D.onlyS = false; next(); render(root); };
+    root.querySelector('#submit').onclick = ()=> submit(root);
+    root.querySelector('#hint').onclick = ()=>{
+      const ks = KEY[k.id];
+      if(!ks || D.hint >= 2) return;
+      const x = ks[D.hint];
+      D.hint++;
+      root.querySelector('#out').innerHTML =
+        `<div class="panel"><b>提示：</b>${x.split('|')[0]}　<span class="muted">（用了提示，最高只算“模糊”）</span></div>`;
+    };
+    root.querySelector('#skip').onclick = ()=>{
+      D.res = {score:0, hits:[], miss:(KEY[k.id]||[]), how:'放弃'};
+      show(root);
+    };
+  }
+
+  function submit(root){
+    const txt = root.querySelector('#ta').value;
+    if(!txt.trim()){ root.querySelector('#ta').focus(); return; }
+    const r = grade(txt);
+    if(D.hint > 0) r.score = Math.min(r.score, 70);
+    D.res = r;
+    D.done++;
+    if(r.score >= 80) D.right++;
+    record(r.score);
+    show(root);
+  }
+
+  function show(root){
+    const k = D.cur, r = D.res;
+    const lvl = r.score >= 80 ? 'ok' : (r.score >= 55 ? 'mid' : 'bad');
+    const label = r.score >= 80 ? '✓ 记住了' : (r.score >= 55 ? '△ 模糊，还要再来' : '✗ 没记住');
+    const color = lvl === 'ok' ? 'var(--ok)' : (lvl === 'mid' ? 'var(--warn)' : 'var(--bad)');
+
+    root.querySelector('#out').innerHTML = `
+      <div class="panel" style="border-color:${lvl==='ok'?'#bde5c8':(lvl==='mid'?'#f0dcae':'#f3c2c2')}">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <b style="color:${color};font-size:16px">${label}</b>
+          <span style="font-size:22px;font-weight:700;color:${color}">${Math.round(r.score)}<span
+            style="font-size:12px;font-weight:400;color:#727b8f"> 分</span></span>
+        </div>
+        <div style="margin-top:8px;font-size:12.5px" class="muted">
+          评分方式：${r.how}
+        </div>
+      </div>
+
+      ${r.hits.length || r.miss.length ? `
+      <div class="panel">
+        <h3>关键词命中</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:7px">
+          ${r.hits.map(x=>`<span style="background:#f2fbf5;border:1px solid #bde5c8;color:#166534;
+            padding:4px 10px;border-radius:8px;font-size:12.5px">✓ ${x.split('|')[0]}</span>`).join('')}
+          ${r.miss.map(x=>`<span style="background:#fff6f6;border:1px solid #f3c2c2;color:#991b1b;
+            padding:4px 10px;border-radius:8px;font-size:12.5px">✗ ${x.split('|')[0]}</span>`).join('')}
+        </div>
+      </div>`:''}
+
+      <div class="panel">
+        <h3>标准答案</h3>
+        <div style="font-size:14.5px;line-height:2;white-space:pre-wrap">${k.a}</div>
+      </div>
+
+      <div class="btns">
+        <button class="btn pri" id="nextq">下一题</button>
+        <button class="btn" id="retry">再默一遍</button>
+        <button class="btn ok" id="force">我其实记住了</button>
+      </div>`;
+
+    root.querySelector('#nextq').onclick = ()=>{ next(); render(root); };
+    root.querySelector('#retry').onclick = ()=>{
+      const k2 = D.cur;
+      D.res = null;
+      render(root);
+      root.querySelector('#ta').value = '';
+    };
+    root.querySelector('#force').onclick = ()=>{ Store.markMastered(k.id); next(); render(root); };
+  }
+
+  MOUNT_PLUGIN({ id:'write', title:'默写检验', tab:true, mount(root){ next(); render(root); } });
+})();
+</script>
+<script>
+/* ==================================================================
+   M5-A  考点扩充：国际贸易（63）＋ 国际投资（25）
+   直接 push 进现有 DATA，核心代码一行不改
+   ================================================================== */
+DATA.push(
+
+/* ---------- 国际贸易 · 理论 ---------- */
+{id:'ta01',m:0,ch:'第1章 国际贸易理论',t:'重商主义',lv:'B',ty:'名解',src:'—',
+ q:'重商主义',a:'15—18世纪的经济思想，认为货币是财富的唯一形态。早期重商主义主张绝对贸易顺差、禁止货币输出（货币平衡论）；晚期主张长期总体顺差即可（贸易平衡论）。主张国家干预、奖出限入。'},
+{id:'ta02',m:0,ch:'第1章 国际贸易理论',t:'规模经济贸易理论',lv:'A',ty:'名解',src:'—',
+ q:'规模经济贸易理论',a:'克鲁格曼提出。规模报酬递增使企业扩大产量、降低单位成本，从而形成成本优势并专业化生产出口。即使两国要素禀赋相同，也能因规模经济产生贸易，解释了产业内贸易。'},
+{id:'ta03',m:0,ch:'第1章 国际贸易理论',t:'国家竞争优势理论',lv:'S',ty:'论述',src:'21简答',
+ q:'波特的国家竞争优势理论（钻石模型）',a:'一国某产业的国际竞争优势由四个基本因素与两个辅助因素决定：\n①生产要素（初级/高级、一般/特殊）；②需求条件；③相关与支持性产业；④企业战略、结构与竞争；\n辅助：机遇与政府。\n评价：从企业与国家层面解释竞争优势来源，突破传统要素禀赋视角；但忽视跨国公司的作用。'},
+{id:'ta04',m:0,ch:'第1章 国际贸易理论',t:'技术差距论',lv:'B',ty:'名解',src:'—',
+ q:'技术差距论（波斯纳）',a:'技术先进国发明新产品并出口，技术模仿国需经过需求滞后、反应滞后、掌握滞后三个时滞后才能模仿生产，期间形成技术差距贸易。随着技术扩散，贸易逐渐消失。'},
+{id:'ta05',m:0,ch:'第1章 国际贸易理论',t:'要素价格均等化定理',lv:'B',ty:'名解',src:'—',
+ q:'要素价格均等化定理（H-O-S）',a:'在要素禀赋论的全部假设下，自由贸易通过商品相对价格均等化，使各国同质要素的相对价格与绝对报酬趋于均等。由萨缪尔森发展。'},
+{id:'ta06',m:0,ch:'第1章 国际贸易理论',t:'斯托尔珀-萨缪尔森定理',lv:'B',ty:'名解',src:'—',
+ q:'斯托尔珀-萨缪尔森定理',a:'某商品相对价格上升，将提高该商品密集使用的生产要素的实际报酬，降低另一要素的实际报酬。即贸易会提高丰裕要素所有者的收入、降低稀缺要素所有者的收入。'},
+{id:'ta07',m:0,ch:'第1章 国际贸易理论',t:'罗伯津斯基定理',lv:'B',ty:'名解',src:'—',
+ q:'罗伯津斯基定理',a:'在商品相对价格不变的前提下，某一要素增加会使密集使用该要素的部门产量增加，另一部门产量下降。适用于小国情形。'},
+{id:'ta08',m:0,ch:'第1章 国际贸易理论',t:'悲惨增长',lv:'B',ty:'名解',src:'—',
+ q:'悲惨增长（贫困化增长）',a:'一国出口部门要素增加、产量扩大，导致出口品国际价格大幅下跌，贸易条件严重恶化，出口收入反而下降，福利水平低于增长前。'},
+{id:'ta09',m:0,ch:'第1章 国际贸易理论',t:'荷兰病',lv:'B',ty:'名解',src:'—',
+ q:'荷兰病',a:'一国某一初级产品部门（如石油、天然气）异常繁荣，导致劳动力和资本大量流入该部门，制造业因成本上升而萎缩，形成资源产业繁荣牺牲其他部门的产业结构失衡现象。'},
+{id:'ta10',m:0,ch:'第1章 国际贸易理论',t:'贸易条件',lv:'B',ty:'名解',src:'17名解',
+ q:'贸易条件',a:'一国出口商品价格与进口商品价格之比，又称进出口交换比价。贸易条件指数＝出口价格指数÷进口价格指数×100，大于100表示改善，小于100表示恶化。'},
+{id:'ta11',m:0,ch:'第1章 国际贸易理论',t:'对外贸易乘数',lv:'B',ty:'名解',src:'20简答',
+ q:'对外贸易乘数',a:'开放经济中，出口增加带动国民收入成倍增长的倍数。等于边际储蓄倾向与边际进口倾向之和的倒数。前提是二者之和小于1，此时增加出口可提高有效需求与就业。'},
+{id:'ta12',m:0,ch:'第1章 国际贸易理论',t:'幼稚产业保护论',lv:'A',ty:'名解',src:'—',
+ q:'幼稚产业保护论（李斯特）',a:'后起国家应对处于成长初期、尚不具备竞争力的幼稚产业实行暂时保护，待其成长壮大后再参与自由贸易。保护手段以关税为主，且应有期限、有选择。'},
+{id:'ta13',m:0,ch:'第1章 国际贸易理论',t:'超保护贸易理论',lv:'A',ty:'简答',src:'22论述',
+ q:'凯恩斯的超保护贸易理论',a:'以有效需求不足为出发点，认为贸易顺差能增加有效需求、扩大就业，且具有乘数效应；逆差则相反。因此主张奖出限入。\n评价：突破了传统自由贸易理论；但易引发报复，且长期顺差会因外汇流入推高物价、削弱竞争力。'},
+{id:'ta14',m:0,ch:'第1章 国际贸易理论',t:'中心-外围论',lv:'B',ty:'名解',src:'—',
+ q:'中心-外围论（普雷维什）',a:'世界经济分为以发达国家构成的“中心”和发展中国家构成的“外围”。中心出口工业品、外围出口初级产品，贸易条件长期不利于外围，形成结构性依附。主张外围国家实行进口替代工业化。'},
+{id:'ta15',m:0,ch:'第1章 国际贸易理论',t:'保护就业论',lv:'B',ty:'简答',src:'—',
+ q:'保护就业论',a:'主张限制进口以保护本国就业。微观上保护某行业即增加该行业就业；宏观上以凯恩斯有效需求理论为依据。缺陷：忽视他国报复、忽略出口部门就业损失、长期损害购买力。'},
+{id:'ta16',m:0,ch:'第1章 国际贸易理论',t:'保护公平竞争论',lv:'B',ty:'简答',src:'—',
+ q:'保护公平竞争论',a:'认为出口补贴、倾销、压低工资、操纵汇率、侵犯知识产权等属不公平竞争，应以反补贴税、反倾销税、限额等手段反制。缺陷：易被滥用为保护借口，引发反报复。'},
+
+/* ---------- 国际贸易 · 概念与分类 ---------- */
+{id:'ta17',m:0,ch:'第5章 国际分工与世界市场',t:'国际分工',lv:'A',ty:'名解',src:'—',
+ q:'国际分工',a:'世界各国之间的劳动分工，是生产国际专业化。它是一国国民经济内部分工超越国家界限的结果。影响因素：生产力（决定性）、自然条件、跨国公司与资本输出、上层建筑。'},
+{id:'ta18',m:0,ch:'第5章 国际分工与世界市场',t:'当代国际分工新特点',lv:'A',ty:'简答',src:'17论述',
+ q:'当代国际分工发展的新特点',a:'①新技术使传统分工格局削弱，发达国家成为农产品主要出口国；②各国产业结构相互依赖加深；③区域集团内部产业分工日趋紧密；④技术密集型产业加快向发展中国家转移；⑤服务分工成为重要形式；⑥分工机制从殖民强制转向市场与政府协调。'},
+{id:'ta19',m:0,ch:'第5章 国际分工与世界市场',t:'世界市场',lv:'B',ty:'名解',src:'—',
+ q:'世界市场',a:'由国际分工联系起来的各国之间以商品流通和劳务交换为主要内容的交换活动总和。战后特点：规模空前扩大、垄断与竞争并存、内部市场扩大、信息网络完善、自由化趋势。'},
+{id:'ta20',m:0,ch:'第5章 国际分工与世界市场',t:'对外贸易依存度',lv:'A',ty:'名解',src:'23名解',
+ q:'对外贸易依存度',a:'一国进出口总额占GDP（或GNP）的比重，反映该国对国际市场的依赖程度与对外开放程度。可细分为出口依存度与进口依存度。'},
+{id:'ta21',m:0,ch:'第5章 国际分工与世界市场',t:'总贸易与专门贸易',lv:'B',ty:'名解',src:'—',
+ q:'总贸易与专门贸易',a:'总贸易以国境为统计标准，进入国境即列为进口，离开国境即列为出口。专门贸易以关境为标准，只有进入关境才列为专门进口，运出关境列为专门出口。'},
+{id:'ta22',m:0,ch:'第5章 国际分工与世界市场',t:'转口贸易 / 过境贸易',lv:'B',ty:'名解',src:'—',
+ q:'转口贸易与过境贸易',a:'转口贸易：商品经第三国转手，第三国分别与生产国、消费国发生交易关系。过境贸易：商品经第三国国境运往他国，对过境国既非进口也非出口。'},
+{id:'ta23',m:0,ch:'第5章 国际分工与世界市场',t:'水平贸易与垂直贸易',lv:'B',ty:'名解',src:'14名解',
+ q:'水平贸易与垂直贸易',a:'水平贸易：经济发展水平相近国家之间的贸易。垂直贸易：经济发展水平不同国家之间的贸易，多为发达国家与发展中国家之间的工业品与初级产品交换。'},
+{id:'ta24',m:0,ch:'第5章 国际分工与世界市场',t:'易货贸易',lv:'B',ty:'名解',src:'—',
+ q:'易货贸易',a:'以经过计价的货物作为清偿工具的贸易，进出口直接结合，双方均有进有出，可节省外汇并保持贸易平衡。'},
+{id:'ta25',m:0,ch:'第3章 货物与服务贸易',t:'加工贸易',lv:'B',ty:'名解',src:'—',
+ q:'加工贸易',a:'进口原料、材料或零部件，利用本国生产能力和技术加工成成品后再出口，获取以 外汇体现的附加价值。形式包括进料加工、来料加工、装配业务与协作生产。'},
+{id:'ta26',m:0,ch:'第3章 货物与服务贸易',t:'服务贸易（广义/狭义）',lv:'A',ty:'名解',src:'23简答',
+ q:'国际服务贸易（广义与狭义）',a:'狭义：以服务产品区别于货物的特性为界定标准，须同时具备生产消费同时性、不可贮藏、非实体形态，且符合严格贸易概念。广义：以国际收支统计为依据，经常项目与资本项目下除商品贸易与无偿转让外一切引起国际收支的实际往来，含资本报酬（利息、股息、利润）。'},
+{id:'ta27',m:0,ch:'第3章 货物与服务贸易',t:'服务贸易的特点',lv:'A',ty:'简答',src:'23简答',
+ q:'国际服务贸易的特点',a:'①生产与消费同时发生，不可分离；②服务难以贮存、易逝；③服务无形，交易完成后消失；④贸易标的多为无形产品，海关统计难以覆盖；⑤涉及人员、资本等要素跨境流动。'},
+{id:'ta28',m:0,ch:'第3章 货物与服务贸易',t:'技术贸易',lv:'B',ty:'名解',src:'—',
+ q:'国际技术贸易',a:'政府机构或企业之间按商业条件签订技术协议或合同，进行有偿技术转让。包括工业产权技术（专利、商标）与专有技术。方式：许可证贸易、技术咨询、合作生产、工程承包。'},
+{id:'ta29',m:0,ch:'第3章 货物与服务贸易',t:'许可证贸易',lv:'B',ty:'名解',src:'—',
+ q:'许可证贸易',a:'技术许可方将其专利、商标或专有技术的使用权通过协议转让给技术接受方，是国际技术贸易最主要、最基本的方式。可单独许可，也可混合许可。'},
+{id:'ta30',m:0,ch:'第3章 货物与服务贸易',t:'交钥匙工程',lv:'B',ty:'名解',src:'—',
+ q:'交钥匙工程',a:'跨国公司为东道国建造工厂或工程项目，完成设计、施工、设备安装、试车并顺利运转后，将所有权与管理权完整移交对方经营。可视为特殊形式的管理合同。'},
+{id:'ta31',m:0,ch:'第3章 货物与服务贸易',t:'数字贸易',lv:'A',ty:'论述',src:'24论述',
+ q:'数字贸易及其发展意义',a:'以数字技术为手段、以数据为关键要素的贸易活动，包括数字产品贸易、数字服务贸易与数字技术支撑的货物贸易。\n意义：①降低交易成本、拓展市场边界；②推动服务可贸易化；③促进产业数字化升级；④提升中小企业的出口能力。\n挑战：数据跨境流动规则、数字税、平台垄断、数字鸿沟。'},
+
+/* ---------- 国际贸易 · 政策与壁垒 ---------- */
+{id:'ta32',m:0,ch:'第2章 贸易政策与壁垒',t:'关税及其特点',lv:'A',ty:'名解',src:'—',
+ q:'关税及其特点',a:'进出口商品经过一国关境时，由海关向进出口商征收的税。特点：①间接税，税负转嫁给消费者；②税收主体是本国进出口商；③税收客体是进出口商品；④由海关征收。作用：财政、保护、协调、外交。'},
+{id:'ta33',m:0,ch:'第2章 贸易政策与壁垒',t:'从价税 / 混合税',lv:'B',ty:'名解',src:'—',
+ q:'从价税、混合税、选择税',a:'从价税：按进口商品价格计征，税额＝商品总值×从价税率。混合税：同时按从价与从量计征。选择税：对同一商品规定从价与从量两种税率，择高或择低征收。'},
+{id:'ta34',m:0,ch:'第2章 贸易政策与壁垒',t:'关税水平',lv:'B',ty:'名解',src:'—',
+ q:'关税水平',a:'一国平均进口税率，衡量关税高低与保护程度。算法有简单平均法与加权平均法，后者以进口值或数量为权数，更合理。'},
+{id:'ta35',m:0,ch:'第2章 贸易政策与壁垒',t:'关税配额',lv:'B',ty:'名解',src:'—',
+ q:'关税配额',a:'预先规定一定时期内的进口配额，配额内适用优惠税率或免税，超过配额则适用普通税率或征收附加税，是关税与配额结合的非关税措施。分全球配额与国别配额。'},
+{id:'ta36',m:0,ch:'第2章 贸易政策与壁垒',t:'自动出口配额',lv:'B',ty:'名解',src:'—',
+ q:'“自动”出口配额制',a:'出口国在进口国要求或压力下，“自动”规定一定时期内某商品对该国的出口配额，限额内自行控制出口，超限即禁止出口。分非协定与协定两种形式。'},
+{id:'ta37',m:0,ch:'第2章 贸易政策与壁垒',t:'进口许可证制',lv:'B',ty:'名解',src:'—',
+ q:'进口许可证制',a:'进口商须向政府主管部门申请并取得许可证，方可进口特定商品，是直接限制进口数量的非关税措施。分自动与非自动许可证。'},
+{id:'ta38',m:0,ch:'第2章 贸易政策与壁垒',t:'外汇管制',lv:'S',ty:'简答',src:'19简答·21',
+ q:'外汇管制及其限制进口的作用',a:'一国政府通过法令对国际结算、外汇买卖和资本流动实行限制。类型：①数量性外汇管制（限额分配）；②成本性外汇管制（复汇率）；③混合性。\n限制进口的机制：进口商须申请外汇，审批环节可拖延或拒批，直接抑制进口付汇能力；复汇率下对进口用汇适用高汇率，抬高进口成本。'},
+{id:'ta39',m:0,ch:'第2章 贸易政策与壁垒',t:'技术性贸易壁垒',lv:'A',ty:'名解',src:'—',
+ q:'技术性贸易壁垒',a:'以国家或地区的技术法规、标准、认证体系等形式出现，涵盖技术、卫生、检疫、安全、环保、质量等指标，名目繁多、灵活多变，披着合法外衣，是最隐蔽、最难对付的非关税壁垒。WTO 相关协定为 TBT 与 SPS。'},
+{id:'ta40',m:0,ch:'第2章 贸易政策与壁垒',t:'碳关税',lv:'B',ty:'名解',src:'—',
+ q:'碳关税',a:'主权国家或地区对高耗能产品进口征收的二氧化碳排放特别关税，主要针对铝、钢铁、水泥、玻璃等碳密集型产品，实质是新型绿色贸易壁垒。'},
+{id:'ta41',m:0,ch:'第2章 贸易政策与壁垒',t:'反倾销税',lv:'A',ty:'名解',src:'—',
+ q:'反倾销税',a:'对实行倾销的进口商品征收的进口附加税，目的是抵消倾销的不利影响。构成倾销须同时满足：低于正常价值销售、对国内产业造成实质损害或威胁、二者存在因果关系。税额不超过倾销差额。'},
+{id:'ta42',m:0,ch:'第2章 贸易政策与壁垒',t:'反补贴税',lv:'A',ty:'名解',src:'17',
+ q:'反补贴税',a:'为抵消商品在生产、制造、加工、买卖及输出过程中直接或间接接受的补贴而征收的临时附加税。条件：补贴确实存在、国内产业受到实质损害、二者有因果关系，税额不超过补贴额。'},
+{id:'ta43',m:0,ch:'第2章 贸易政策与壁垒',t:'普惠制',lv:'B',ty:'名解',src:'—',
+ q:'普惠制（GSP）',a:'发达国家对发展中国家出口的制成品与半制成品给予普遍优惠的减税制度。三原则：普遍性、非歧视性、非互惠性。'},
+{id:'ta44',m:0,ch:'第2章 贸易政策与壁垒',t:'保障措施',lv:'A',ty:'名解',src:'—',
+ q:'保障措施',a:'当某类产品进口大量增加，对国内同类产业造成严重损害或严重威胁且存在因果关系时，进口国可实施的临时性进口限制。属 WTO 例外条款，须遵循非歧视原则并给予补偿。'},
+{id:'ta45',m:0,ch:'第2章 贸易政策与壁垒',t:'出口退税',lv:'B',ty:'名解',src:'—',
+ q:'出口退税',a:'政府将出口商品的原料进口税及国内生产流转环节已缴税款全部或部分退还给出口商，以降低出口成本、提高竞争力。合理性在于出口商品未在国内消费，不应重复征税。'},
+{id:'ta46',m:0,ch:'第2章 贸易政策与壁垒',t:'出口信贷国家担保制',lv:'B',ty:'名解',src:'—',
+ q:'出口信贷国家担保制',a:'国家设立专门机构，对本国出口商或商业银行向外国进口商或银行提供的贷款予以担保，当外国债务人拒付时按承保数额补偿。承保政治风险与经济风险。'},
+{id:'ta47',m:0,ch:'第2章 贸易政策与壁垒',t:'经济特区',lv:'B',ty:'名解',src:'—',
+ q:'经济特区',a:'实行特殊经济贸易政策的地区，通常划在关境以外，通过减免关税、提供良好基础设施等优惠，吸引外资与技术，发展转口贸易与出口加工。类型：自由贸易区、出口加工区、综合型、科技型、保税区、过境区。'},
+{id:'ta48',m:0,ch:'第2章 贸易政策与壁垒',t:'出口加工区',lv:'B',ty:'名解',src:'—',
+ q:'出口加工区',a:'专门为加工、制造、装配出口产品而开辟的特定区域，是自由贸易区转口功能弱化、加工功能强化的产物，面向工业，一般设在关境以内并给予税收优惠。'},
+{id:'ta49',m:0,ch:'第2章 贸易政策与壁垒',t:'保税区',lv:'B',ty:'名解',src:'—',
+ q:'保税区',a:'经海关批准注册、受海关监管的特定区域。商品可自由进出并暂不缴纳进口税，再出口免出口税；若进入国内市场销售则须补缴进口税。可储存、改装、分类、展览与加工。'},
+{id:'ta50',m:0,ch:'第2章 贸易政策与壁垒',t:'出口管制',lv:'B',ty:'简答',src:'—',
+ q:'出口管制及其方式',a:'国家以保护政治、经济、安全利益为由，限制某些商品出口。目的：政治军事目的、经济目的。对象：战略物资与尖端技术、国内紧缺原材料、被要求自动限制的商品、制裁对象国、文物、垄断商品。方式：单方面管制（专营、出口税、许可证、配额、禁运）与多边管制（瓦森纳协定）。'},
+
+/* ---------- 国际贸易 · 区域与多边 ---------- */
+{id:'ta51',m:0,ch:'第4章 区域一体化与 WTO',t:'关税同盟理论',lv:'S',ty:'论述',src:'15论述',
+ q:'关税同盟的静态效应与动态效应',a:'静态效应：贸易创造（福利增加）、贸易转移（福利损失），净福利取决于二者差额。\n动态效应：①获得规模经济；②加剧竞争、打破垄断；③刺激投资（含绕过关税的“关税工厂”）；④促进技术进步；⑤提高要素流动性；⑥促进经济增长。'},
+{id:'ta52',m:0,ch:'第4章 区域一体化与 WTO',t:'大市场理论',lv:'B',ty:'名解',src:'—',
+ q:'大市场理论',a:'认为保护贸易把市场分割得狭小缺乏弹性，无法实现规模经济。共同市场把分散的小市场统一成大市场，通过内部激烈竞争实现大批量生产利益。核心：获得规模经济、依靠市场扩大带来的竞争激化。'},
+{id:'ta53',m:0,ch:'第4章 区域一体化与 WTO',t:'协议性国际分工',lv:'B',ty:'名解',src:'—',
+ q:'协议性国际分工（小岛清）',a:'在两国经济发展阶段相近、资源禀赋差异不大的条件下，通过相互提供市场的协议实现规模经济与成本递减，而非依靠比较优势与竞争。三个条件：发展阶段相近、对象商品可获规模经济、专业化利益差别不大。'},
+{id:'ta54',m:0,ch:'第4章 区域一体化与 WTO',t:'共同市场',lv:'B',ty:'名解',src:'—',
+ q:'共同市场',a:'在成员间取消关税与非关税壁垒、建立对外统一关税的基础上，还允许资本、劳动力等生产要素自由流动的一体化形式。要求成员让渡关税制定权、技术标准制定权、间接税调整权等。'},
+{id:'ta55',m:0,ch:'第4章 区域一体化与 WTO',t:'经济同盟',lv:'B',ty:'名解',src:'—',
+ q:'经济同盟',a:'成员间商品与要素自由流动、对外统一关税，并制定执行共同的经济政策与社会政策，让渡宏观经济政策干预权（含财政、货币与汇率政策），是较高层次的一体化。'},
+{id:'ta56',m:0,ch:'第4章 区域一体化与 WTO',t:'RCEP',lv:'S',ty:'论述',src:'25论述',
+ q:'RCEP 的经济效应及对中国的影响',a:'经济效应：①关税削减与非关税壁垒消除，降低区域内贸易成本；②原产地累积规则促进区域内产业链整合；③投资便利化提升外资吸引力；④服务贸易与电子商务开放。\n对中国：①巩固亚太产业链核心地位；②制造业与日韩产业链衔接更紧；③农产品获得市场准入；④数字贸易规则助力平台企业出海；⑤挑战：部分低端产业外迁、规则标准压力。'},
+{id:'ta57',m:0,ch:'第4章 区域一体化与 WTO',t:'一带一路',lv:'B',ty:'论述',src:'—',
+ q:'“一带一路”倡议的经济意义',a:'①基础设施互联互通，降低贸易成本；②拓展出口市场与产能合作空间；③推动人民币区域化；④促进中西部开放与区域均衡；⑤风险：债务可持续性、地缘政治、投资回报周期长。'},
+{id:'ta58',m:0,ch:'第4章 区域一体化与 WTO',t:'自由贸易试验区',lv:'A',ty:'简答',src:'24简答',
+ q:'中国设立自贸试验区的意义',a:'①制度创新试验田：负面清单、准入前国民待遇、贸易便利化；②压力测试：为全国推广积累经验；③吸引高端要素与总部经济；④推动服务业开放；⑤倒逼政府职能转变与营商环境优化。'},
+{id:'ta59',m:0,ch:'第4章 区域一体化与 WTO',t:'贸易便利化',lv:'A',ty:'名解',src:'—',
+ q:'贸易便利化',a:'通过简化程序与手续、协调法律法规、标准化与改善基础设施，为国际贸易创造协调、透明、可预见的环境。核心是海关与跨境制度。'},
+{id:'ta60',m:0,ch:'第4章 区域一体化与 WTO',t:'投资便利化',lv:'S',ty:'名解',src:'25名解',
+ q:'投资便利化',a:'各国政府通过优化政策、简化行政程序、提高法律透明度与服务质量，减少外资进入与运营障碍，促进 FDI 增长。核心是提高投资效率、增强投资环境吸引力，同时兼顾国家安全与可持续发展。RCEP、CPTPP 均含相关条款。'},
+{id:'ta61',m:0,ch:'第4章 区域一体化与 WTO',t:'国民待遇',lv:'A',ty:'名解',src:'—',
+ q:'国民待遇',a:'一成员对另一成员的产品、服务、服务提供者及知识产权持有人提供的待遇，不低于本国同类对象享有的待遇。与最惠国待遇共同构成非歧视原则。'},
+{id:'ta62',m:0,ch:'第4章 区域一体化与 WTO',t:'多哈回合',lv:'B',ty:'名解',src:'—',
+ q:'多哈回合',a:'WTO 于 2001 年启动的新一轮多边贸易谈判，又称发展回合，议题包括农业、非农产品市场准入、服务贸易、规则谈判、争端解决、知识产权、环境与发展。因发达成员与发展中成员在农业补贴等问题上分歧严重而长期停滞。'},
+{id:'ta63',m:0,ch:'第4章 区域一体化与 WTO',t:'贸易制裁',lv:'B',ty:'名解',src:'—',
+ q:'贸易制裁',a:'一国或国家集团为达到政治或经济目的，对另一国采取的贸易限制措施，如禁运、提高关税、取消最惠国待遇、限制技术出口等。'},
+
+/* ---------- 国际投资 ---------- */
+{id:'ia01',m:1,ch:'第1章 FDI 与跨国公司理论',t:'国际间接投资',lv:'A',ty:'名解',src:'—',
+ q:'国际间接投资',a:'投资者通过购买外国股票、债券等有价证券或提供贷款进行的投资，目的是获取利息、股息等资本收益，不涉及对企业经营控制权的取得。'},
+{id:'ia02',m:1,ch:'第1章 FDI 与跨国公司理论',t:'资产选择理论',lv:'B',ty:'名解',src:'—',
+ q:'资产选择理论（马科维茨）',a:'投资者不应只追求收益，而应综合权衡收益与风险，通过持有多种有价证券形成有效组合以分散风险。选择标准：平均收益率一定时取风险最小者，风险一定时取收益最高者。核心是“不要把鸡蛋放在一个篮子里”。'},
+{id:'ia03',m:1,ch:'第1章 FDI 与跨国公司理论',t:'麦克杜格尔模型',lv:'B',ty:'论述',src:'—',
+ q:'麦克杜格尔模型（国际资本流动的福利分析）',a:'假设世界资本总量不变、仅两国、资本由平均收益决定流向。资本自由流动后，资本从丰裕国流向短缺国，两国资本的边际生产率趋于相等，世界总产出增加，投资国与东道国均获益。缺陷：假设过于简化，忽略技术、制度与风险因素。'},
+{id:'ia04',m:1,ch:'第5章 投资环境与风险管理',t:'冷热对比分析法',lv:'B',ty:'名解',src:'—',
+ q:'冷热对比分析法',a:'1968 年由利特法克与班廷提出，从投资者立场选定七项因素（政治稳定性、市场机会、经济发展与成就、文化一体化、法令阻碍、实质阻碍、地理文化差距），对目标国由“热”到“冷”排序，热国表示投资环境优良。'},
+{id:'ia05',m:1,ch:'第5章 投资环境与风险管理',t:'投资环境等级评分法',lv:'B',ty:'名解',src:'—',
+ q:'投资环境等级评分法（斯托伯）',a:'从东道国政府对外资的限制与鼓励政策着眼，选取币值稳定、通胀率、资本外调、外资持股比例、差别待遇、政治稳定、当地资本供应、关税保护态度八项因素评分，加总得投资环境总分。'},
+{id:'ia06',m:1,ch:'第5章 投资环境与风险管理',t:'道氏评估法',lv:'B',ty:'名解',src:'—',
+ q:'道氏评估法（动态分析法）',a:'道氏公司把投资风险分为正常企业风险（竞争风险）与环境风险，并把影响环境的因素分为企业业务条件与可能引起其变化的主要压力，通过动态评估判断未来环境变化。'},
+{id:'ia07',m:1,ch:'第5章 投资环境与风险管理',t:'富兰德指数',lv:'B',ty:'名解',src:'—',
+ q:'富兰德指数（FL）',a:'由汉厄尔设计、美国商业环境风险情报所编制的国家风险指数：FL＝政府风险指数×50%＋商业环境指数×25%＋政治风险指数×25%，0—100 分，分值越高风险越低。'},
+{id:'ia08',m:1,ch:'第3章 跨国公司',t:'跨国战略联盟',lv:'S',ty:'论述',src:'22论述',
+ q:'跨国战略联盟的目的与动机',a:'两个或以上企业为实现共同战略目标而结成的合作、共担风险、共享利益的联合行动。\n动机：①优势互补、分摊研发成本与风险；②绕开贸易壁垒、快速进入市场；③获取规模经济与学习效应；④应对技术标准竞争；⑤降低政治与管制风险。\n风险：技术外溢、伙伴机会主义、管理协调成本高。'},
+{id:'ia09',m:1,ch:'第3章 跨国公司',t:'全球战略',lv:'B',ty:'名解',src:'—',
+ q:'全球战略',a:'跨国公司从全球角度配置资源、安排经营活动，以全球市场为单位追求规模经济、区位经济与学习效应，通过集权管理获得成本优势。适用于成本压力大、地区调适压力小的情形。'},
+{id:'ia10',m:1,ch:'第3章 跨国公司',t:'多国战略',lv:'B',ty:'名解',src:'—',
+ q:'多国战略',a:'又称本土化战略，把战略重点放在各国差异上，通过提高对东道国市场需求的适应能力扩大份额，子公司自主经营、适当自给自足。适用于地区调适压力高、成本压力低的情形。'},
+{id:'ia11',m:1,ch:'第1章 FDI 与跨国公司理论',t:'诱发要素组合理论',lv:'S',ty:'简答',src:'16简答',
+ q:'发展中国家跨国公司投资的诱发要素组合理论',a:'对外直接投资由直接诱发要素与间接诱发要素组合推动。\n①直接诱发要素：技术、资本、管理、劳动力等生产要素，本国不具备时可通过对外投资到国外获取；\n②间接诱发要素：东道国投资环境、政策法规、基础设施，母国政策与双边协定，以及全球经济环境。\n意义：解释了不具备垄断优势的发展中国家为何也能对外投资。'},
+{id:'ia12',m:1,ch:'第1章 FDI 与跨国公司理论',t:'小规模技术理论',lv:'B',ty:'名解',src:'—',
+ q:'小规模技术理论（威尔斯）',a:'发展中国家跨国公司的优势来自：①为小市场服务的小规模生产技术；②当地采购与低成本劳动力；③民族产品与低价营销。这些优势使其能在发达国家企业不愿进入的小市场生存。'},
+{id:'ia13',m:1,ch:'第1章 FDI 与跨国公司理论',t:'技术地方化理论',lv:'B',ty:'名解',src:'—',
+ q:'技术地方化理论（拉奥）',a:'发展中国家企业对引进技术进行改造、消化与再创新，形成适应当地要素价格与市场需求的“地方化”技术优势，从而具备对外投资能力。'},
+{id:'ia14',m:1,ch:'第1章 FDI 与跨国公司理论',t:'雁行模式',lv:'B',ty:'名解',src:'—',
+ q:'雁行模式（赤松要）',a:'后起国通过“国外引进—国内生产—产品出口”的循环实现产业结构升级，形成类似雁阵的产业转移序列。山泽逸平扩展为引进、进口替代、出口成长、成熟、逆进口五阶段。'},
+{id:'ia15',m:1,ch:'第4章 母国与东道国效应',t:'产业空心化',lv:'B',ty:'名解',src:'—',
+ q:'产业空心化',a:'一国对外直接投资过度发展，制造业生产与就业大量转移海外，国内实体经济相对萎缩、产业基础削弱的现 象。是母国对外投资的潜在代价之一。'},
+{id:'ia16',m:1,ch:'第4章 母国与东道国效应',t:'对外直接投资的东道国效应',lv:'A',ty:'论述',src:'—',
+ q:'对外直接投资对东道国的影响',a:'积极：①弥补资本缺口，扩大资本形成；②带来技术与管理的溢出；③创造就业（直接与间接）；④促进出口与产业升级；⑤改善国际收支。\n消极：①利润汇回造成资本账户压力；②挤占本地市场、抑制本地企业成长；③转移定价导致税收流失；④可能形成对关键产业的依附。'},
+{id:'ia17',m:1,ch:'第3章 跨国公司',t:'网络分布指数',lv:'B',ty:'名解',src:'—',
+ q:'网络分布指数（NDI）',a:'反映跨国公司经营所涉东道国数量的指标：NDI＝N/N*×100%，N 为海外分支机构所在国家数，N* 为世界上有 FDI 输入的国家数（扣除母国）。'},
+{id:'ia18',m:1,ch:'第3章 跨国公司',t:'跨国银行',lv:'B',ty:'名解',src:'—',
+ q:'跨国银行',a:'在多个国家设立分支机构、经营国际金融业务的银行。主要形式：代表处、分行、子银行、附属银行、合资银行。作用：为跨国公司提供全球融资、结算与资金调拨服务。'},
+{id:'ia19',m:1,ch:'第2章 FDI 类型与决策',t:'外商直接投资',lv:'A',ty:'名解',src:'—',
+ q:'外商直接投资（FDI）',a:'外国投资者在本国境内以现金、实物、技术等投资设立企业，或并购境内企业股权达到一定比例以上，从而取得经营控制权的投资。形式：独资、合资、合作、并购、利润再投资。'},
+{id:'ia20',m:1,ch:'第2章 FDI 类型与决策',t:'独资经营',lv:'B',ty:'名解',src:'—',
+ q:'独资经营',a:'外国投资者在东道国单独出资设立企业，独立经营、自负盈亏，全部股权归投资者所有。优点是控制力强、技术不易外溢；缺点是资金压力大、风险自担、易受东道国限制。'},
+{id:'ia21',m:1,ch:'第2章 FDI 类型与决策',t:'BOT',lv:'B',ty:'名解',src:'—',
+ q:'BOT（建设—经营—转让）',a:'东道国政府将基础设施项目的建设与经营权特许给外国投资者，由其融资建设并在约定期限内经营收费，期满后无偿移交东道国政府。属国际灵活投资方式。'},
+{id:'ia22',m:1,ch:'第2章 FDI 类型与决策',t:'特许经营',lv:'B',ty:'名解',src:'—',
+ q:'国际特许经营',a:'特许方将其商标、商号、经营模式、技术等以合同形式授予受许方使用，受许方支付特许费并按统一标准经营。属非股权式的国际灵活投资方式。'},
+{id:'ia23',m:1,ch:'第5章 投资环境与风险管理',t:'国际投资环境',lv:'A',ty:'名解',src:'22名解',
+ q:'国际投资环境',a:'在国际投资过程中影响跨国企业生产经营活动的各种外部条件或因素相互依赖、相互制约所形成的有机统一体。特点：综合性、系统性、动态性。内容：自然、经济、政治、法律、社会文化环境。'},
+{id:'ia24',m:1,ch:'第5章 投资环境与风险管理',t:'国家风险',lv:'B',ty:'名解',src:'—',
+ q:'国家风险',a:'由于东道国政治、经济、社会或法律环境变化，导致外国投资者资产受损或收益不确定的可能性。主要包括政治风险、汇兑风险、征用风险与战争风险。'},
+{id:'ia25',m:1,ch:'第1章 FDI 与跨国公司理论',t:'市场内部化',lv:'B',ty:'名解',src:'—',
+ q:'市场内部化',a:'由于中间产品（技术、知识、管理技能）市场不完全、交易成本高且难以定价，企业以内部组织替代外部市场，将交易转入企业内部完成，以降低交易成本、保护垄断优势。'}
+);
+
+/* 数据扩充后刷新界面 */
+if(typeof renderTree === 'function'){
+  renderTree();
+  if(typeof renderTabs === 'function') renderTabs();
+  if(typeof updateHeader === 'function') updateHeader();
+}
+</script>
+<script>
+/* ==================================================================
+   M5-B  考点扩充：国际金融（42）＋ 商务运营（26）
+   ================================================================== */
+DATA.push(
+
+/* ---------- 国际金融 · 国际收支 ---------- */
+{id:'fa01',m:2,ch:'第1章 国际收支',t:'国际收支平衡表',lv:'A',ty:'名解',src:'—',
+ q:'国际收支平衡表',a:'一国按复式记账原理，系统记录一定时期内全部对外经济交易的统计报表。三大账户：①经常账户（货物、服务、收益、经常转移）；②资本与金融账户（资本账户、金融账户）；③错误与遗漏账户。'},
+{id:'fa02',m:2,ch:'第1章 国际收支',t:'经常账户',lv:'A',ty:'名解',src:'16名解',
+ q:'经常账户',a:'记录一国居民与非居民之间货物、服务、收益与经常转移的账户，是国际收支平衡表中最基本的账户，反映一国实际资源的对外交换状况。'},
+{id:'fa03',m:2,ch:'第1章 国际收支',t:'资本与金融账户',lv:'B',ty:'名解',src:'—',
+ q:'资本与金融账户',a:'记录资本转移、非生产非金融资产交易以及金融资产与负债变动的账户。金融账户下分直接投资、证券投资、其他投资与储备资产。'},
+{id:'fa04',m:2,ch:'第1章 国际收支',t:'国际收支失衡的类型',lv:'A',ty:'简答',src:'—',
+ q:'国际收支失衡的类型',a:'①偶然性失衡：短期偶发因素；②周期性失衡：经济周期波动；③结构性失衡：产业结构与国际需求不匹配，最具持久性；④货币性失衡：物价与利率变动；⑤收入性失衡：国民收入变化；⑥投机性冲击与不稳定资本流动造成的失衡。'},
+{id:'fa05',m:2,ch:'第1章 国际收支',t:'国际收支的自动调节机制',lv:'B',ty:'简答',src:'—',
+ q:'国际收支的自动调节机制',a:'①金本位下的物价—现金流动机制：逆差→黄金外流→货币供给减少→物价下跌→出口增加；②纸币本位下的价格机制、收入机制与利率机制；③浮动汇率下的汇率机制：逆差→本币贬值→出口增加、进口减少。'},
+{id:'fa06',m:2,ch:'第1章 国际收支',t:'弹性分析法',lv:'A',ty:'简答',src:'—',
+ q:'国际收支的弹性分析法',a:'以马歇尔—勒纳条件为核心，考察本币贬值对贸易收支的影响。假设供给弹性无穷大、不考虑资本流动、其他条件不变。结论：只有进出口需求弹性之和的绝对值大于 1，贬值才改善贸易收支。评价：局部均衡、比较静态分析，存在技术困难。'},
+{id:'fa07',m:2,ch:'第1章 国际收支',t:'吸收分析法',lv:'A',ty:'简答',src:'—',
+ q:'国际收支的吸收分析法',a:'以凯恩斯国民收入恒等式为基础：贸易差额＝国民收入－国内吸收。贬值要改善贸易收支，必须使收入的增加大于吸收的增加。政策含义：既要用支出转换政策，也要用支出减少政策。'},
+{id:'fa08',m:2,ch:'第1章 国际收支',t:'货币分析法',lv:'B',ty:'简答',src:'—',
+ q:'国际收支的货币分析法',a:'认为国际收支失衡本质上是货币供求失衡。国内信贷扩张超过货币需求，会引起储备流失与逆差；反之则顺差。主张以控制国内信贷增长来调节国际收支。评价：强调货币因素，但忽视实际经济因素与结构问题。'},
+{id:'fa09',m:2,ch:'第1章 国际收支',t:'国际收支调节政策',lv:'A',ty:'简答',src:'—',
+ q:'国际收支的调节政策',a:'①融资政策：动用国际储备、对外借款；②需求调节政策：支出减少型（财政货币紧缩）、支出转换型（汇率、补贴、关税）；③供给调节政策：产业政策、科技政策、提高效率；④直接管制：外汇管制、贸易管制；⑤国际政策协调。'},
+
+/* ---------- 国际金融 · 国际储备 ---------- */
+{id:'fa10',m:2,ch:'第2章 国际储备',t:'国际清偿能力',lv:'A',ty:'名解',src:'—',
+ q:'国际清偿能力',a:'一国货币当局持有的国际储备资产与潜在的对外借款能力之和，即向外国政府、中央银行、国际金融机构及商业银行筹措资金的能力。内涵比国际储备更宽：国际储备是现实清偿力，国际清偿能力是现实＋潜在。'},
+{id:'fa11',m:2,ch:'第2章 国际储备',t:'特别提款权',lv:'B',ty:'名解',src:'—',
+ q:'特别提款权（SDR）',a:'IMF 创设的一种储备资产与记账单位，又称“纸黄金”，按成员国缴纳份额比例分配。可用于换取外汇偿付逆差或偿还 IMF 贷款，也可充作储备。但只是记账单位，不能直接用于贸易支付。'},
+{id:'fa12',m:2,ch:'第2章 国际储备',t:'国际储备需求的影响因素',lv:'A',ty:'简答',src:'18简答',
+ q:'影响国际储备需求的因素',a:'①进口规模（比例法：储备/年进口额）；②国际收支的波动幅度；③外债规模与结构；④汇率制度（固定汇率需更多储备）；⑤资本流动的规模与开放程度；⑥持有储备的机会成本；⑦国际融资能力。'},
+{id:'fa13',m:2,ch:'第3章 汇率制度',t:'金本位制',lv:'A',ty:'名解',src:'—',
+ q:'国际金本位制的特点',a:'以黄金为本位货币的国际货币制度（约 1880—1914）。特点：①金币自由铸造、银行券自由兑换黄金、黄金自由输出入；②汇率由铸币平价决定，波动限于黄金输送点内；③国际收支自动调节；④促进国际贸易与资本流动。'},
+{id:'fa14',m:2,ch:'第3章 汇率制度',t:'牙买加体系',lv:'B',ty:'名解',src:'—',
+ q:'牙买加体系',a:'1976 年 IMF 牙买加协定确立的国际货币体系。内容：①黄金非货币化；②储备资产多元化；③汇率制度多样化，承认浮动汇率合法；④扩大 SDR 作用；⑤加强 IMF 对国际收支的调节。'},
+{id:'fa15',m:2,ch:'第3章 汇率制度',t:'汇率制度选择因素',lv:'A',ty:'简答',src:'—',
+ q:'影响汇率制度选择的因素',a:'①经济规模与开放程度：规模小、开放度高宜固定；②通货膨胀率差异：差异大宜浮动；③劳工市场灵活性：工资越僵化越需要灵活汇率；④金融市场发展程度：不成熟不宜浮动；⑤资本流动性：开放度越高越难维持固定。'},
+
+/* ---------- 国际金融 · 汇率与外汇 ---------- */
+{id:'fa16',m:2,ch:'第4章 外汇与汇率',t:'汇率与标价法',lv:'A',ty:'名解',src:'—',
+ q:'汇率及两种标价法',a:'汇率：一国货币兑换另一国货币的比率。\n直接标价法：以一定单位外币折合若干本币，汇率上升＝外币升值、本币贬值（多数国家采用）。\n间接标价法：以一定单位本币折合若干外币，汇率上升＝本币升值（英、美采用）。'},
+{id:'fa17',m:2,ch:'第4章 外汇与汇率',t:'买入/卖出/中间汇率',lv:'B',ty:'名解',src:'—',
+ q:'买入汇率、卖出汇率与中间汇率',a:'买入汇率：银行买入外汇时使用的价格（较低）。卖出汇率：银行卖出外汇时使用的价格（较高）。中间汇率＝(买入价＋卖出价)÷2，多用于报道与衡量汇率趋势。'},
+{id:'fa18',m:2,ch:'第4章 外汇与汇率',t:'实际汇率',lv:'B',ty:'名解',src:'—',
+ q:'实际汇率',a:'剔除价格因素后的汇率，反映一国商品的对外竞争力。实际汇率＝名义汇率×外国物价水平/本国物价水平。实际汇率上升表示本国竞争力下降。'},
+{id:'fa19',m:2,ch:'第4章 外汇与汇率',t:'有效汇率',lv:'S',ty:'名解',src:'25名解',
+ q:'有效汇率',a:'一国货币相对多种主要贸易伙伴货币的加权平均汇率，用于衡量整体竞争力。分名义有效汇率（NEER）与实际有效汇率（REER）。REER 剔除通胀差异，更能反映出口竞争力的实际变化：REER 上升意味着实际升值、竞争力下降。'},
+{id:'fa20',m:2,ch:'第4章 外汇与汇率',t:'复汇率',lv:'S',ty:'名解',src:'18名解',
+ q:'复汇率',a:'一国货币对某一外国货币规定两种或两种以上汇率的制度。形式：贸易汇率与金融汇率、官方汇率与市场汇率并存。目的：奖出限入、控制资本流动。弊端：扭曲价格、滋生寻租、易引发国际争议。'},
+{id:'fa21',m:2,ch:'第4章 外汇与汇率',t:'远期升水与贴水',lv:'A',ty:'名解',src:'—',
+ q:'远期升水与远期贴水',a:'升水：远期汇率高于即期汇率。贴水：远期汇率低于即期汇率。二者相等称平价。直接标价法下，远期汇率＝即期汇率＋升水（或－贴水）。'},
+{id:'fa22',m:2,ch:'第4章 外汇与汇率',t:'外汇市场',lv:'B',ty:'名解',src:'—',
+ q:'外汇市场',a:'进行外汇买卖、调剂外汇供求的场所。参与者：外汇银行、外汇经纪人、中央银行、客户。功能：实现购买力转移、提供信贷、消除汇率风险、形成汇率。'},
+{id:'fa23',m:2,ch:'第5章 外汇风险',t:'外汇期货',lv:'S',ty:'名解',src:'25名解',
+ q:'外汇期货',a:'交易双方在期货交易所签订标准化合约，约定在未来特定日期按约定汇率交割一定数量外汇的金融衍生工具。功能：套期保值与投机。与远期相比，标准化、场内交易、流动性强、有保证金与每日结算。'},
+{id:'fa24',m:2,ch:'第5章 外汇风险',t:'外汇期权',lv:'A',ty:'名解',src:'17名解',
+ q:'外汇期权',a:'合约买方支付期权费后，获得在约定日期按约定汇率买入或卖出一定数量外汇的权利而非义务。买方风险有限（损失期权费），卖方义务无限。分看涨期权与看跌期权。'},
+{id:'fa25',m:2,ch:'第5章 外汇风险',t:'远期外汇交易',lv:'A',ty:'名解',src:'—',
+ q:'远期外汇交易',a:'买卖双方约定在未来某一日期、按事先确定的汇率交割一定数量外汇的交易。特点是合约非标准化、场外交易、量身定制，主要用于锁定汇率风险。'},
+{id:'fa26',m:2,ch:'第5章 外汇风险',t:'掉期交易',lv:'B',ty:'名解',src:'—',
+ q:'掉期交易',a:'同时买进和卖出相同金额的同种货币，但交割期限不同的外汇交易，又称时间套汇。用于调整外汇头寸、轧平资金缺口。'},
+{id:'fa27',m:2,ch:'第5章 外汇风险',t:'套汇交易',lv:'A',ty:'名解',src:'14名解',
+ q:'套汇交易',a:'利用同一时刻不同外汇市场之间的汇率差异，贱买贵卖以获取差价的交易行为。分直接套汇（两市场）与间接套汇（三市场及以上）。其存在会迅速消除市场间价差。'},
+{id:'fa28',m:2,ch:'第5章 外汇风险',t:'套期保值',lv:'B',ty:'名解',src:'—',
+ q:'套期保值',a:'在现货市场与期货市场对同种商品同时进行数量相等、方向相反的交易，以一个市场的盈利弥补另一个市场的亏损，从而锁定价格或汇率风险。'},
+{id:'fa29',m:2,ch:'第4章 外汇与汇率',t:'国际借贷说',lv:'B',ty:'名解',src:'—',
+ q:'国际借贷说',a:'最早的汇率决定理论之一。认为汇率由外汇供求决定，而外汇供求取决于国际借贷（债权债务）关系。国际借贷差额引起外汇供求变化，进而决定汇率涨落。'},
+{id:'fa30',m:2,ch:'第4章 外汇与汇率',t:'利率平价说',lv:'A',ty:'简答',src:'—',
+ q:'利率平价说',a:'汇率由两国利率差异决定。套补的利率平价：远期升贴水率等于两国利差；非套补的利率平价：预期汇率变动率等于两国利差。结论：利率高的货币远期贴水。'},
+{id:'fa31',m:2,ch:'第4章 外汇与汇率',t:'资产市场说',lv:'B',ty:'简答',src:'—',
+ q:'资产市场分析法',a:'把汇率视为资产价格，由货币市场与资产市场的均衡决定。分弹性价格货币模型、粘性价格货币模型（超调模型）与资产组合模型。特点：强调存量与预期，短期解释力强。'},
+{id:'fa32',m:2,ch:'第3章 汇率制度',t:'货币自由兑换',lv:'A',ty:'简答',src:'—',
+ q:'货币自由兑换及其条件',a:'指一国货币可自由兑换为他国货币。层次：经常项目可兑换（第八条款国）、资本与金融项目可兑换。条件：①稳健的宏观经济政策；②良好的微观经营机制；③合理的汇率水平；④充足的国际清偿能力；⑤健全的金融监管。'},
+
+/* ---------- 国际金融 · 市场与危机 ---------- */
+{id:'fa33',m:2,ch:'第6章 国际金融市场',t:'国际金融市场构成',lv:'B',ty:'简答',src:'—',
+ q:'国际金融市场的构成',a:'按资金期限分：国际货币市场（短期）与国际资本市场（中长期）。按业务性质分：资金借贷市场、外汇市场、黄金市场、证券市场。按性质分：传统国际金融市场与离岸金融市场。'},
+{id:'fa34',m:2,ch:'第6章 国际金融市场',t:'LIBOR',lv:'B',ty:'名解',src:'—',
+ q:'LIBOR',a:'伦敦银行同业拆放利率，指欧洲货币市场上银行之间一年期以下的短期资金借贷利率，是国际金融市场大多数浮动利率的基础利率。'},
+{id:'fa35',m:2,ch:'第6章 国际金融市场',t:'欧洲债券市场特点',lv:'B',ty:'简答',src:'—',
+ q:'欧洲债券市场的特点',a:'①不受任何国家金融法规与税收管制；②发行货币可自由选择，多为欧洲美元；③发行人主要是发达国家企业、政府、跨国公司与国际组织；④分固定利率与浮动利率债券，期限通常 15 年，最长 30 年。'},
+{id:'fa36',m:2,ch:'第8章 国际金融危机',t:'金融危机',lv:'B',ty:'名解',src:'—',
+ q:'金融危机',a:'货币危机、信用危机、银行危机、债务危机、证券市场与衍生品市场危机的总称。表现为金融指标急剧恶化、股市暴跌、资本外逃、银行挤兑、货币大幅贬值等。'},
+{id:'fa37',m:2,ch:'第8章 国际金融危机',t:'货币危机',lv:'B',ty:'名解',src:'—',
+ q:'货币危机',a:'投机冲击导致一国货币大幅贬值，或迫使当局动用大量储备、大幅提高利率以维持汇率的状况。分预期自致性货币危机与蔓延性货币危机。'},
+{id:'fa38',m:2,ch:'第8章 国际金融危机',t:'主权债务危机',lv:'B',ty:'名解',src:'—',
+ q:'主权债务危机',a:'一国以主权为担保对外举债，债务规模超过自身偿还能力，导致无法按期偿付本息的危机。典型如冰岛、希腊。'},
+{id:'fa39',m:2,ch:'第7章 汇率与货币体系',t:'国际货币体系',lv:'A',ty:'名解',src:'—',
+ q:'国际货币体系',a:'各国政府对货币在国际间发挥职能作用所确定的原则、协议、措施与组织形式。内容：①国际储备资产的确定；②汇率制度的确定；③国际收支调节方式。演变：国际金本位→布雷顿森林体系→牙买加体系。'},
+{id:'fa40',m:2,ch:'第7章 汇率与货币体系',t:'人民币国际化',lv:'A',ty:'论述',src:'—',
+ q:'人民币国际化的意义与路径',a:'意义：①获得铸币税收入；②降低贸易结算成本与汇率风险；③提升金融话语权；④促进金融市场深化；⑤减少对美元的依赖。\n路径：结算货币→投资货币→储备货币；经常项目结算→资本项目开放→离岸市场建设。\n风险：货币政策独立性受约束、资本流动冲击、跨境监管难度上升。'},
+{id:'fa41',m:2,ch:'第7章 汇率与货币体系',t:'IMF 与世界银行',lv:'B',ty:'简答',src:'23简答',
+ q:'国际金融机构的功能',a:'IMF：①监督成员国汇率政策与国际收支；②向国际收支困难成员提供贷款；③提供技术援助与培训；④促进国际货币合作。\n世界银行：①向发展中国家提供长期项目贷款；②提供技术援助与政策咨询；③促进私人资本流入。\n共同点：维护国际金融稳定、促进经济发展。'},
+{id:'fa42',m:2,ch:'第7章 汇率与货币体系',t:'内外均衡与政策搭配',lv:'A',ty:'简答',src:'—',
+ q:'内外均衡与政策搭配',a:'内部均衡：充分就业、物价稳定、经济增长。外部均衡：合理的国际收支结构。\n丁伯根原则：政策工具数目须不少于目标数目。\n有效市场分类原则（蒙代尔）：应把工具分配给其影响最大的目标。\n政策搭配：财政政策与货币政策、支出转换与支出减少政策组合使用。'},
+
+/* ---------- 商务运营 ---------- */
+{id:'oa01',m:3,ch:'第4章 商务环境与文化',t:'国际商务',lv:'B',ty:'名解',src:'—',
+ q:'国际商务',a:'国际企业从事国际贸易、国际投资与国际生产过程中产生的跨国经营活动，包括国际战略、资源配置、市场开发、规则遵守与跨文化适应等。本质是“跨国界”，研究对象是国际企业或跨国公司。'},
+{id:'oa02',m:3,ch:'第4章 商务环境与文化',t:'文化',lv:'B',ty:'名解',src:'—',
+ q:'文化',a:'一群人所共有的、为生存而设计的价值观与规范，在宗教、语言、价值、态度、习惯、社会结构等要素相互影响下逐渐形成。文化是社会现象，也是历史积淀。'},
+{id:'oa03',m:3,ch:'第4章 商务环境与文化',t:'文化冲击',lv:'B',ty:'名解',src:'—',
+ q:'文化冲击',a:'个人或组织身处不同国家文化环境中经受的困惑、焦虑状态，涉及气候、饮食、语言、服饰、行为举止、政治经济环境等方面，更多是精神因素。'},
+{id:'oa04',m:3,ch:'第4章 商务环境与文化',t:'跨文化冲突',lv:'A',ty:'简答',src:'—',
+ q:'跨文化冲突的成因',a:'①价值观不同；②思维方式不同；③民族个性差异（自我参照）；④信息理解与沟通方式差异（高语境/低语境）；⑤管理风格不同。表现：制度文化冲突、劳动人事冲突、决策模式冲突、经营观念冲突。'},
+{id:'oa05',m:3,ch:'第4章 商务环境与文化',t:'跨文化管理策略',lv:'A',ty:'简答',src:'—',
+ q:'跨文化管理的主要策略',a:'①本土化策略（思维全球化、行动当地化）；②文化相容策略（平行相容、隐去主体文化的和平相容）；③文化创新策略；④文化规避策略；⑤文化渗透策略；⑥借助第三方文化策略；⑦占领支配式策略。'},
+{id:'oa06',m:3,ch:'第4章 商务环境与文化',t:'霍夫斯泰德文化维度',lv:'B',ty:'简答',src:'—',
+ q:'霍夫斯泰德的文化维度',a:'①权力距离；②个人主义与集体主义；③男性化与女性化；④不确定性规避；⑤长期导向与短期导向。用于解释不同国家在工作价值观与管理方式上的差异。'},
+{id:'oa07',m:3,ch:'第4章 商务环境与文化',t:'商业伦理与企业社会责任',lv:'B',ty:'名解',src:'—',
+ q:'商业伦理与企业社会责任',a:'商业伦理：研究商业活动中人与人的伦理关系及规律，以及商业主体应遵守的行为原则与规范。\n企业社会责任：企业对其利害关系人（员工、顾客、供应商、社区、股东等）应负的责任，须兼顾经济绩效、社会影响与环境保护。'},
+{id:'oa08',m:3,ch:'第4章 商务环境与文化',t:'政治风险',lv:'A',ty:'简答',src:'24简答',
+ q:'如何防范国际商务中的政治风险',a:'①投资前评估：国家风险指数、政局与政策连续性；②投资结构安排：与当地企业合资、引入多边机构参股；③融资本地化，减少资产暴露；④购买政治风险保险（MIGA、出口信用保险）；⑤经营本地化，履行社会责任、建立政府关系；⑥分散投资国别；⑦签订双边投资保护协定。'},
+{id:'oa09',m:3,ch:'第4章 商务环境与文化',t:'大陆法系',lv:'B',ty:'名解',src:'—',
+ q:'大陆法系',a:'又称罗马法系、民法法系，以详尽的成文法典为基础，强调系统化、条理化、法典化与逻辑性，法庭依据法律条文解释。与普通法系相对（后者以判例为基础）。'},
+{id:'oa10',m:3,ch:'第1章 国际营销',t:'国际营销',lv:'B',ty:'名解',src:'—',
+ q:'国际营销',a:'企业超越本国国境进行的市场经营活动，包括市场调研、细分、目标市场选择、营销组合与定位等。相比国内营销，差异性、复杂性与风险性更大。'},
+{id:'oa11',m:3,ch:'第1章 国际营销',t:'市场细分',lv:'A',ty:'名解',src:'—',
+ q:'市场细分',a:'按消费者需求、动机与购买行为的差异，把整体市场划分为若干子市场的过程。作用：发现市场机会、选择目标市场、集中资源、提高效益。细分标准：地理、人口、心理、行为。'},
+{id:'oa12',m:3,ch:'第1章 国际营销',t:'营销组合 4P',lv:'B',ty:'简答',src:'—',
+ q:'国际营销组合（4P）',a:'产品（Product）：标准化与差异化、品牌、包装；价格（Price）：撇脂、渗透、成本加成、价格歧视；渠道（Place）：直接/间接、中间商选择；促销（Promotion）：广告、人员推销、营业推广、公共关系。'},
+{id:'oa13',m:3,ch:'第1章 国际营销',t:'撇脂定价',lv:'B',ty:'名解',src:'—',
+ q:'撇脂定价',a:'新产品上市初期定高价，在竞争者推出相似产品前尽快收回投资并获取高利润，随后逐步降价进入弹性较大的市场。适用于全新产品、专利保护产品、需求弹性小或流行产品。'},
+{id:'oa14',m:3,ch:'第1章 国际营销',t:'成本加成定价',lv:'B',ty:'名解',src:'—',
+ q:'成本加成定价法',a:'按单位成本加上一定比例的利润确定价格。步骤：估算单位成本（按假定产量水平）→加上目标毛利，以覆盖未分摊成本并提供投资回报。'},
+{id:'oa15',m:3,ch:'第1章 国际营销',t:'价格歧视',lv:'B',ty:'名解',src:'—',
+ q:'价格歧视',a:'垄断者对同一产品向不同消费者索取不同价格以最大化利润。条件：消费者偏好不同且可区分、市场相互隔离。分一级（完全）、二级（按购买量分段）、三级（不同市场不同价）。'},
+{id:'oa16',m:3,ch:'第1章 国际营销',t:'国际分销渠道',lv:'B',ty:'名解',src:'—',
+ q:'国际分销渠道',a:'商品由生产商向国外消费者转移所经过的通道，包括企业进入国际市场的国家间渠道与各国国内的分销渠道两部分。与国内渠道的差别主要在影响渠道决策的市场因素。'},
+{id:'oa17',m:3,ch:'第2章 供应链',t:'国际物流',lv:'B',ty:'简答',src:'—',
+ q:'国际物流及其目标',a:'物品跨越国界的实体流动及相关信息处理过程。目标：①降低成本；②缩短交付周期；③提高服务水平与响应速度；④保证供应链连续性。措施：合理选择运输方式、建设配送中心、信息系统集成、通关便利化。'},
+{id:'oa18',m:3,ch:'第2章 供应链',t:'准时制生产 JIT',lv:'B',ty:'名解',src:'—',
+ q:'准时制生产（JIT）',a:'借助计算机与条码技术实时监控生产与物料，按需在恰当时间、恰当数量供应零部件，以减少库存、缩短生产周期、节约成本，追求零库存。'},
+{id:'oa19',m:3,ch:'第2章 供应链',t:'逆向物流',lv:'B',ty:'名解',src:'—',
+ q:'逆向物流',a:'物品从供应链下游向上游的运动所引发的物流活动，即为资源回收或正确处理废弃物，对原材料、在制品、产成品及相关信息从消费点到产出点进行规划、实施与控制。'},
+{id:'oa20',m:3,ch:'第2章 供应链',t:'全球价值链',lv:'B',ty:'名解',src:'—',
+ q:'全球价值链',a:'为实现商品或服务价值而连接生产、销售、回收处理等过程的全球性跨企业网络组织，涉及原料采购、半成品与成品生产分销直至最终消费与回收的全过程。'},
+{id:'oa21',m:3,ch:'第2章 供应链',t:'微笑曲线',lv:'B',ty:'名解',src:'—',
+ q:'微笑曲线',a:'施振荣提出。在产业链中附加值呈微笑形分布：两端（研发设计与品牌营销服务）附加值高，中间（组装制造）附加值最低。因此产业应朝两端延伸。'},
+{id:'oa22',m:3,ch:'第3章 国际会计与税收',t:'跨国会计差异的原因',lv:'B',ty:'简答',src:'—',
+ q:'造成跨国间会计差异的原因',a:'①会计管理的社会性：经济、政治、法律、文化差异导致准则制定不同；②会计实践的适用性：各国坚持适合自身的会计模式；③准则制定程序与方式不同；④会计本身的特殊性与不确定性。'},
+{id:'oa23',m:3,ch:'第3章 国际会计与税收',t:'税收饶让',lv:'B',ty:'名解',src:'—',
+ q:'税收饶让',a:'居住国政府对本国居民在国外享受的减免税优惠部分，视同已缴纳并给予税收抵免，不再按本国税率补征。是税收抵免的特殊形式，须通过双边税收协定确定。'},
+{id:'oa24',m:3,ch:'第3章 国际会计与税收',t:'国际避税',lv:'B',ty:'简答',src:'—',
+ q:'国际避税及其原因',a:'跨国纳税人利用各国税制差异与国际税法漏洞，以合法手段规避或减少纳税义务。原因：主观上追求税负最小化；客观上①税收管辖权与居民、来源地判定标准差异；②税率差异；③大量税收协定；④涉外税法漏洞。'},
+{id:'oa25',m:3,ch:'第3章 国际会计与税收',t:'离岸公司',lv:'B',ty:'名解',src:'—',
+ q:'离岸公司',a:'在离岸管辖区（如英属维尔京群岛、开曼、百慕大）注册成立的有限责任公司或国际商业公司。优势：注册简便、税收优惠、保密性强、绕开配额与外汇管制、便于海外融资上市。'},
+{id:'oa26',m:3,ch:'第3章 国际会计与税收',t:'外资准入负面清单',lv:'A',ty:'名解',src:'—',
+ q:'外资准入负面清单',a:'列明对外资禁止或限制进入的行业与特别管理措施，清单以外领域按内外资一致原则管理。是“准入前国民待遇＋负面清单”管理模式的核心，体现高水平投资自由化便利化。'}
+);
+
+/* 刷新 */
+if(typeof renderTree === 'function'){
+  renderTree();
+  if(typeof renderTabs === 'function') renderTabs();
+  if(typeof updateHeader === 'function') updateHeader();
+}
+</script>
+<script>
+/* ==================================================================
+   备份提醒
+   超过 7 天未备份 → 顶部出现提醒条
+   ================================================================== */
+(function(){
+  const WEEK = 7 * 86400000;
+  const $b = document.getElementById('btnExport');
+
+  /* 接管原来的导出按钮：导出后记录时间 */
+  if($b){
+    const old = $b.onclick;
+    $b.onclick = function(e){
+      if(typeof old === 'function') old.call(this, e);
+      S.backup = Date.now();
+      S.snooze = 0;
+      Store.save();
+      removeBanner();
+    };
+  }
+
+  function removeBanner(){
+    const el = document.getElementById('bkbar');
+    if(el) el.remove();
+  }
+
+  function showBanner(days){
+    if(document.getElementById('bkbar')) return;
+
+    const bar = document.createElement('div');
+    bar.id = 'bkbar';
+    bar.style.cssText = `
+      position:fixed;left:0;right:0;top:0;z-index:99;
+      background:#fff8e6;border-bottom:1px solid #f0dcae;
+      padding:9px 18px;display:flex;align-items:center;gap:12px;
+      font-size:13px;color:#8a6100;box-shadow:0 2px 10px rgba(0,0,0,.05)`;
+    bar.innerHTML = `
+      <span style="flex:1">
+        ⚠ 已经 ${days} 天没有备份了。换浏览器、清缓存都会让进度归零，建议现在存一份。
+      </span>
+      <button id="bkNow" style="padding:6px 14px;border-radius:8px;background:#d99400;
+        color:#fff;font-size:13px">立即备份</button>
+      <button id="bkLater" style="padding:6px 12px;border-radius:8px;background:#fff;
+        border:1px solid #e6d3a3;color:#8a6100;font-size:13px">明天再说</button>`;
+
+    document.body.appendChild(bar);
+    document.querySelector('.app').style.paddingTop = '42px';
+
+    bar.querySelector('#bkNow').onclick = ()=>{ if($b) $b.click(); };
+    bar.querySelector('#bkLater').onclick = ()=>{
+      S.snooze = Date.now() + 86400000;
+      Store.save();
+      removeBanner();
+      document.querySelector('.app').style.paddingTop = '0';
+    };
+  }
+
+  function check(){
+    if(S.snooze && Date.now() < S.snooze) return;
+    const since = S.backup || S.created || Date.now();
+    const days = Math.floor((Date.now() - since) / 86400000);
+    if(days >= 7) showBanner(days);
+  }
+
+  setTimeout(check, 800);
+})();
+</script>
+<script>
+/* ==================================================================
+   冲刺包：考前 7 天，只做 S 级 ＋ 错题
+   ================================================================== */
+(function(){
+
+  const PLAN = [
+    {d:7, name:'D-7　清扫 S 级（上）', mode:'闪卡＋默写', min:45},
+    {d:6, name:'D-6　清扫 S 级（中）', mode:'闪卡＋默写', min:45},
+    {d:5, name:'D-5　清扫 S 级（下）', mode:'闪卡＋默写', min:45},
+    {d:4, name:'D-4　错题清零第一轮', mode:'错题本＋概念对抗', min:40},
+    {d:3, name:'D-3　论述骨架全过一遍', mode:'论述骨架', min:50},
+    {d:2, name:'D-2　错题清零第二轮 ＋ 计算', mode:'错题＋计算', min:40},
+    {d:1, name:'D-1　只看一页纸', mode:'一页纸＋静默回忆', min:30}
+  ];
+
+  function daysLeft(){
+    return Math.max(0, Math.ceil((EXAM - Date.now()) / DAY));
+  }
+
+  function pools(){
+    const s = DATA.filter(k => k.lv === 'S');
+    const wrong = S.wrong.map(id => Store.byId(id)).filter(Boolean);
+    return {s: ranked(s), wrong};
+  }
+
+  /* 把 S 级平均切成 3 份 */
+  function split3(arr){
+    const n = Math.ceil(arr.length / 3);
+    return [arr.slice(0, n), arr.slice(n, n*2), arr.slice(n*2)];
+  }
+
+  function chunkFor(idx, s){
+    const parts = split3(s);
+    if(idx === 0) return parts[0];
+    if(idx === 1) return parts[1];
+    if(idx === 2) return parts[2];
+    return [];
+  }
+
+  function render(root){
+    const left = daysLeft();
+    const {s, wrong} = pools();
+    const active = left <= 7;
+
+    root.innerHTML = `
+      <h1 class="h1">冲刺包</h1>
+      <p class="muted">
+        距初试 <b style="color:var(--bad)">${left}</b> 天 ·
+        S 级 ${s.length} 个 · 错题 ${wrong.length} 条
+        ${active ? '　<span style="color:var(--ok)">· 已进入冲刺期</span>'
+                 : '　（D-7 起自动启用，现在可预览）'}
+      </p>
+
+      <div class="panel" style="margin-top:14px">
+        <h3>三条铁律</h3>
+        <div style="font-size:13.5px;line-height:2">
+          ① 只做 S 级和错题，B/C 级一律不看<br>
+          ② 每天先默写再翻答案，绝不通读<br>
+          ③ 论述只写骨架，不写全文
+        </div>
+      </div>
+
+      ${PLAN.map((p, i)=>{
+        const chunk = p.d >= 5 ? chunkFor(7 - p.d, s) : [];
+        const done = chunk.filter(k => kps(k.id).m >= 5).length;
+        const est = p.d >= 5
+          ? Math.max(20, Math.round(chunk.length * 1.6))
+          : p.min;
+
+        return `<div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <b style="font-size:15px">${p.name}</b>
+              <div class="muted" style="font-size:12px;margin-top:3px">
+                ${p.mode} · 约 ${est} 分钟
+                ${chunk.length ? '　进度 ' + done + '/' + chunk.length : ''}
+              </div>
+            </div>
+            <button class="btn pri sm" data-day="${i}">${chunk.length ? '开始' : '打开'}</button>
+          </div>
+
+          ${chunk.length ? `
+          <div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:6px">
+            ${chunk.map(k=>{
+              const ok = kps(k.id).m >= 5;
+              return `<span data-kp="${k.id}" style="cursor:pointer;font-size:12px;
+                padding:4px 10px;border-radius:7px;
+                border:1px solid ${ok?'#bde5c8':'var(--line)'};
+                background:${ok?'#f2fbf5':'#fff'};
+                color:${ok?'#166534':'#4a5368'}">
+                ${ok?'✓ ':''}${k.t}</span>`;
+            }).join('')}
+          </div>` : ''}
+        </div>`;
+      }).join('')}
+
+      <div class="btns">
+        <button class="btn pri" id="goWrong">错题清零</button>
+        <button class="btn" id="goPaper">导出一页纸</button>
+      </div>`;
+
+    root.querySelectorAll('[data-day]').forEach(b=>{
+      b.onclick = ()=>{
+        const i = +b.dataset.day;
+        const p = PLAN[i];
+        if(p.d >= 5){
+          const chunk = chunkFor(7 - p.d, s);
+          if(chunk.length) startCard(chunk[0].id);
+          else route('card');
+        }else if(p.d === 4 || p.d === 2){
+          route('wrong');
+        }else if(p.d === 3){
+          route('skel');
+        }else{
+          exportOnePage();
+        }
+      };
+    });
+
+    root.querySelectorAll('[data-kp]').forEach(el=>{
+      el.onclick = ()=> startCard(el.dataset.kp);
+    });
+
+    root.querySelector('#goWrong').onclick = ()=> route('wrong');
+    root.querySelector('#goPaper').onclick = ()=> exportOnePage();
+  }
+
+  MOUNT_PLUGIN({ id:'sprint', title:'冲刺包', tab:true, mount(root){ render(root); } });
+})();
+</script>
+<!-- ================= 434 增强包 · 第 1/3 段 ================= -->
+<!-- 粘贴位置：原文件最后一段 </script> 之后，</body> 之前 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434 = window.IMX434 || {};
+if (X._s1) return; X._s1 = 1;
+
+/* ---------- 0. 样式 ---------- */
+var CSS = `
+.imx-dock{position:fixed;right:16px;bottom:16px;z-index:9000;display:flex;gap:4px;align-items:center;background:rgba(255,255,255,.95);border:1px solid rgba(54,101,243,.16);border-radius:14px;padding:5px;box-shadow:0 10px 30px rgba(20,30,60,.16);font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}
+.imx-dock button{position:relative;border:0;background:transparent;color:#33415c;font:600 12px/1.2 inherit;padding:8px 10px;border-radius:9px;cursor:pointer}
+.imx-dock button:hover{background:rgba(54,101,243,.1);color:#3665f3}
+.imx-dot{position:absolute;top:1px;right:1px;min-width:15px;height:15px;border-radius:8px;background:#ef4444;color:#fff;font:700 10px/15px system-ui;text-align:center;padding:0 3px}
+.imx-mask{position:fixed;inset:0;background:rgba(18,24,38,.42);z-index:9100;display:none}
+.imx-mask.on{display:block}
+.imx-panel{position:fixed;z-index:9200;background:#fff;border-radius:16px;box-shadow:0 24px 70px rgba(12,20,40,.3);display:none;flex-direction:column;overflow:hidden;font-family:system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:#1f2a44}
+.imx-panel.on{display:flex}
+.imx-panel.wide{left:50%;top:50%;transform:translate(-50%,-50%);width:min(880px,94vw);max-height:88vh}
+.imx-panel.side{right:0;top:0;bottom:0;width:min(470px,96vw);border-radius:16px 0 0 16px}
+.imx-h{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid #eef1f7}
+.imx-h b{font-size:15px}
+.imx-h .imx-x{margin-left:auto;border:0;background:#f1f4fa;color:#5a6a86;width:28px;height:28px;border-radius:9px;font-size:16px;cursor:pointer;line-height:1}
+.imx-sub{font-size:12px;color:#7a86a0;margin-top:3px}
+.imx-body{padding:16px 18px;overflow:auto;flex:1}
+.imx-sec{margin:14px 0 8px;font:700 12px/1 system-ui;color:#7a86a0;letter-spacing:.04em}
+.imx-sec em{color:#3665f3;font-style:normal}
+.imx-task{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #edf1f8;border-radius:12px;margin-bottom:8px;background:#fbfcff}
+.imx-task.fin{opacity:.5;background:#f6f8fb}
+.imx-task.fin b{text-decoration:line-through}
+.imx-lv{flex:none;width:24px;height:24px;border-radius:8px;display:grid;place-items:center;font:700 11px/1 system-ui;background:#eef2fb;color:#4b5b7a}
+.imx-lv.lvS{background:#fff0e6;color:#e2680b}
+.imx-lv.lvA{background:#eaf1ff;color:#3665f3}
+.imx-tt{flex:1;min-width:0}
+.imx-tt b{display:block;font-size:13px;font-weight:600;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imx-tt i{font:400 11px/1.4 system-ui;color:#8a96ad;font-style:normal}
+.imx-go{border:0;background:#3665f3;color:#fff;font:600 12px/1 system-ui;padding:8px 11px;border-radius:9px;cursor:pointer}
+.imx-fin{border:1px solid #dfe6f3;background:#fff;color:#8a96ad;width:30px;height:31px;border-radius:9px;cursor:pointer}
+.imx-fin:hover{color:#22c55e;border-color:#22c55e}
+.imx-ring{--p:0;flex:none;width:62px;height:62px;border-radius:50%;background:conic-gradient(#3665f3 calc(var(--p)*1%),#edf1fa 0);display:grid;place-items:center;position:relative}
+.imx-ring:after{content:"";position:absolute;inset:6px;background:#fff;border-radius:50%}
+.imx-ring span{position:relative;z-index:1;font:700 13px/1 system-ui;color:#22304d}
+.imx-ring.big{width:96px;height:96px}
+.imx-ring.big span{font-size:18px}
+.imx-foot{padding:10px 18px;border-top:1px solid #eef1f7;font-size:11px;color:#93a0b8}
+.imx-empty{padding:14px;text-align:center;color:#9aa6bd;font-size:12px;background:#fafbff;border-radius:10px}
+.imx-badge{display:inline-flex;align-items:center;gap:6px;margin-left:12px;padding:5px 10px;border-radius:20px;background:#eef3ff;color:#3665f3;font:600 11px/1 system-ui;cursor:pointer;position:relative;overflow:hidden}
+.imx-badge i{position:absolute;left:0;top:0;bottom:0;background:rgba(54,101,243,.16)}
+.imx-badge span{position:relative}
+.imx-bar{display:flex;align-items:center;gap:12px;margin:0 0 12px;padding:10px 14px;border:1px solid #e3ebff;background:linear-gradient(90deg,#f2f6ff,#fbfdff);border-radius:12px;font-size:12px;color:#5a6a86}
+.imx-bar b{color:#22304d}
+.imx-bar button{margin-left:auto;border:0;background:#3665f3;color:#fff;border-radius:8px;padding:7px 10px;font:600 11px/1 system-ui;cursor:pointer}
+.imx-pill{position:fixed;left:50%;bottom:96px;transform:translateX(-50%);z-index:8900;border:0;border-radius:20px;padding:9px 14px;background:#fff;color:#e2680b;font:600 12px/1 system-ui;box-shadow:0 8px 24px rgba(20,30,60,.18);cursor:pointer}
+.imx-cv{position:fixed;inset:0;z-index:9500;pointer-events:none}
+.imx-toast{position:fixed;left:50%;top:78px;transform:translateX(-50%) translateY(-8px);z-index:9600;background:#22304d;color:#fff;font:500 12px/1.5 system-ui;padding:9px 14px;border-radius:10px;opacity:0;transition:.25s;pointer-events:none;max-width:80vw}
+.imx-toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.imx-prog{height:3px;background:#eef1f7;flex:none}
+.imx-prog i{display:block;height:100%;background:#3665f3;transition:width .3s}
+.imx-qmeta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.imx-tag{background:#eef3ff;color:#3665f3;border-radius:6px;padding:3px 7px;font:600 11px/1.4 system-ui}
+.imx-tag.ghost{background:#f3f5f9;color:#8a96ad}
+.imx-q{font:600 16px/1.7 system-ui;color:#1f2a44;margin:6px 0 14px}
+.imx-ta{width:100%;min-height:110px;box-sizing:border-box;border:1px solid #dfe6f3;border-radius:12px;padding:12px;font:400 14px/1.7 system-ui;color:#1f2a44;resize:vertical;outline:none}
+.imx-ta:focus{border-color:#3665f3;box-shadow:0 0 0 3px rgba(54,101,243,.1)}
+.imx-row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.imx-btn{border:0;background:#3665f3;color:#fff;font:600 13px/1 system-ui;padding:11px 18px;border-radius:10px;cursor:pointer}
+.imx-btn.ghost{background:#f1f4fa;color:#5a6a86}
+.imx-hint{margin-top:10px;font-size:11px;color:#9aa6bd;line-height:1.6}
+.imx-fb{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.imx-rate{font:800 34px/1 system-ui;color:#3665f3}
+.imx-rate small{font-size:15px}
+.imx-chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 4px}
+.imx-chip{font:500 11px/1.4 system-ui;padding:3px 8px;border-radius:20px;background:#eafaf0;color:#16894b}
+.imx-chip.miss{background:#fdeeee;color:#c33}
+.imx-ref{margin-top:12px;background:#fafbff;border:1px solid #eef1f8;border-radius:12px;padding:12px}
+.imx-ref label{font:700 11px/1 system-ui;color:#7a86a0;letter-spacing:.05em}
+.imx-ref p{margin:8px 0 0;font:400 13px/1.8 system-ui;color:#2c3a56}
+.imx-eg{margin-top:10px;background:#fffaf0;border:1px solid #ffe9c2;border-radius:12px;padding:12px}
+.imx-eg label{font:700 11px/1 system-ui;color:#c07a10}
+.imx-eg p{margin:8px 0 0;font:400 13px/1.8 system-ui;color:#5c4620}
+.imx-result{text-align:center}
+.imx-big{font:800 46px/1.1 system-ui;color:#22304d;margin:6px 0}
+.imx-stamp{width:78px;height:78px;margin:6px auto 2px;border-radius:50%;display:grid;place-items:center;font:800 34px/1 system-ui;border:3px solid #3665f3;color:#3665f3;transform:rotate(-8deg);animation:imxPop .45s cubic-bezier(.2,1.6,.4,1)}
+.imx-stamp.rankS{border-color:#e2680b;color:#e2680b}
+.imx-stamp.rankA{border-color:#3665f3;color:#3665f3}
+.imx-stamp.rankB{border-color:#22a06b;color:#22a06b}
+.imx-stamp.rankC{border-color:#8a96ad;color:#8a96ad}
+@keyframes imxPop{0%{transform:scale(.3) rotate(-30deg);opacity:0}100%{transform:scale(1) rotate(-8deg);opacity:1}}
+.imx-enc{font:500 14px/1.7 system-ui;color:#4b5b7a;margin:10px 0 4px}
+.imx-up{display:flex;justify-content:space-between;gap:10px;padding:8px 12px;border-radius:9px;background:#f5fbf7;margin-bottom:6px;font-size:12px;color:#2c5a41}
+.imx-up b{color:#16894b}
+.imx-mod{display:flex;align-items:center;gap:10px;margin:8px 0}
+.imx-mod .nm{width:44px;font:600 12px/1 system-ui;color:#5a6a86}
+.imx-mod .track{flex:1;height:8px;background:#eef1f7;border-radius:5px;overflow:hidden}
+.imx-mod .track i{display:block;height:100%;background:linear-gradient(90deg,#3665f3,#6f93ff);border-radius:5px}
+.imx-mod .val{width:64px;text-align:right;font:600 12px/1 system-ui;color:#22304d}
+.imx-tip{margin-top:14px;padding:10px 12px;background:#f7f9fd;border-radius:10px;font-size:11px;line-height:1.7;color:#8a96ad}
+.imx-ex{border:1px solid #eef1f8;border-radius:12px;padding:10px 12px;margin-bottom:8px;background:#fff}
+.imx-ex summary{cursor:pointer;font-size:13px;display:flex;align-items:center;gap:8px;list-style:none}
+.imx-ex summary::-webkit-details-marker{display:none}
+.imx-ex summary b{flex:1;font-weight:600}
+.imx-ex summary em{font-style:normal;font-size:11px;color:#9aa6bd}
+.imx-ex .imx-ref,.imx-ex .imx-eg{margin-top:10px}
+.imx-search{width:100%;box-sizing:border-box;border:1px solid #dfe6f3;border-radius:10px;padding:10px 12px;font:400 13px/1.4 system-ui;outline:none;margin-bottom:12px}
+.imx-search:focus{border-color:#3665f3}
+`;
+var st=document.createElement('style'); st.id='imxStyle'; st.textContent=CSS;
+(document.head||document.documentElement).appendChild(st);
+
+/* ---------- 1. 对核心层的只读桥接（读不到就降级，不报错） ---------- */
+X.C = {
+  get data(){ try{ return DATA; }catch(e){ return []; } },
+  get kps(){ try{ return kps(); }catch(e){ return X.C.data; } },
+  get KEY(){ try{ return KEY; }catch(e){ return null; } },
+  due:function(k){ try{ return isDue(k); }catch(e){ try{ return isDue(k.id); }catch(e2){ return false; } } },
+  weight:function(k){ try{ return weight(k)||0; }catch(e){ return 0; } },
+  ranked:function(){ try{ return ranked(); }catch(e){ return X.C.kps; } },
+  answer:function(id,ok){ try{ if(typeof answer==='function') return answer(id,ok); }catch(e){} },
+  mastered:function(id){ try{ if(typeof markMastered==='function') return markMastered(id); }catch(e){} },
+  card:function(id){ try{ if(typeof startCard==='function') return startCard(id); }catch(e){} }
+};
+
+/* ---------- 2. 独立存档（不碰 imx434_v1） ---------- */
+var PKEY='imx434_plus_v1';
+X.P = {v:1, p:{}, ex:{}, tasks:{date:'',done:[]}, mute:false, quota:8, stageDays:7, seen:''};
+try{
+  var raw=localStorage.getItem(PKEY);
+  if(raw){ var o=JSON.parse(raw); if(o&&typeof o==='object'){ for(var kk in o) X.P[kk]=o[kk]; } }
+}catch(e){}
+if(!X.P.p) X.P.p={};
+if(!X.P.ex) X.P.ex={};
+if(!X.P.tasks) X.P.tasks={date:'',done:[]};
+if(!X.P.tasks.done) X.P.tasks.done=[];
+X.save=function(){ try{ localStorage.setItem(PKEY, JSON.stringify(X.P)); }catch(e){} };
+
+/* ---------- 3. 小工具 ---------- */
+X.esc=function(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); };
+X.today=function(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); };
+X.dateCN=function(){ try{ return new Date().toLocaleDateString('zh-CN',{month:'long',day:'numeric',weekday:'long'}); }catch(e){ return X.today(); } };
+X.kpById=function(id){ var a=X.C.kps||[]; for(var i=0;i<a.length;i++){ if(a[i]&&a[i].id===id) return a[i]; } return null; };
+X.mName=function(k){
+  var cn=['国贸','投资','金融','运营'], m=k&&k.m;
+  if(typeof m==='number') return cn[m]||'其他';
+  var s=String(m==null?'':m);
+  for(var i=0;i<cn.length;i++){ if(s.indexOf(cn[i])>=0) return cn[i]; }
+  var map={'0':'国贸','1':'投资','2':'金融','3':'运营'};
+  return map[s]||s||'其他';
+};
+
+/* ---------- 4. 通俗例子库（按考点标题关键词匹配，不依赖 id） ---------- */
+var EX = [
+{k:['绝对优势'],eg:'两个人做衣服：甲一小时做2件、乙做1件，甲制衣全面更快，这就是绝对优势——比的是谁更省时间，不是谁放弃得更少。',sc:'A国造1吨钢用2小时，B国用4小时，A国在钢上具有绝对优势。'},
+{k:['比较优势'],eg:'律师打字比秘书快，但他一小时开庭能赚2000元，秘书打字只花他50元。他该去开庭、把打字交给秘书。比较优势比的是机会成本，不是绝对能力。',sc:'中国产衬衫的机会成本低，美国产飞机的机会成本低，各自专业化再交换，两国都更富。'},
+{k:['要素禀赋','赫克歇尔','H-O'],eg:'谁家地多就多种粮，谁家人多就多做加工——一个国家出口自己"富裕要素"密集的产品。',sc:'澳大利亚地广人稀，出口羊毛、铁矿；中国劳动力丰富，出口劳动密集品。'},
+{k:['里昂惕夫'],eg:'大家以为美国资本最多该出口资本密集品，结果数据反了——这就是"谜"。',sc:'美国出口的劳动密集品比进口的还多，与要素禀赋理论预测相反。'},
+{k:['规模经济'],eg:'印1000份传单，机器调试费只付一次，份数越多单份越便宜。注意：这是长期概念，所有要素都可调整。',sc:'汽车厂年产50万辆的单车成本，远低于年产5万辆。'},
+{k:['产品生命周期'],eg:'新产品像时装：先在本国卖给有钱人，再出口到发达国家，最后转到低成本国家生产再返销。',sc:'彩电先在美国生产，后移到日本、韩国，再到中国代工。'},
+{k:['产业内贸易'],eg:'德国人买法国车，法国人也买德国车——同类产品互相买卖。',sc:'中国出口手机也进口手机，因为消费者偏好不同、型号不同。'},
+{k:['需求偏好相似'],eg:'都爱吃辣的地方才互相卖辣椒酱；口味差太远，贸易就少。',sc:'发达国家之间制成品贸易最多，因为收入水平相近、需求结构相似。'},
+{k:['钻石','国家竞争优势'],eg:'一张桌子四条腿：要素条件、需求条件、相关产业、企业战略与竞争，缺一条就晃。',sc:'德国汽车强，因为有机床、化工、工程师和激烈本土竞争共同支撑。'},
+{k:['战略性贸易'],eg:'政府先给本国飞机厂补贴，帮它把产量做大、成本压低，从而抢下全球市场。',sc:'空客早期获欧洲政府支持，才与波音形成双寡头。'},
+{k:['关税同盟'],eg:'几个国家组成一个"内部免过路费、对外统一收费"的俱乐部。',sc:'欧盟对内零关税，对外实行共同关税。'},
+{k:['自由贸易区'],eg:'邻居之间互相不收费，但各自对门外的人仍收自己的费。',sc:'中国—东盟自贸区内部降税，成员对外关税各自保留。'},
+{k:['关税'],eg:'过路费：货进来先交一笔，价格就被抬高。',sc:'进口一辆车加征25%关税，国内售价随之上涨。'},
+{k:['名义保护率'],eg:'只看成品价格被关税抬高了多少百分比。',sc:'国外钢材1000元，征20%关税后国内卖1200元，名义保护率20%。'},
+{k:['有效保护率'],eg:'不只看成品，还算零件——真正保护的是国内"加工增值"那一段。',sc:'成品关税高、零件关税低，国内组装环节有效保护率会高于名义税率。'},
+{k:['配额'],eg:'不是收费，是发号：一年只放固定数量进来，谁拿到号谁赚钱。',sc:'进口配额10万辆，超过部分不许进，国内价格被抬高。'},
+{k:['反倾销'],eg:'被低价冲击的国家立案调查，然后加征反倾销税。',sc:'某国钢铁以低于本国售价出口，进口国征收反倾销税。'},
+{k:['倾销'],eg:'同一件衣服在本国卖300，出口只卖150，就是低价抛售。',sc:'出口价低于正常价值，构成倾销的三个要件之一。'},
+{k:['补贴'],eg:'政府给出口企业发红包，让它能低价卖还不亏。',sc:'出口退税、低息贷款都属于可诉补贴。'},
+{k:['技术性贸易壁垒'],eg:'不说不许卖，只说"标准达不到"，用规则挡人。',sc:'欧盟以农药残留标准限制茶叶进口。'},
+{k:['绿色壁垒'],eg:'打着环保名义设门槛。',sc:'要求产品碳足迹认证、包装可回收，否则不得入境。'},
+{k:['贸易条件'],eg:'一吨出口货能换回多少吨进口货，换得多了就是贸易条件改善。',sc:'出口价格指数/进口价格指数上升，贸易条件改善。'},
+{k:['贸易创造'],eg:'结盟后从伙伴国买更便宜，替代了本国高成本生产，凭空多出贸易。',sc:'加入关税同盟后，本国不再自产，改从成员国进口。'},
+{k:['贸易转移'],eg:'原本从全球最便宜的国家买，结盟后被迫改从伙伴国买贵的，贸易被"转移"了。',sc:'英国入欧后从英联邦国家转向欧共体采购。'},
+{k:['最惠国待遇'],eg:'给一个国家的优惠，自动给所有成员，不许 discrimination。',sc:'WTO成员给A国降税，必须同样给B国。'},
+{k:['国民待遇'],eg:'外国货进门之后，享受和本国货一样的待遇，不许再额外刁难。',sc:'进口商品在国内税收、销售上应与本国产品同等对待。'},
+{k:['普惠制'],eg:'发达国家单方面给发展中国家低关税，不用 reciprocity。',sc:'欧盟对最不发达国家部分产品免关税。'},
+{k:['原产地'],eg:'查"户口"：这件货到底算哪国的，决定它能不能享受优惠。',sc:'区域价值成分达40%才能认定为区内原产。'},
+{k:['幼稚产业'],eg:'小孩学走路先扶一把，长大后再放手——保护是暂时的。',sc:'新兴产业在成本降下来之前，用关税挡住进口。'},
+{k:['绿地'],eg:'从空地盖起一座新厂。',sc:'在越南买地建新工厂，属于绿地投资。'},
+{k:['跨国并购'],eg:'直接买下别人现成的厂和渠道。',sc:'中国企业收购德国机器人公司，属于跨国并购。'},
+{k:['独资'],eg:'自己100%持股，说了算，但风险全担。',sc:'设立全资子公司。'},
+{k:['合资'],eg:'两个人合伙开店，出资、分利、共担风险。',sc:'中外合资经营企业。'},
+{k:['跨国公司'],eg:'在多个国家有实体，按一套全球战略统一调度。',sc:'母公司在A国，子公司在B、C国，统一研发与销售。'},
+{k:['跨国经营指数','TNI'],eg:'三项比率的算术平均：国外资产/总资产、国外销售/总销售、国外雇员/总雇员，三项加起来除以3。',sc:'三项分别为60%、50%、40%，TNI=(60+50+40)/3=50%。'},
+{k:['垄断优势'],eg:'我有你没有的配方、品牌或专利，所以敢出去投资。',sc:'制药企业凭专利到海外设厂。'},
+{k:['内部化'],eg:'把外部买卖变成公司内部调拨，省谈判成本、防技术外泄。',sc:'母公司把核心零部件低价调给海外子公司。'},
+{k:['区位优势'],eg:'为什么去越南——人工便宜、离港口近、关税低。',sc:'劳动密集环节转移到东南亚。'},
+{k:['折衷','OLI'],eg:'三把钥匙同时插上才开门：所有权优势、区位优势、内部化优势。',sc:'有品牌（O）、越南成本低（L）、自己建厂不外租（I），才做FDI。'},
+{k:['转移定价'],eg:'集团内部左手卖给右手，价格自己定，用来把利润挪到低税地。',sc:'母公司高价卖给低税区子公司，压低当地利润。'},
+{k:['避税港'],eg:'税率极低的"中转站"，公司注册在那里但业务在别处。',sc:'在开曼群岛设立控股公司。'},
+{k:['返程投资'],eg:'钱出去绕一圈，换个"外资"身份回来享受优惠。',sc:'境内企业到香港设公司再回内地投资。'},
+{k:['负面清单'],eg:'只列不许做的，没列的都默认可以做。',sc:'外商投资准入负面清单之外的领域实行备案管理。'},
+{k:['国际收支'],eg:'国家版的记账本，每笔交易记两笔，借贷必相等。',sc:'出口收汇记贷方，进口付汇记借方。'},
+{k:['经常账户'],eg:'货物、服务、收益、经常转移四本账。',sc:'货物贸易顺差是经常账户顺差的主要来源。'},
+{k:['资本账户'],eg:'投资和借贷的进出，钱是来投资还是来借钱。',sc:'外商直接投资记入金融账户。'},
+{k:['J曲线'],eg:'贬值先让账更难看，过几个月才转好，走势像字母J。',sc:'本币贬值后进口变贵，短期逆差扩大，之后出口放量才改善。'},
+{k:['马歇尔','勒纳'],eg:'贬值能不能改善贸易收支，看进出口弹性之和是否大于1。',sc:'|Ex|+|Em|>1时，贬值改善贸易收支。'},
+{k:['购买力平价'],eg:'同一篮子商品，在哪个国家都该卖差不多的价。',sc:'一篮子商品在美国卖100美元，在中国卖700元，均衡汇率约7。'},
+{k:['利率平价'],eg:'两国利差会被远期汇率的升贴水抵掉，否则就有套利。',sc:'美元利率高于人民币，美元远期贴水。'},
+{k:['套利'],eg:'低息借钱、高息存钱，赚利差。',sc:'借日元换美元存美国，赚利差。'},
+{k:['套汇'],eg:'同一时刻两个市场价不同，低买高卖。',sc:'纽约1美元兑7元，东京兑7.1元，在纽约买、东京卖。'},
+{k:['升水'],eg:'远期比即期贵叫升水，便宜叫贴水。',sc:'远期美元升水，说明市场预期美元升值。'},
+{k:['直接标价'],eg:'用本币表示一单位外币的价：1美元=7元人民币。',sc:'我国采用直接标价法。'},
+{k:['特里芬'],eg:'美元要当世界货币就得往外流，流多了别人又不信它——两难。',sc:'布雷顿森林体系下美国必须持续输出美元。'},
+{k:['布雷顿森林'],eg:'美元挂黄金，各国货币挂美元，形成双挂钩。',sc:'1944年确立，1973年瓦解。'},
+{k:['牙买加'],eg:'黄金脱钩，汇率制度各选各的。',sc:'1976年牙买加体系确认浮动汇率合法化。'},
+{k:['特别提款权'],eg:'IMF发的"记账货币"，成员国缺外汇时可以换。',sc:'SDR篮子含美元、欧元、人民币、日元、英镑。'},
+{k:['欧洲货币市场'],eg:'在境外存贷的美元，不受美国监管。',sc:'伦敦的美元存款市场。'},
+{k:['外汇储备'],eg:'国家的应急钱包，用来稳汇率、付外债。',sc:'央行持有美元、黄金、SDR。'},
+{k:['汇率风险'],eg:'签合同时汇率7.0，收款时变6.8，利润被吃掉。',sc:'出口商用远期结汇锁定汇率。'},
+{k:['目标市场'],eg:'先筛国家，再筛人群，最后定打法。',sc:'先选东南亚，再选25-35岁女性，再定性价比路线。'},
+{k:['市场细分'],eg:'把一锅人分成几类口味，分别下料。',sc:'按收入、年龄、使用场景划分市场。'},
+{k:['进入模式'],eg:'出口—许可—合资—独资，投入和控制力依次上升。',sc:'先代理出口试水，再设合资厂，最后独资。'},
+{k:['供应链'],eg:'从原料到货架的接力赛，哪一棒掉了整条链都慢。',sc:'零部件断供导致整车厂停产。'},
+{k:['标准化'],eg:'全球卖同款，省成本；差异化是各地改口味，贴近需求。',sc:'可口可乐基本标准化，麦当劳在各地改菜单。'},
+{k:['霍夫斯泰德'],eg:'用几个维度量"文化性格"：权力距离、个人主义、不确定性规避等。',sc:'高权力距离市场更接受层级式管理。'},
+{k:['外派'],eg:'派本国人去海外当厂长，带经验也带成本。',sc:'外派经理薪酬通常是本地的2-3倍。'},
+{k:['外包'],eg:'把非核心环节交给别人做，自己专注擅长的事。',sc:'把客服外包给菲律宾呼叫中心。'},
+{k:['4P'],eg:'产品、价格、渠道、促销，四颗棋子一起走。',sc:'新产品先定高价，再铺渠道，再投广告。'},
+{k:['准时制','JIT'],eg:'不囤货，需要时刚好送到，省仓储但怕断供。',sc:'丰田式零库存生产。'}
+];
+
+/* ---------- 5. 声音、彩带、提示 ---------- */
+X.beep=function(freq,dur,type,gain){
+  if(X.P.mute) return;
+  try{
+    var AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+    X._ac=X._ac||new AC();
+    var ac=X._ac, o=ac.createOscillator(), g=ac.createGain();
+    o.type=type||'sine'; o.frequency.value=freq||660;
+    g.gain.setValueAtTime(0.0001,ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(gain||0.06,ac.currentTime+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001,ac.currentTime+(dur||0.12));
+    o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime+(dur||0.12)+0.02);
+  }catch(e){}
+};
+X.chord=function(){ [523,659,784].forEach(function(f,i){ setTimeout(function(){ X.beep(f,0.16,'sine',0.055); }, i*80); }); };
+X.confetti=function(n,x,y){
+  var cv=document.getElementById('imxCv'); if(!cv) return;
+  cv.width=window.innerWidth; cv.height=window.innerHeight;
+  var ctx=cv.getContext('2d'); if(!ctx) return;
+  var cols=['#3665f3','#ffb020','#22c55e','#ef4444','#8b5cf6'], ps=[];
+  for(var i=0;i<(n||40);i++){
+    ps.push({x:x||window.innerWidth/2, y:y||window.innerHeight*0.3, vx:(Math.random()-0.5)*7, vy:-Math.random()*7-2, g:0.24, s:3+Math.random()*4, c:cols[i%cols.length], r:Math.random()*6, vr:(Math.random()-0.5)*0.3, life:1});
+  }
+  var t0=Date.now();
+  (function loop(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    var alive=false;
+    for(var i=0;i<ps.length;i++){
+      var p=ps[i]; p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; p.life-=0.012;
+      if(p.life>0 && p.y<cv.height+20){
+        alive=true; ctx.globalAlpha=Math.max(0,p.life); ctx.fillStyle=p.c;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*1.7); ctx.restore();
+      }
+    }
+    ctx.globalAlpha=1;
+    if(alive && Date.now()-t0<2200) requestAnimationFrame(loop); else ctx.clearRect(0,0,cv.width,cv.height);
+  })();
+};
+X.toast=function(msg){
+  var t=document.getElementById('imxToast');
+  if(!t){ t=document.createElement('div'); t.id='imxToast'; t.className='imx-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.classList.add('on');
+  clearTimeout(X._tt); X._tt=setTimeout(function(){ t.classList.remove('on'); }, 2000);
+};
+
+/* ---------- 6. 面板外壳 ---------- */
+X.ensureShell=function(){
+  if(document.getElementById('imxMask')) return;
+  var m=document.createElement('div'); m.id='imxMask'; m.className='imx-mask'; m.onclick=X.close; document.body.appendChild(m);
+  var p=document.createElement('div'); p.id='imxPanel'; p.className='imx-panel wide'; document.body.appendChild(p);
+  var cv=document.createElement('canvas'); cv.id='imxCv'; cv.className='imx-cv'; document.body.appendChild(cv);
+};
+X.openShell=function(mode){
+  X.ensureShell();
+  var p=document.getElementById('imxPanel');
+  p.className='imx-panel '+(mode==='side'?'side':'wide');
+  p.classList.add('on');
+  document.getElementById('imxMask').classList.add('on');
+};
+X.close=function(){
+  var p=document.getElementById('imxPanel'); if(p) p.classList.remove('on');
+  var m=document.getElementById('imxMask'); if(m) m.classList.remove('on');
+};
+
+/* ---------- 7. 今日任务（艾宾浩斯驱动：到期复习 + 每日新学） ---------- */
+X.buildTasks=function(){
+  var all=X.C.kps||[], t=X.today();
+  if(!X.P.tasks || X.P.tasks.date!==t) X.P.tasks={date:t, done:[]};
+  var due=[], fresh=[];
+  for(var i=0;i<all.length;i++){
+    var k=all[i]; if(!k||!k.id) continue;
+    var r=X.P.p[k.id];
+    if(!r || !r.n){ fresh.push(k); continue; }
+    var gap=[0,1,2,4,7,15,30][Math.min(r.n,6)]||30;
+    if((Date.now()-r.last)/86400000>=gap) due.push(k);
+  }
+  var wf=function(k){ return X.C.weight(k); };
+  due.sort(function(a,b){ return wf(b)-wf(a); });
+  var lvO={S:0,A:1,B:2,C:3};
+  fresh.sort(function(a,b){ return (lvO[a.lv]||3)-(lvO[b.lv]||3); });
+  return {due:due, fresh:fresh.slice(0,X.P.quota||8), done:X.P.tasks.done};
+};
+X.taskRow=function(k,kind,n,done){
+  var fin=done.indexOf(k.id)>=0;
+  return '<div class="imx-task'+(fin?' fin':'')+'">'
+    +'<span class="imx-lv lv'+X.esc(k.lv||'C')+'">'+X.esc(k.lv||'C')+'</span>'
+    +'<div class="imx-tt"><b>'+X.esc(k.t||k.q||k.id)+'</b><i>'+kind+(n?' · 第'+n+'次':'')+'</i></div>'
+    +'<button class="imx-go" data-go="'+X.esc(k.id)+'">'+(fin?'再看':'开背')+'</button>'
+    +'<button class="imx-fin" data-fin="'+X.esc(k.id)+'" title="标记完成（只记任务，不计掌握）">✓</button>'
+    +'</div>';
+};
+X.openToday=function(){
+  X.openShell('side'); X._panelKind='today';
+  var t=X.buildTasks(), p=document.getElementById('imxPanel');
+  var listed=t.due.concat(t.fresh);
+  var done=0;
+  listed.forEach(function(k){ if(t.done.indexOf(k.id)>=0) done++; });
+  var pct=listed.length?Math.round(done/listed.length*100):0;
+  var h='<div class="imx-h"><div><b>今日任务</b><div class="imx-sub">'+X.dateCN()+' · 复习 '+t.due.length+' · 新学 '+t.fresh.length+'</div></div>'
+    +'<div class="imx-ring" style="--p:'+pct+'"><span>'+pct+'%</span></div>'
+    +'<button class="imx-x" data-x="1">×</button></div>';
+  h+='<div class="imx-body">';
+  if(!listed.length){
+    h+='<div class="imx-empty">今天没有任务：题库没读出来，或已全部完成 🎉</div>';
+  }
+  h+='<div class="imx-sec">复习 · 按遗忘曲线到期 <em>'+t.due.length+'</em></div>';
+  h+= t.due.length ? t.due.map(function(k){ return X.taskRow(k,'复习',X.P.p[k.id]&&X.P.p[k.id].n,t.done); }).join('') : '<div class="imx-empty">今天没有到期复习</div>';
+  h+='<div class="imx-sec">新学 · 今日配额 <em>'+t.fresh.length+'</em></div>';
+  h+= t.fresh.length ? t.fresh.map(function(k){ return X.taskRow(k,'首学',0,t.done); }).join('') : '<div class="imx-empty">新学已完成</div>';
+  h+='</div>';
+  h+='<div class="imx-foot">掌握度只由答题结果决定；打勾仅记录任务。</div>';
+  p.innerHTML=h;
+
+  var body=p.querySelector('.imx-body');
+  body.onclick=function(e){
+    var g=e.target.closest?e.target.closest('[data-go]'):null;
+    if(g){ X.C.card(g.getAttribute('data-go')); return; }
+    var f=e.target.closest?e.target.closest('[data-fin]'):null;
+    if(f){ X.finishTask(f.getAttribute('data-fin')); }
+  };
+  var x=p.querySelector('[data-x]'); if(x) x.onclick=X.close;
+};
+X.finishTask=function(id){
+  var t=X.P.tasks;
+  if(!t || t.date!==X.today()){ t=X.P.tasks={date:X.today(), done:[]}; }
+  if(t.done.indexOf(id)<0) t.done.push(id);
+  X.save();
+  X.beep(880,0.1,'triangle',0.05);
+  setTimeout(function(){ X.beep(1174,0.12,'triangle',0.045); }, 90);
+  X.confetti(24);
+  X.toast('完成一项 · 明天它会按遗忘曲线回来');
+  X.refreshDock();
+  if(X._panelKind==='today') X.openToday();
+};
+
+/* ---------- 8. 悬浮入口 & 角标 ---------- */
+X.refreshDock=function(){
+  var btn=document.querySelector('#imxDock [data-a="today"]');
+  if(!btn) return;
+  var t=X.buildTasks(), listed=t.due.concat(t.fresh), left=0;
+  listed.forEach(function(k){ if(t.done.indexOf(k.id)<0) left++; });
+  var dot=btn.querySelector('.imx-dot');
+  if(left>0){
+    if(!dot){ dot=document.createElement('span'); dot.className='imx-dot'; btn.appendChild(dot); }
+    dot.textContent=left;
+  }else if(dot){ dot.remove(); }
+};
+X.buildDock=function(){
+  if(document.getElementById('imxDock')) return;
+  var d=document.createElement('div');
+  d.id='imxDock'; d.className='imx-dock';
+  d.innerHTML='<button data-a="today">今日任务</button>'
+    +'<button data-a="round">轮次</button>'
+    +'<button data-a="ex">例子</button>'
+    +'<button data-a="test">自测</button>'
+    +'<button data-a="mute" title="音效开关">🔊</button>';
+  document.body.appendChild(d);
+  d.onclick=function(e){
+    var b=e.target.closest?e.target.closest('button'):null; if(!b) return;
+    var a=b.getAttribute('data-a');
+    if(a==='today') X.openToday();
+    else if(a==='round') X.openRound();
+    else if(a==='ex') X.openEx();
+    else if(a==='test') X.openTest();
+    else if(a==='mute'){ X.P.mute=!X.P.mute; X.save(); b.textContent=X.P.mute?'🔇':'🔊'; X.toast(X.P.mute?'音效已关闭':'音效已开启'); }
+  };
+  X.refreshDock();
+};
+})();
+</script>
+<!-- ================= 434 增强包 · 第 2/3 段 ================= -->
+<!-- 紧接第 1 段之后粘贴 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434 = window.IMX434 || {};
+if (X._s2) return; X._s2 = 1;
+
+/* ---------- 9. 轮次进度 ---------- */
+X.progress=function(){
+  var all=X.C.kps||[], total=all.length||1, r1=0, solid=0, mod={};
+  all.forEach(function(k){
+    var r=X.P.p[k.id], m=X.mName(k);
+    if(!mod[m]) mod[m]={all:0,done:0};
+    mod[m].all++;
+    if(r && r.n>=1){ r1++; mod[m].done++; }
+    if(r) solid+=Math.min(r.n/3,1);
+  });
+  return {total:total, r1:r1, p1:r1/total, solid:solid/total, mod:mod};
+};
+X.openRound=function(){
+  X.openShell('wide'); X._panelKind='round';
+  var pr=X.progress(), p=document.getElementById('imxPanel');
+  var left=pr.total-pr.r1, days=Math.ceil(left/(X.P.quota||8));
+  var h='<div class="imx-h"><div><b>复习进度</b><div class="imx-sub">共 '+pr.total+' 个考点</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h+='<div class="imx-body">';
+  h+='<div style="display:flex;align-items:center;gap:20px;padding:6px 0 14px">'
+    +'<div class="imx-ring big" style="--p:'+Math.round(pr.p1*100)+'"><span>'+Math.round(pr.p1*100)+'%</span></div>'
+    +'<div><div class="imx-big" style="font-size:26px;margin:0">第一轮 '+pr.r1+' / '+pr.total+'</div>'
+    +'<div class="imx-sub">扎实度 '+Math.round(pr.solid*100)+'% · 按日均 '+(X.P.quota||8)+' 条算，还需约 '+days+' 天</div></div></div>';
+  h+='<div class="imx-sec">分模块第一轮</div>';
+  ['国贸','投资','金融','运营'].forEach(function(m){
+    var o=pr.mod[m]||{all:0,done:0}, pct=o.all?Math.round(o.done/o.all*100):0;
+    h+='<div class="imx-mod"><span class="nm">'+m+'</span><span class="track"><i style="width:'+pct+'%"></i></span><span class="val">'+o.done+'/'+o.all+' · '+pct+'%</span></div>';
+  });
+  h+='<div class="imx-tip">第一轮 = 每条至少完整过一遍（答过一次即计入）。<br>扎实度 = 每条复习次数除以 3 的平均值，越接近 100% 说明越稳。<br>进入第二轮后，只有复习次数 ≥2 的条目才计入。</div>';
+  h+='</div>';
+  p.innerHTML=h;
+  var x=p.querySelector('[data-x]'); if(x) x.onclick=X.close;
+  X.beep(720,0.08,'sine',0.04);
+};
+
+/* ---------- 10. 例子本 ---------- */
+X.findEx=function(id){
+  var k=X.kpById(id); if(!k) return null;
+  var own=X.P.ex[id]||'';
+  var t=(k.t||'')+' '+(k.q||'');
+  var hit=null;
+  for(var i=0;i<EX.length;i++){
+    var e=EX[i];
+    for(var j=0;j<e.k.length;j++){
+      if(t.indexOf(e.k[j])>=0){ hit=e; break; }
+    }
+    if(hit) break;
+  }
+  if(!hit && !own) return null;
+  return {eg:hit?hit.eg:'', sc:hit?hit.sc:'', own:own};
+};
+X.exHTML=function(k){
+  var ex=X.findEx(k.id);
+  var h='<details class="imx-ex" id="imxEx-'+X.esc(k.id)+'"><summary><b>'+X.esc(k.t||k.id)+'</b>'
+    +'<span class="imx-lv lv'+X.esc(k.lv||'C')+'">'+X.esc(k.lv||'C')+'</span>'
+    +'<em>'+X.mName(k)+(ex?'':' · 待补')+'</em></summary>';
+  h+='<div class="imx-ref"><label>标准表述</label><p>'+X.esc(k.a||'（题库未提供，先按讲义背）')+'</p></div>';
+  if(ex && (ex.eg||ex.sc)){
+    h+='<div class="imx-eg"><label>通俗例子</label>';
+    if(ex.eg) h+='<p>'+X.esc(ex.eg)+'</p>';
+    if(ex.sc) h+='<p style="color:#8a6a2f">场景：'+X.esc(ex.sc)+'</p>';
+    h+='</div>';
+  }
+  h+='<div class="imx-eg" style="background:#f5f8ff;border-color:#dfe8ff"><label style="color:#3665f3">我自己的例子（可选，随备份保存）</label>'
+    +'<textarea class="imx-ta" style="min-height:66px;margin-top:8px" data-own="'+X.esc(k.id)+'" placeholder="用你自己的话打个比方…">'+X.esc(ex?ex.own:'')+'</textarea></div>';
+  h+='</details>';
+  return h;
+};
+X.openEx=function(id){
+  X.openShell('wide'); X._panelKind='ex';
+  var p=document.getElementById('imxPanel');
+  var all=X.C.kps||[];
+  var h='<div class="imx-h"><div><b>通俗例子本</b><div class="imx-sub">共 '+all.length+' 条 · 例子可自己改写</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h+='<div class="imx-body"><input class="imx-search" id="imxExQ" placeholder="搜概念，如：比较优势 / 有效保护率 / 套利">';
+  h+='<div id="imxExList"></div></div>';
+  p.innerHTML=h;
+
+  var box=p.querySelector('#imxExList');
+  var render=function(q){
+    var s=(q||'').trim();
+    var html='';
+    for(var i=0;i<all.length;i++){
+      var k=all[i];
+      if(s && ((k.t||'')+(k.q||'')+(k.a||'')).indexOf(s)<0) continue;
+      html+=X.exHTML(k);
+    }
+    box.innerHTML=html||'<div class="imx-empty">没找到</div>';
+    var tas=box.querySelectorAll('[data-own]');
+    for(var j=0;j<tas.length;j++){
+      tas[j].onchange=function(){
+        var id2=this.getAttribute('data-own');
+        var v=this.value.trim();
+        if(v) X.P.ex[id2]=v; else delete X.P.ex[id2];
+        X.save(); X.toast('已保存你的例子');
+      };
+    }
+  };
+  render('');
+  var inp=p.querySelector('#imxExQ');
+  inp.oninput=function(){ render(this.value); };
+  var x=p.querySelector('[data-x]'); if(x) x.onclick=X.close;
+
+  if(id){
+    var target=document.getElementById('imxEx-'+id);
+    if(target){
+      inp.value='';
+      render('');
+      target=document.getElementById('imxEx-'+id);
+      if(target){ target.open=true; setTimeout(function(){ target.scrollIntoView({block:'center',behavior:'smooth'}); }, 60); }
+    }
+  }
+};
+
+/* ---------- 11. 评分引擎 ---------- */
+X.norm=function(s){
+  return String(s==null?'':s).toLowerCase()
+    .replace(/[\s\u3000，。、；：？！“”‘’（）()《》【】,.;:!?\-—…·%％]/g,'');
+};
+X.kw=function(id){
+  var K=X.C.KEY;
+  if(!K || typeof K!=='object' || typeof K==='string') return [];
+  var v=K[id];
+  if(!v) return [];
+  if(Array.isArray(v)) return v.map(function(x){ return typeof x==='string'?x:(x&&(x.k||x.w||x.word))||''; }).filter(Boolean);
+  if(typeof v==='string') return v.split(/[、,，;；\s]+/).filter(Boolean);
+  if(typeof v==='object'){
+    var arr=v.kw||v.keys||v.list||v.words;
+    if(Array.isArray(arr)) return arr.filter(function(x){ return typeof x==='string'; });
+    return Object.keys(v).filter(function(x){ return typeof v[x]==='string'; });
+  }
+  return [];
+};
+X.bg=function(s){ var a=[]; for(var i=0;i<s.length-1;i++) a.push(s.slice(i,i+2)); return a; };
+X.score=function(user,k){
+  var u=X.norm(user), ref=X.norm(k.a||'');
+  var ks=X.kw(k.id), hit=[], miss=[], rate=0;
+  if(ks.length){
+    ks.forEach(function(w){
+      var nw=X.norm(w);
+      if(nw && u.indexOf(nw)>=0) hit.push(w); else miss.push(w);
+    });
+    rate=ks.length?hit.length/ks.length:0;
+  }else{
+    var R=X.bg(ref), U={};
+    X.bg(u).forEach(function(b){ U[b]=1; });
+    var h=0; R.forEach(function(b){ if(U[b]) h++; });
+    rate=R.length?h/R.length:0;
+    rate=Math.min(0.85, rate);
+  }
+  return {rate:Math.min(1,Math.max(0,rate)), hit:hit, miss:miss, hasKw:!!ks.length};
+};
+X.gain=function(k,rate){
+  var rec=X.P.p[k.id]||(X.P.p[k.id]={n:0,last:0,ok:0,bad:0});
+  var before=rec.n;
+  var gain=rate>=0.8?2:(rate>=0.6?1:0);
+  if(gain){
+    for(var i=0;i<gain;i++){ try{ if(typeof answer==='function') answer(k.id,true); }catch(e){} }
+    try{ if(typeof markMastered==='function') markMastered(k.id); }catch(e){}
+  }else{
+    try{ if(typeof answer==='function') answer(k.id,false); }catch(e){}
+  }
+  rec=X.P.p[k.id]||(X.P.p[k.id]={n:0,last:0,ok:0,bad:0});
+  if(gain && rec.n<=before) rec.n=before+gain;
+  rec.last=Date.now();
+  if(gain) rec.ok++; else rec.bad++;
+  X.save();
+  if(X.refreshDock) X.refreshDock();
+  if(X.refreshBadge) X.refreshBadge();
+  return gain;
+};
+
+/* ---------- 12. 组卷 ---------- */
+X.shuffle=function(a){ var x=a.slice(); for(var i=x.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=x[i]; x[i]=x[j]; x[j]=t; } return x; };
+X.poolStage=function(){
+  var all=X.C.kps||[], d=X.P.stageDays||7, out=[];
+  all.forEach(function(k){
+    var r=X.P.p[k.id];
+    if(r && r.n && (Date.now()-r.last)/86400000<=d) out.push(k);
+  });
+  return out;
+};
+X.compose=function(pool,kind){
+  var used={}, q=[];
+  var add=function(arr,n){
+    var s=X.shuffle(arr);
+    for(var i=0;i<s.length && n>0;i++){
+      if(!used[s[i].id]){ used[s[i].id]=1; q.push(s[i]); n--; }
+    }
+  };
+  if(kind==='all'){
+    var g={n:[],s:[],c:[],d:[]};
+    pool.forEach(function(k){
+      var t=String(k.ty==null?'':k.ty);
+      if(t.indexOf('计算')>=0) g.c.push(k);
+      else if(t.indexOf('论述')>=0) g.d.push(k);
+      else if(t.indexOf('简答')>=0) g.s.push(k);
+      else g.n.push(k);
+    });
+    add(g.n,8); add(g.s,8); add(g.c,2); add(g.d,2);
+    add(pool,20-q.length);
+    return X.shuffle(q).slice(0,20);
+  }
+  add(pool,10);
+  return X.shuffle(q).slice(0,10);
+};
+})();
+</script>
+<!-- ================= 434 增强包 · 第 3/3 段 ================= -->
+<!-- 紧接第 2 段之后粘贴，最后一段必须有 </script> -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434 = window.IMX434 || {};
+if (X._s3) return; X._s3 = 1;
+
+/* ---------- 13. 自测入口 ---------- */
+X.openTest=function(){
+  X.openShell('wide'); X._panelKind='test';
+  var stage=X.poolStage().length, all=(X.C.kps||[]).length;
+  var p=document.getElementById('imxPanel');
+  var h='<div class="imx-h"><div><b>自测</b><div class="imx-sub">两套分开跑，互不干扰</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h+='<div class="imx-body">';
+  h+='<div class="imx-task" style="padding:16px;align-items:flex-start;flex-direction:column;gap:8px">'
+    +'<b style="font-size:14px">阶段性自测</b>'
+    +'<div class="imx-sub" style="margin:0;line-height:1.6">只从今日任务、近 '+(X.P.stageDays||7)+' 天学过的考点里抽 10 题，检验刚背完的有没有留住。</div>'
+    +'<div class="imx-sub" style="margin:0">可抽 <b style="color:#3665f3">'+stage+'</b> 条</div>'
+    +'<button class="imx-btn" data-stage="1">开始阶段性自测</button></div>';
+  h+='<div class="imx-task" style="padding:16px;align-items:flex-start;flex-direction:column;gap:8px;margin-top:12px">'
+    +'<b style="font-size:14px">综合性自测</b>'
+    +'<div class="imx-sub" style="margin:0;line-height:1.6">跨四个模块按权重抽 20 题：名解 8 + 简答 8 + 计算 2 + 论述 2，模拟整卷手感。</div>'
+    +'<div class="imx-sub" style="margin:0">题库 <b style="color:#3665f3">'+all+'</b> 条</div>'
+    +'<button class="imx-btn" data-all="1">开始综合性自测</button></div>';
+  h+='<div class="imx-tip">评分按关键词命中率：≥80% 该考点熟练度 +2 并标记掌握；≥60% +1；低于 60% 记一次错误。<br>阶段性自测没题可抽，说明今天还没开始背——先去今日任务台。</div>';
+  h+='</div>';
+  p.innerHTML=h;
+  var x=p.querySelector('[data-x]'); if(x) x.onclick=X.close;
+  p.querySelector('[data-stage]').onclick=function(){
+    if(!stage){ X.toast('还没有已学记录，先去今日任务台背几条'); return; }
+    X.startTest('stage');
+  };
+  p.querySelector('[data-all]').onclick=function(){
+    if(!all){ X.toast('题库没读出来'); return; }
+    X.startTest('all');
+  };
+};
+
+X.startTest=function(kind){
+  var pool = kind==='stage' ? X.poolStage() : (X.C.kps||[]);
+  if(pool.length<3){ X.toast('可抽的题太少，先去背几条'); return; }
+  var qs=X.compose(pool,kind).map(function(k){ return {kp:k, res:null}; });
+  X.T={kind:kind, qs:qs, i:0, gains:[]};
+  X.renderQ();
+};
+X.T=null;
+X.scoreText=function(){
+  var T=X.T; if(!T) return '0%';
+  var done=T.qs.filter(function(x){ return !!x.res; });
+  if(!done.length) return '0%';
+  var s=0; done.forEach(function(x){ s+=x.res.rate; });
+  return Math.round(s/done.length*100)+'%';
+};
+
+X.renderQ=function(){
+  var T=X.T, it=T.qs[T.i], k=it.kp, p=document.getElementById('imxPanel');
+  var pct=Math.round(T.i/T.qs.length*100);
+  var h='<div class="imx-h"><div><b>'+(T.kind==='all'?'综合性自测':'阶段性自测')+'</b>'
+    +'<div class="imx-sub">第 '+(T.i+1)+' / '+T.qs.length+' 题 · 当前踩点 '+X.scoreText()+'</div></div>'
+    +'<button class="imx-x" data-x="1">×</button></div>';
+  h+='<div class="imx-prog"><i style="width:'+pct+'%"></i></div>';
+  h+='<div class="imx-body" id="imxBody">';
+  h+='<div class="imx-qmeta"><span class="imx-tag">'+X.esc(k.ty||'名解')+'</span>'
+    +'<span class="imx-tag ghost">'+X.mName(k)+'</span>'
+    +'<span class="imx-tag ghost">'+X.esc(k.lv||'')+'</span></div>';
+  h+='<div class="imx-q">'+X.esc(k.q||('请解释：'+(k.t||'')))+'</div>';
+  h+='<textarea id="imxAns" class="imx-ta" placeholder="只写关键词和要点，不用写整段…"></textarea>';
+  h+='<div class="imx-row"><button class="imx-btn" data-sub="1">提交自评</button>'
+    +'<button class="imx-btn ghost" data-skip="1">不会，跳过</button></div>';
+  h+='<div class="imx-hint">评分只看关键词命中，不看字数。写不出就跳过，跳过的会记一次错误。</div>';
+  h+='</div>';
+  p.innerHTML=h;
+  var body=p.querySelector('#imxBody');
+  body.querySelector('[data-sub]').onclick=function(){ X.judge(false); };
+  body.querySelector('[data-skip]').onclick=function(){ X.judge(true); };
+  p.querySelector('[data-x]').onclick=X.close;
+  var ta=body.querySelector('#imxAns'); if(ta) ta.focus();
+};
+
+X.judge=function(skip){
+  var T=X.T, it=T.qs[T.i], k=it.kp;
+  var val=skip?'':((document.getElementById('imxAns')||{}).value||'');
+  if(!skip && !val.trim()){ X.toast('先写几个关键词，或点跳过'); return; }
+  var r=skip?{rate:0,hit:[],miss:[],hasKw:false}:X.score(val,k);
+  it.res=r;
+  var gain=skip?0:X.gain(k,r.rate);
+  T.gains.push({t:k.t||k.id, gain:gain, rate:r.rate});
+  if(gain){ X.chord(); X.confetti(36); }
+  X.renderFb(gain,r);
+};
+
+X.renderFb=function(gain,r){
+  var T=X.T, it=T.qs[T.i], k=it.kp, p=document.getElementById('imxPanel');
+  var pct=Math.round((T.i+1)/T.qs.length*100);
+  var rate=Math.round(r.rate*100);
+  var h='<div class="imx-h"><div><b>第 '+(T.i+1)+' 题 · 自评结果</b>'
+    +'<div class="imx-sub">'+X.mName(k)+' · '+X.esc(k.ty||'')+'</div></div>'
+    +'<button class="imx-x" data-x="1">×</button></div>';
+  h+='<div class="imx-prog"><i style="width:'+pct+'%"></i></div>';
+  h+='<div class="imx-body">';
+  h+='<div class="imx-fb"><div class="imx-rate">'+rate+'<small>%</small></div><div>'
+    +'<div style="font:700 14px/1.4 system-ui;color:'+(gain?'#16894b':'#8a96ad')+'">'
+    +(gain?'熟练度 +'+gain+'，已升级':'这次没升级')+'</div>'
+    +'<div class="imx-sub">'+(r.hasKw?'按关键词命中率计分':'无关键词表，按要点覆盖率估算')+'</div></div></div>';
+  if(r.hit && r.hit.length){
+    h+='<div class="imx-sec">踩到的点</div><div class="imx-chips">';
+    r.hit.forEach(function(w){ h+='<span class="imx-chip">'+X.esc(w)+'</span>'; });
+    h+='</div>';
+  }
+  if(r.miss && r.miss.length){
+    h+='<div class="imx-sec">漏掉的点 <em>'+r.miss.length+'</em></div><div class="imx-chips">';
+    r.miss.forEach(function(w){ h+='<span class="imx-chip miss">'+X.esc(w)+'</span>'; });
+    h+='</div>';
+  }
+  h+='<div class="imx-ref"><label>标准表述</label><p>'+X.esc(k.a||'（暂无）')+'</p></div>';
+  var ex=X.findEx(k.id);
+  if(ex && (ex.eg||ex.sc)){
+    h+='<div class="imx-eg"><label>换个说法理解</label>';
+    if(ex.eg) h+='<p>'+X.esc(ex.eg)+'</p>';
+    if(ex.sc) h+='<p style="color:#8a6a2f">场景：'+X.esc(ex.sc)+'</p>';
+    h+='</div>';
+  }
+  h+='<div class="imx-row"><button class="imx-btn" data-next="1">'
+    +(T.i+1>=T.qs.length?'看结算':'下一题')+'</button></div>';
+  h+='</div>';
+  p.innerHTML=h;
+  p.querySelector('[data-x]').onclick=X.close;
+  p.querySelector('[data-next]').onclick=function(){
+    T.i++;
+    if(T.i>=T.qs.length) X.finishTest(); else X.renderQ();
+  };
+  if(gain>=2) X.confetti(46);
+};
+
+X.finishTest=function(){
+  var T=X.T, n=T.qs.length, sum=0;
+  T.qs.forEach(function(it){ sum+=it.res?it.res.rate:0; });
+  var avg=n?sum/n:0, rate=Math.round(avg*100);
+  var rank=avg>=0.85?'S':(avg>=0.7?'A':(avg>=0.55?'B':'C'));
+  var ups=T.gains.filter(function(g){ return g.gain>0; });
+  var enc=rank==='S'?'这一组几乎是照着答案背出来的，稳住这个手感。'
+    :rank==='A'?'框架已经立住了，把漏掉的点补上就是满分。'
+    :rank==='B'?'大方向对了，缺的是关键术语，回去把加粗词再读一遍。'
+    :'这组偏难，先回今日任务台把标准表述过一遍，明天再测同一批。';
+  var p=document.getElementById('imxPanel');
+  var h='<div class="imx-h"><div><b>'+(T.kind==='all'?'综合性自测 · 结算':'阶段性自测 · 结算')+'</b>'
+    +'<div class="imx-sub">'+n+' 题 · 平均踩点率</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h+='<div class="imx-body imx-result">';
+  h+='<div class="imx-stamp rank'+rank+'">'+rank+'</div>';
+  h+='<div class="imx-big" id="imxBig">0%</div>';
+  h+='<div class="imx-enc">'+enc+'</div>';
+  h+='<div class="imx-sec">本次升级 <em>'+ups.length+'</em> 个考点</div>';
+  if(ups.length){
+    ups.forEach(function(g){
+      h+='<div class="imx-up"><span>'+X.esc(g.t)+'</span><b>熟练度 +'+g.gain+'</b></div>';
+    });
+  }else{
+    h+='<div class="imx-empty">这组没有考点升级，先补漏再测一次</div>';
+  }
+  h+='<div class="imx-row" style="justify-content:center"><button class="imx-btn" data-again="1">再来一组</button>'
+    +'<button class="imx-btn ghost" data-x="1">关闭</button></div>';
+  h+='</div>';
+  p.innerHTML=h;
+  var x1=p.querySelector('[data-x]'); if(x1) x1.onclick=X.close;
+  var x2=p.querySelectorAll('[data-x]'); if(x2[1]) x2[1].onclick=X.close;
+  p.querySelector('[data-again]').onclick=function(){ X.startTest(T.kind); };
+
+  var big=document.getElementById('imxBig'), cur=0;
+  var timer=setInterval(function(){
+    cur+=Math.max(1,Math.round(rate/24));
+    if(cur>=rate){ cur=rate; clearInterval(timer); }
+    big.textContent=cur+'%';
+  },28);
+
+  X.chord();
+  X.confetti(80);
+  setTimeout(function(){ X.confetti(50, window.innerWidth*0.3, window.innerHeight*0.42); },260);
+  setTimeout(function(){ X.confetti(50, window.innerWidth*0.7, window.innerHeight*0.42); },460);
+  if(rank==='S'){ setTimeout(function(){ X.confetti(70); },700); }
+  X.refreshBadge(); X.refreshDock();
+};
+
+/* ---------- 14. 顶部第一轮徽章 / 今日台横幅 / 卡片例子按钮 ---------- */
+X.refreshBadge=function(){
+  if(!X.progress) return;
+  var pr=X.progress(), b=document.getElementById('imxBadge');
+  if(!b){
+    var brand=document.querySelector('.top .brand')||document.querySelector('.brand');
+    if(!brand) return;
+    b=document.createElement('div'); b.id='imxBadge'; b.className='imx-badge';
+    brand.parentNode.insertBefore(b, brand.nextSibling);
+  }
+  b.innerHTML='<i style="width:'+Math.round(pr.p1*100)+'%"></i><span>第一轮 '+Math.round(pr.p1*100)+'%</span>';
+  b.onclick=X.openRound;
+};
+X.miniToday=function(){
+  var main=document.querySelector('.main'); if(!main) return;
+  var old=document.getElementById('imxMini'); if(old) old.remove();
+  var t=X.buildTasks(), listed=t.due.concat(t.fresh), done=0;
+  listed.forEach(function(k){ if(t.done.indexOf(k.id)>=0) done++; });
+  var d=document.createElement('div'); d.id='imxMini'; d.className='imx-bar';
+  d.innerHTML='<b>今日任务</b><span>复习 '+t.due.length+' · 新学 '+t.fresh.length+' · 已完成 '+done+'/'+listed.length+'</span><button>打开任务台</button>';
+  d.querySelector('button').onclick=X.openToday;
+  main.insertBefore(d, main.firstChild);
+};
+X.cardPill=function(id){
+  var old=document.getElementById('imxExPill'); if(old) old.remove();
+  if(!id) return;
+  if(!X.findEx(id)) return;
+  var b=document.createElement('button');
+  b.id='imxExPill'; b.className='imx-pill'; b.textContent='💡 看通俗例子';
+  b.onclick=function(){ X.openEx(id); };
+  document.body.appendChild(b);
+};
+
+/* ---------- 15. 挂载（只包装，不改原函数体） ---------- */
+X.patch=function(){
+  if(typeof window.answer==='function' && !window.answer.__imx){
+    var oa=window.answer;
+    window.answer=function(id,ok){
+      var r=oa.apply(this,arguments);
+      try{
+        if(id){
+          var rec=X.P.p[id]||(X.P.p[id]={n:0,last:0,ok:0,bad:0});
+          rec.n++; rec.last=Date.now();
+          if(ok===false) rec.bad++; else rec.ok++;
+          X.save(); X.refreshDock(); X.refreshBadge();
+        }
+      }catch(e){}
+      return r;
+    };
+    window.answer.__imx=1;
+  }
+  if(typeof window.renderToday==='function' && !window.renderToday.__imx){
+    var or=window.renderToday;
+    window.renderToday=function(){
+      var r=or.apply(this,arguments);
+      try{ X.miniToday(); }catch(e){}
+      return r;
+    };
+    window.renderToday.__imx=1;
+  }
+  if(typeof window.renderCard==='function' && !window.renderCard.__imx){
+    var oc=window.renderCard;
+    window.renderCard=function(id){
+      var r=oc.apply(this,arguments);
+      try{ X.cardPill(id); }catch(e){}
+      return r;
+    };
+    window.renderCard.__imx=1;
+  }
+  if(typeof window.startCard==='function' && !window.startCard.__imx){
+    var os=window.startCard;
+    window.startCard=function(id){
+      var r=os.apply(this,arguments);
+      try{ X.cardPill(id); }catch(e){}
+      return r;
+    };
+    window.startCard.__imx=1;
+  }
+  try{
+    if(window.Bus && typeof Bus.on==='function'){
+      Bus.on('answer',function(d){
+        try{
+          if(d && d.id){
+            var rec=X.P.p[d.id];
+            if(!rec || Date.now()-rec.last>600){ /* answer 包装已计入，这里只兜底 */ }
+          }
+        }catch(e){}
+      });
+    }
+  }catch(e){}
+};
+
+X.init=function(){
+  try{
+    X.ensureShell();
+    X.buildDock();
+    X.patch();
+    X.refreshBadge();
+    X.miniToday();
+    setTimeout(function(){ X.refreshBadge(); X.refreshDock(); },300);
+    if(X.P.seen!==X.today()){
+      X.P.seen=X.today(); X.save();
+      setTimeout(function(){ X.openToday(); }, 1000);
+    }
+    document.addEventListener('keydown',function(e){ if(e.key==='Escape') X.close(); });
+  }catch(e){
+    try{ console.warn('[434增强包]',e); }catch(_){}
+  }
+};
+
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',X.init);
+else setTimeout(X.init,50);
+})();
+</script>
+<!-- ================= 434 增强包 · 总修复（只贴这一段） ================= -->
+<!-- 位置：文件最后一个 </script> 之后 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X || !X.C){ console.error('[434] 增强包未加载，请确认前面三段增强脚本都在'); return; }
+if(X._FIXALL) return; X._FIXALL = 1;
+
+/* ---------- 1. 修列表接口：kps 是单条状态，考点列表用 DATA ---------- */
+try{
+  Object.defineProperty(X.C, 'kps', {
+    configurable:true, enumerable:true,
+    get:function(){ try{ return DATA; }catch(e){ return []; } }
+  });
+}catch(e){}
+
+X.st = function(id){
+  try{ var s = Store.state; if(s && s.kp) return s.kp[id] || null; }catch(e){}
+  try{ if(typeof S !== 'undefined' && S && S.kp) return S.kp[id] || null; }catch(e){}
+  return null;
+};
+X.norm = X.norm || function(s){
+  return String(s==null?'':s).toLowerCase().replace(/[\s\u3000，。、；：？！“”‘’（）()《》【】,.;:!?\-—…·%％]/g,'');
+};
+
+/* ---------- 2. 自带例子库（不再依赖旧闭包里的 EX） ---------- */
+var RAW = [
+'绝对优势|两个人做衣服：甲一小时做2件、乙做1件，甲制衣全面更快。绝对优势比的是谁更省时间。|A国造1吨钢2小时，B国4小时，A国在钢上有绝对优势。',
+'比较优势|律师打字比秘书快，但他开庭一小时赚2000元，秘书打字只花50元，他该去开庭。比较优势比的是机会成本。|中国产衬衫机会成本低，美国产飞机机会成本低，各自专业化再交换，两国都更富。',
+'要素禀赋|谁家地多就多种粮，谁家人多就多做加工，出口自己富裕要素密集的产品。|澳大利亚出口羊毛、铁矿；中国出口劳动密集品。',
+'里昂惕夫|大家以为资本最多的美国该出口资本密集品，数据却反了，这就是谜。|美国出口的劳动密集品多于进口，与H-O预测相反。',
+'规模经济|印1000份传单，机器调试费只付一次，份数越多单份越便宜。这是长期概念。|汽车厂年产50万辆的单车成本远低于年产5万辆。',
+'产品生命周期|新产品像时装：先在本国卖，再出口，最后转到低成本国家生产。|彩电先在美国生产，后移到日本、韩国，再到中国代工。',
+'产业内贸易|德国人买法国车，法国人也买德国车，同类产品互相买卖。|中国出口手机也进口手机，因为型号和偏好不同。',
+'需求偏好相似|都爱吃辣的地方才互相卖辣椒酱，口味差太远贸易就少。|发达国家之间制成品贸易最多，因为收入相近、需求结构相似。',
+'钻石|一张桌子四条腿：要素、需求、相关产业、企业战略，缺一条就晃。|德国汽车强，靠机床、化工、工程师和激烈本土竞争共同支撑。',
+'战略性贸易|政府先给本国飞机厂补贴，帮它做大产量、压低成本，抢下全球市场。|空客早期获欧洲政府支持，才与波音形成双寡头。',
+'关税同盟|几个国家组成内部免过路费、对外统一收费的俱乐部。|欧盟对内零关税，对外共同关税。',
+'自由贸易区|邻居之间互相不收费，但各自对门外的人仍收自己的费。|中国—东盟自贸区内部降税，对外关税各自保留。',
+'名义保护率|只看成品价格被关税抬高了多少百分比。|国外钢材1000元，征20%关税后卖1200元，名义保护率20%。',
+'有效保护率|不只看成品，还算零件，真正保护的是国内加工增值那一段。|成品关税高、零件关税低，组装环节有效保护率高于名义税率。',
+'配额|不是收费，是发号：一年只放固定数量进来。|进口配额10万辆，超过不许进，国内价格被抬高。',
+'反倾销|被低价冲击的国家立案调查，然后加征反倾销税。|某国钢铁低于本国售价出口，进口国征税。',
+'倾销|同一件衣服本国卖300，出口只卖150，就是低价抛售。|出口价低于正常价值，是倾销要件之一。',
+'补贴|政府给出口企业发红包，让它低价卖还不亏。|出口退税、低息贷款都属于可诉补贴。',
+'技术性贸易壁垒|不说不许卖，只说标准达不到，用规则挡人。|欧盟以农药残留标准限制茶叶进口。',
+'绿色壁垒|打着环保名义设门槛。|要求碳足迹认证、包装可回收，否则不得入境。',
+'贸易条件|一吨出口货能换回多少吨进口货，换得多了就是改善。|出口价格指数除以进口价格指数上升，贸易条件改善。',
+'贸易创造|结盟后从伙伴国买更便宜，替代本国高成本生产，凭空多出贸易。|加入关税同盟后本国不再自产，改从成员国进口。',
+'贸易转移|原本从全球最便宜的国家买，结盟后改从伙伴国买贵的。|英国入欧后从英联邦转向欧共体采购。',
+'最惠国待遇|给一个国家的优惠，自动给所有成员。|WTO成员给A国降税，必须同样给B国。',
+'国民待遇|外国货进门后享受和本国货一样待遇。|进口商品在国内税收、销售上应同等对待。',
+'普惠制|发达国家单方面给发展中国家低关税。|欧盟对最不发达国家部分产品免关税。',
+'原产地|查户口：这件货算哪国的，决定能不能享优惠。|区域价值成分达40%才能认定为区内原产。',
+'幼稚产业|小孩学走路先扶一把，长大再放手，保护是暂时的。|新兴产业成本降下来之前用关税挡进口。',
+'绿地|从空地盖起一座新厂。|在越南买地建新工厂。',
+'跨国并购|直接买下别人现成的厂和渠道。|中国企业收购德国机器人公司。',
+'独资|自己100%持股，说了算，风险全担。|设立全资子公司。',
+'合资|两个人合伙开店，出资、分利、共担风险。|中外合资经营企业。',
+'跨国公司|在多个国家有实体，按一套全球战略统一调度。|母公司在A国，子公司在B、C国，统一研发销售。',
+'跨国经营指数|三项比率的算术平均：国外资产/总资产、国外销售/总销售、国外雇员/总雇员，再除以3。|三项60%、50%、40%，TNI=(60+50+40)/3=50%。',
+'TNI|三项比率的算术平均，不是销售收入除以总资产。|国外资产、销售、雇员各占比的平均。',
+'垄断优势|我有你没有的配方、品牌或专利，所以敢出去投资。|制药企业凭专利到海外设厂。',
+'内部化|把外部买卖变成公司内部调拨，省谈判成本、防技术外泄。|母公司把核心零部件低价调给海外子公司。',
+'区位优势|为什么去越南：人工便宜、离港口近、关税低。|劳动密集环节转移到东南亚。',
+'折衷|三把钥匙同时插上才开门：所有权、区位、内部化。|有品牌、越南成本低、自己建厂不外租，才做FDI。',
+'OLI|所有权优势、区位优势、内部化优势三者同时满足才对外直接投资。|缺一条就选择出口或许可。',
+'转移定价|集团内部左手卖右手，价格自己定，用来把利润挪到低税地。|母公司高价卖给低税区子公司，压低当地利润。',
+'避税港|税率极低的中转站，公司注册在那里但业务在别处。|在开曼群岛设控股公司。',
+'返程投资|钱出去绕一圈，换个外资身份回来享受优惠。|境内企业到香港设公司再回内地投资。',
+'负面清单|只列不许做的，没列的都默认可以做。|清单之外领域实行备案管理。',
+'国际收支|国家版记账本，每笔交易记两笔，借贷必相等。|出口收汇记贷方，进口付汇记借方。',
+'经常账户|货物、服务、收益、经常转移四本账。|货物贸易顺差是经常账户顺差主要来源。',
+'资本账户|投资和借贷的进出。|外商直接投资记入金融账户。',
+'J曲线|贬值先让账更难看，过几个月才转好，走势像J。|贬值后进口变贵，短期逆差扩大，之后出口放量才改善。',
+'马歇尔|贬值能否改善贸易收支，看进出口弹性之和是否大于1。|Ex绝对值加Em绝对值大于1时贬值有效。',
+'购买力平价|同一篮子商品在哪国都该卖差不多的价。|一篮子商品美国100美元、中国700元，均衡汇率约7。',
+'利率平价|两国利差会被远期升贴水抵掉，否则有套利。|美元利率高，美元远期贴水。',
+'套利|低息借钱、高息存钱，赚利差。|借日元换美元存美国。',
+'套汇|同一时刻两个市场价不同，低买高卖。|纽约7.0、东京7.1，纽约买东京卖。',
+'升水|远期比即期贵叫升水，便宜叫贴水。|远期美元升水，市场预期美元升值。',
+'直接标价|用本币表示一单位外币的价：1美元=7元。|我国采用直接标价法。',
+'特里芬|美元要当世界货币就得外流，流多了别人又不信它，两难。|布雷顿森林体系下美国必须持续输出美元。',
+'布雷顿森林|美元挂黄金，各国货币挂美元，双挂钩。|1944年确立，1973年瓦解。',
+'牙买加|黄金脱钩，汇率制度各选各的。|1976年确认浮动汇率合法化。',
+'特别提款权|IMF发的记账货币，成员国缺外汇时可以换。|SDR篮子含美元、欧元、人民币、日元、英镑。',
+'欧洲货币市场|在境外存贷的美元，不受美国监管。|伦敦的美元存款市场。',
+'外汇储备|国家的应急钱包，用来稳汇率、付外债。|央行持有美元、黄金、SDR。',
+'汇率风险|签合同时汇率7.0，收款时6.8，利润被吃掉。|出口商用远期结汇锁定汇率。',
+'目标市场|先筛国家，再筛人群，最后定打法。|先选东南亚，再选25-35岁女性，再定性价比路线。',
+'市场细分|把一锅人分成几类口味，分别下料。|按收入、年龄、使用场景划分市场。',
+'进入模式|出口、许可、合资、独资，投入和控制力依次上升。|先代理出口试水，再设合资厂，最后独资。',
+'供应链|从原料到货架的接力赛，哪一棒掉了整条链都慢。|零部件断供导致整车厂停产。',
+'标准化|全球卖同款省成本；差异化是各地改口味，贴近需求。|可口可乐基本标准化，麦当劳在各地改菜单。',
+'霍夫斯泰德|用几个维度量文化性格：权力距离、个人主义、不确定性规避。|高权力距离市场更接受层级式管理。',
+'外派|派本国人去海外当厂长，带经验也带成本。|外派经理薪酬通常是本地的2-3倍。',
+'外包|把非核心环节交给别人做，自己专注擅长的事。|把客服外包给菲律宾呼叫中心。',
+'4P|产品、价格、渠道、促销，四颗棋子一起走。|新产品先定高价，再铺渠道，再投广告。',
+'准时制|不囤货，需要时刚好送到，省仓储但怕断供。|丰田式零库存生产。',
+'JIT|准时制生产，零库存，对供应链稳定性要求极高。|零部件按节拍送到工位。'
+].join('~');
+
+X.EXD = RAW.split('~').map(function(s){
+  var p = s.split('|');
+  return {k:(p[0]||'').split(','), eg:p[1]||'', sc:p[2]||''};
+});
+
+/* ---------- 3. 今日任务：到期复习 + 每日新学 ---------- */
+X.buildTasks = function(){
+  var all = []; try{ all = DATA || []; }catch(e){}
+  var t = X.today();
+  if(!X.P.tasks || X.P.tasks.date !== t) X.P.tasks = {date:t, done:[]};
+  var due = [], fresh = [];
+  for(var i=0; i<all.length; i++){
+    var k = all[i], s = X.st(k.id);
+    if(!s || !s.seen){ fresh.push(k); continue; }
+    if(!s.due || s.due <= Date.now()) due.push(k);
+  }
+  due.sort(function(a,b){ return (X.C.weight(b)||0) - (X.C.weight(a)||0); });
+  var o = {S:0,A:1,B:2,C:3};
+  fresh.sort(function(a,b){ return (o[a.lv]||3) - (o[b.lv]||3); });
+  return {due:due, fresh:fresh.slice(0, X.P.quota||8), done:X.P.tasks.done};
+};
+
+/* ---------- 4. 第一轮进度 ---------- */
+X.progress = function(){
+  var all = []; try{ all = DATA || []; }catch(e){}
+  var total = all.length || 1, r1 = 0, solid = 0, mod = {};
+  var cn = ['国贸','投资','金融','运营'];
+  for(var i=0; i<all.length; i++){
+    var k = all[i], s = X.st(k.id), m = cn[k.m] || '其他';
+    if(!mod[m]) mod[m] = {all:0, done:0};
+    mod[m].all++;
+    if(s && s.seen > 0){ r1++; mod[m].done++; }
+    if(s) solid += Math.min((s.m||0)/6, 1);
+  }
+  return {total:total, r1:r1, p1:r1/total, solid:solid/total, mod:mod};
+};
+
+/* ---------- 5. 阶段性自测池 ---------- */
+X.poolStage = function(){
+  var all = []; try{ all = DATA || []; }catch(e){}
+  var d = X.P.stageDays || 7, out = [];
+  for(var i=0; i<all.length; i++){
+    var s = X.st(all[i].id);
+    if(s && s.seen > 0 && (Date.now()-(s.last||0)) <= d*86400000) out.push(all[i]);
+  }
+  return out;
+};
+
+/* ---------- 6. 例子匹配 ---------- */
+X.findEx = function(id){
+  var k = X.kpById(id);
+  if(!k) return null;
+  var own = X.P.ex[id] || '';
+  var t = (k.t||'') + ' ' + (k.q||'');
+  var list = X.EXD || [], hit = null;
+  for(var i=0; i<list.length; i++){
+    var e = list[i];
+    for(var j=0; j<e.k.length; j++){
+      if(e.k[j] && t.indexOf(e.k[j]) >= 0){ hit = e; break; }
+    }
+    if(hit) break;
+  }
+  if(!hit && !own) return null;
+  return {eg: hit?hit.eg:'', sc: hit?hit.sc:'', own: own};
+};
+
+/* ---------- 7. 卡片例子按钮 ---------- */
+X.cardPill = function(id){
+  var old = document.getElementById('imxExPill');
+  if(old) old.remove();
+  if(!id || typeof id !== 'string') return;
+  if(!X.findEx(id)) return;
+  var b = document.createElement('button');
+  b.id = 'imxExPill'; b.className = 'imx-pill'; b.textContent = '💡 看通俗例子';
+  b.onclick = function(){ X.openEx(id); };
+  document.body.appendChild(b);
+};
+
+/* ---------- 8. 自测加分 ---------- */
+X.gain = function(k, rate){
+  var gain = rate >= 0.8 ? 2 : (rate >= 0.6 ? 1 : 0);
+  try{
+    if(gain){ for(var i=0;i<gain;i++) answer(k.id, true); }
+    else answer(k.id, false);
+  }catch(e){}
+  var r = X.P.p[k.id] || (X.P.p[k.id] = {n:0,last:0,ok:0,bad:0});
+  r.last = Date.now();
+  if(gain) r.ok++; else r.bad++;
+  X.save();
+  try{ X.refreshDock(); X.refreshBadge(); }catch(e){}
+  return gain;
+};
+
+/* ---------- 9. 评分：去重二元组 + 去虚词 ---------- */
+X.score = function(user, k){
+  var u = X.norm(user), ref = X.norm(k.a||'');
+  var ks = X.kw(k.id), hit = [], miss = [], rate = 0;
+  if(ks.length){
+    for(var i=0;i<ks.length;i++){
+      var nw = X.norm(ks[i]);
+      if(nw && u.indexOf(nw) >= 0) hit.push(ks[i]); else miss.push(ks[i]);
+    }
+    rate = hit.length / ks.length;
+  }else{
+    var stop = {};
+    '的了是在和与及或为对以等这那其之而于由从到把被将则也都很更就还只'.split('').forEach(function(c){ stop[c]=1; });
+    var bg = function(s){
+      var arr = [], seen = {}, out = [], i;
+      for(i=0;i<s.length-1;i++){
+        if(stop[s.charAt(i)] || stop[s.charAt(i+1)]) continue;
+        arr.push(s.substr(i,2));
+      }
+      for(i=0;i<arr.length;i++){ if(!seen[arr[i]]){ seen[arr[i]]=1; out.push(arr[i]); } }
+      return out;
+    };
+    var R = bg(ref), U = {};
+    bg(u).forEach(function(b){ U[b]=1; });
+    var h = 0;
+    for(var j=0;j<R.length;j++){ if(U[R[j]]) h++; }
+    rate = R.length ? h/R.length : 0;
+  }
+  return {rate:Math.min(1,Math.max(0,rate)), hit:hit, miss:miss, hasKw:!!ks.length};
+};
+
+/* ---------- 10. 今日台接上复习+新学 ---------- */
+try{
+  if(typeof window.todayTasks === 'function'){
+    window.todayTasks = function(){
+      var t = X.buildTasks(), out = [];
+      t.due.forEach(function(k){
+        if(t.done.indexOf(k.id) >= 0) return;
+        var s = X.st(k.id) || {};
+        out.push({k:k, why:'到期复习 · 已学 ' + (s.seen||0) + ' 次'});
+      });
+      t.fresh.forEach(function(k){
+        if(t.done.indexOf(k.id) >= 0) return;
+        out.push({k:k, why:'新学 · 今日配额'});
+      });
+      return out.slice(0, 14);
+    };
+  }
+}catch(e){}
+
+/* ---------- 11. 答对自动打勾 + 彩带 ---------- */
+X.autoDone = function(id){
+  try{
+    var t = X.P.tasks;
+    if(!t || t.date !== X.today()) return;
+    if(t.done.indexOf(id) >= 0) return;
+    t.done.push(id); X.save();
+    X.refreshDock();
+    X.beep(940, 0.07, 'triangle', 0.045);
+    X.confetti(16);
+  }catch(e){}
+};
+try{
+  if(typeof window.answer === 'function' && !window.answer.__imx3){
+    var oa = window.answer;
+    window.answer = function(id, ok){
+      var r = oa.apply(this, arguments);
+      try{ if(ok !== false && X._panelKind !== 'test') X.autoDone(id); }catch(e){}
+      return r;
+    };
+    window.answer.__imx3 = 1;
+  }
+}catch(e){}
+
+/* ---------- 12. 考试倒计时修正（不改原代码） ---------- */
+X.daysLeft = function(){
+  return Math.max(0, Math.ceil((new Date(2025,11,19,0,0,0) - Date.now()) / 86400000));
+};
+X.fixDays = function(){
+  var d = X.daysLeft();
+  var el = document.getElementById('dcount');
+  if(el) el.innerHTML = '距初试 <b>' + d + '</b> 天';
+  var ms = document.querySelectorAll('#view .muted');
+  for(var i=0;i<ms.length;i++){
+    if(ms[i].textContent.indexOf('距初试') >= 0){
+      ms[i].textContent = ms[i].textContent.replace(/距初试\s*\d+\s*天/, '距初试 ' + d + ' 天');
+    }
+  }
+};
+try{
+  if(typeof window.updateHeader === 'function' && !window.updateHeader.__imx3){
+    var oh = window.updateHeader;
+    window.updateHeader = function(){ var r = oh.apply(this, arguments); try{ X.fixDays(); }catch(e){} return r; };
+    window.updateHeader.__imx3 = 1;
+  }
+}catch(e){}
+try{
+  if(typeof window.renderToday === 'function' && !window.renderToday.__imx3){
+    var or = window.renderToday;
+    window.renderToday = function(v){
+      var r = or.apply(this, arguments);
+      try{ X.fixDays(); X.miniToday(); }catch(e){}
+      return r;
+    };
+    window.renderToday.__imx3 = 1;
+  }
+}catch(e){}
+
+/* ---------- 13. 卡片按钮拿对 id ---------- */
+try{
+  if(typeof window.renderCard === 'function'){
+    var rc = window.renderCard;
+    window.renderCard = function(v){
+      var r = rc.apply(this, arguments);
+      try{
+        var id = null;
+        try{ id = UI.queue[UI.qi]; }catch(e){}
+        X.cardPill(id);
+      }catch(e){}
+      return r;
+    };
+  }
+}catch(e){}
+
+/* ---------- 14. 清校名 + 清理脏状态 ---------- */
+try{ if(Store.state.kp) delete Store.state.kp['undefined']; }catch(e){}
+try{
+  var B1 = '\u5c71\u4e1c\u5927\u5b66', B2 = '\u5c71\u5927';
+  var b = document.querySelector('.brand small');
+  if(b && (b.textContent.indexOf(B1)>=0 || b.textContent.indexOf(B2)>=0)) b.textContent = '国际商务专业基础';
+  if(document.title.indexOf(B1) >= 0) document.title = '434 复习台 · 国际商务专业基础';
+}catch(e){}
+
+/* ---------- 15. 重新渲染 ---------- */
+try{ X.refreshBadge(); X.refreshDock(); }catch(e){}
+try{ X.fixDays(); }catch(e){}
+try{ if(typeof UI !== 'undefined' && UI.tab === 'today') route('today'); }catch(e){}
+try{
+  if(X.P.seen !== X.today()){
+    X.P.seen = X.today(); X.save();
+    setTimeout(function(){ X.openToday(); }, 600);
+  }
+}catch(e){}
+
+console.log('[434] 修复完成：今日任务 / 第一轮 / 例子 / 自测');
+})();
+</script>
