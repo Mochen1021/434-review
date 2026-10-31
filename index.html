@@ -4623,3 +4623,1570 @@ window.IMXSYNC={ syncNow:syncNow, openSettings:openSettings };
 console.log('[434] 云同步已加载');
 })();
 </script>
+<!-- ================= P0 补库 · 第一批 20 张 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+if(window.__IMX_P0A) return;
+window.__IMX_P0A = 1;
+
+/* 防止重复粘贴 */
+try{
+  for(var i=0;i<DATA.length;i++){
+    if(DATA[i] && DATA[i].id === 'pa01'){ console.log('[434] P0 已存在，跳过'); return; }
+  }
+}catch(e){}
+
+DATA.push(
+
+/* ---------- 关税与非关税的经济效应 ---------- */
+{id:'pa01',m:0,ch:'第2章 贸易政策与壁垒',t:'关税的经济效应（小国）',lv:'A',ty:'简答',src:'推测',
+ q:'关税的经济效应（小国模型）',
+ a:'小国是国际价格的接受者，征关税不改变国际价格，只抬高国内价格。\n①价格效应：国内价格上升幅度等于关税；\n②生产效应：国内产量增加，资源流向进口竞争部门，形成生产扭曲；\n③消费效应：消费量减少，形成消费扭曲；\n④贸易效应：进口量下降；\n⑤财政效应：政府获得关税收入；\n⑥再分配效应：生产者剩余增加、消费者剩余减少。\n净福利＝关税收入－生产扭曲－消费扭曲，通常为负。'},
+
+{id:'pa02',m:0,ch:'第2章 贸易政策与壁垒',t:'关税的经济效应（大国）',lv:'A',ty:'论述',src:'推测',
+ q:'关税的经济效应（大国模型）',
+ a:'大国征关税会压低国际价格，产生贸易条件效应，国内价格上升幅度小于关税。\n福利＝贸易条件收益－生产扭曲－消费扭曲。\n若贸易条件收益大于两项扭曲损失，本国福利可能改善，但世界总福利下降。\n这也是“最优关税”存在的理论基础，但实践中易引发报复。'},
+
+{id:'pa03',m:0,ch:'第2章 贸易政策与壁垒',t:'最优关税',lv:'A',ty:'名解',src:'推测',
+ q:'最优关税',
+ a:'大国通过征收关税改善贸易条件，使本国福利达到最大化的关税水平。\n条件：边际贸易条件改善收益＝边际生产扭曲与消费扭曲损失。\n特点：只对大国成立；税率介于零与禁止性关税之间；单边最优关税易引发对方报复，长期可能得不偿失。'},
+
+{id:'pa04',m:0,ch:'第2章 贸易政策与壁垒',t:'进口配额的经济效应',lv:'A',ty:'简答',src:'推测',
+ q:'进口配额的经济效应及其与关税的区别',
+ a:'配额直接限制进口数量，使国内价格上升，产生生产扭曲、消费扭曲与再分配效应。\n与等效关税的区别：\n①关税收入归政府，配额租金归配额持有者（除非公开拍卖）；\n②配额的数量限制确定，价格效应不确定；\n③配额更易滋生寻租与腐败；\n④配额的福利损失通常大于等效关税。'},
+
+{id:'pa05',m:0,ch:'第2章 贸易政策与壁垒',t:'非关税壁垒的经济效应',lv:'A',ty:'简答',src:'推测',
+ q:'非关税壁垒的经济效应',
+ a:'①数量限制效应：直接压缩进口规模；\n②价格效应：国内价格上升，消费者剩余减少；\n③生产扭曲与消费扭曲；\n④租金再分配：配额租金、许可证租金归持证者；\n⑤寻租与腐败；\n⑥贸易转移：限制某国进口后转向其他国家；\n⑦隐蔽性强、针对性强，易引发报复。'},
+
+/* ---------- 国际贸易理论补漏 ---------- */
+{id:'pa06',m:0,ch:'第1章 国际贸易理论',t:'相互需求理论',lv:'B',ty:'名解',src:'推测·超纲',
+ q:'相互需求理论（穆勒）',
+ a:'穆勒提出。两国间的交换比例由两国对彼此产品的相互需求强度决定：对本国出口品需求越强，本国贸易条件越有利。\n国际交换比例必须介于两国国内交换比例之间，双方才能都获益；具体位置取决于相互需求强度。\n马歇尔后用提供曲线加以图解。'},
+
+{id:'pa07',m:0,ch:'第1章 国际贸易理论',t:'提供曲线',lv:'B',ty:'名解',src:'推测·超纲',
+ q:'提供曲线',
+ a:'马歇尔提出，表示一国在不同贸易条件下愿意出口与进口的商品数量组合。\n两条提供曲线的交点决定国际均衡贸易条件。\n曲线形状由生产可能性（供给）与需求偏好共同决定；交点越靠近某国国内交换比例，该国贸易条件越不利。'},
+
+{id:'pa08',m:0,ch:'第1章 国际贸易理论',t:'新新贸易理论',lv:'A',ty:'简答',src:'推测',
+ q:'新新贸易理论（企业异质性贸易理论）',
+ a:'以梅里兹（Melitz）为代表。核心：企业生产率存在异质性，只有生产率高于临界值的企业才能承担出口的固定成本并进入国际市场。\n贸易自由化使资源从低生产率企业流向高生产率企业，行业平均生产率提高。\n它解释了为什么只有少数企业出口，以及贸易如何促进产业升级。'},
+
+{id:'pa09',m:0,ch:'第1章 国际贸易理论',t:'企业异质性与国际化路径',lv:'B',ty:'简答',src:'推测',
+ q:'企业异质性下的国际化路径选择',
+ a:'按生产率由低到高：只服务国内市场→出口→对外直接投资。\n出口需支付可变贸易成本与较小固定成本；OFDI 需支付更高固定成本，但可节省运输成本、贴近市场。\n生产率最高的企业选择 OFDI，次高者出口，低者仅内销；贸易与投资既替代又互补。'},
+
+/* ---------- 贸易摩擦与知识产权 ---------- */
+{id:'pa10',m:0,ch:'第2章 贸易政策与壁垒',t:'国际贸易摩擦的成因',lv:'A',ty:'简答',src:'推测',
+ q:'国际贸易摩擦的成因',
+ a:'①贸易利益分配不均，逆差国产业与就业受冲击；\n②产业结构调整滞后，受损集团政治游说；\n③战略互疑与制度差异；\n④WTO 规则约束弱化、单边主义抬头；\n⑤技术竞争与国家安全泛化；\n⑥经济下行期保护主义升温。'},
+
+{id:'pa11',m:0,ch:'第2章 贸易政策与壁垒',t:'国际贸易摩擦的应对',lv:'A',ty:'简答',src:'推测',
+ q:'应对国际贸易摩擦的主要措施',
+ a:'①利用 WTO 争端解决机制与双边磋商；\n②依法开展反倾销、反补贴、保障措施调查；\n③推动市场多元化与产业链升级；\n④加强区域贸易协定合作；\n⑤完善出口管制与合规体系；\n⑥发挥行业协会协调作用，提高企业应诉能力；\n⑦扩大内需，降低对单一市场依赖。'},
+
+{id:'pa12',m:0,ch:'第2章 贸易政策与壁垒',t:'知识产权保护（TRIPS）',lv:'A',ty:'名解',src:'推测',
+ q:'国际贸易中的知识产权保护（TRIPS 协定）',
+ a:'TRIPS 把知识产权纳入多边贸易体系，要求成员提供最低保护标准、国民待遇与最惠国待遇，并建立边境措施与争端解决机制。\n保护对象：专利、商标、版权、地理标志、商业秘密等。\n意义：鼓励创新与技术转移；争议：高标准保护可能被用于技术封锁，加重发展中国家负担。'},
+
+{id:'pa13',m:0,ch:'第2章 贸易政策与壁垒',t:'知识产权边境措施与 337 调查',lv:'B',ty:'名解',src:'推测',
+ q:'知识产权的边境措施与“337 调查”',
+ a:'边境措施：海关依申请或依职权扣留涉嫌侵权货物，防止侵权产品进出口。\n337 调查：美国国际贸易委员会依《1930 年关税法》第 337 条，对进口中的知识产权侵权与不公平贸易行为进行调查，可发布排除令、禁止令。\n特点：程序快、救济强，常被用作贸易保护工具。'},
+
+/* ---------- FDI 战略决策 ---------- */
+{id:'pa14',m:1,ch:'第2章 FDI 类型与决策',t:'FDI 选址决策',lv:'A',ty:'简答',src:'推测',
+ q:'对外直接投资的选址决策',
+ a:'①市场因素：规模、增长、购买力、竞争强度；\n②成本因素：劳动力、土地、税收、运输；\n③资源因素：自然资源、技术、人才；\n④政策因素：外资准入、优惠、双边协定、政治风险；\n⑤集聚因素：产业集群、供应链配套、基础设施。\n常用方法：国家风险评级、投资环境评分、成本比较。'},
+
+{id:'pa15',m:1,ch:'第2章 FDI 类型与决策',t:'FDI 时机决策',lv:'B',ty:'简答',src:'推测',
+ q:'对外直接投资的时机决策',
+ a:'①先行者优势：抢占市场、渠道、品牌与标准；\n②跟随者优势：降低不确定性、学习先行者、避免试错成本；\n③决策依据：市场开放节奏、政策窗口、竞争格局、技术生命周期、自身资源与风险承受力。\n常见路径：先出口试探→设销售机构→本地生产。'},
+
+{id:'pa16',m:1,ch:'第2章 FDI 类型与决策',t:'FDI 进入模式决策',lv:'A',ty:'论述',src:'推测',
+ q:'对外直接投资的进入模式决策',
+ a:'主要模式：出口、许可/特许、合资、独资、并购。\n选择依据：\n①控制权需求；②资源承诺与风险；③交易成本与知识保护；④东道国政策限制；⑤市场与成本压力。\n权衡：控制力越强，投入与风险越大；轻资产模式灵活，但控制弱、技术易外溢。'},
+
+{id:'pa17',m:1,ch:'第2章 FDI 类型与决策',t:'绿地投资与跨国并购的选择',lv:'A',ty:'简答',src:'推测',
+ q:'绿地投资与跨国并购如何选择',
+ a:'绿地：控制力强、可按全球战略设计、技术不外溢；但周期长、成本高、风险大。\n并购：快速进入，获得现成渠道、品牌与技术；但存在估值溢价、整合与文化冲突、东道国审查。\n选择取决于：市场进入紧迫性、目标资源可得性、东道国政策、自身整合能力。'},
+
+{id:'pa18',m:1,ch:'第2章 FDI 类型与决策',t:'股权与控制权安排',lv:'B',ty:'简答',src:'推测',
+ q:'跨国投资中的股权与控制权安排',
+ a:'①独资：100% 股权，控制力最强，技术与利润独享，但投入大、风险自担、易受东道国限制；\n②多数股权合资：控制经营，兼顾本地资源；\n③对等合资：共担风险，易出现决策僵局；\n④少数股权：获取渠道与政策资源，控制力弱。\n选择取决于东道国股权限制、资源互补性、风险分担与技术保护。'},
+
+/* ---------- 中国式跨国公司 ---------- */
+{id:'pa19',m:1,ch:'第3章 跨国公司',t:'中国式跨国公司的特点',lv:'A',ty:'简答',src:'推测',
+ q:'中国式跨国公司的特点',
+ a:'①以国有企业与大型民企为主体，政府作用明显；\n②动因多元：资源获取、市场开拓、技术获取、品牌并购；\n③区位偏向发展中国家与“一带一路”沿线；\n④进入方式并购与绿地并重；\n⑤后发优势：依托国内大市场、完整产业链与成本优势；\n⑥挑战：国际化人才、合规与风险管控、ESG。'},
+
+{id:'pa20',m:1,ch:'第1章 FDI 与跨国公司理论',t:'中国对外直接投资的理论解释',lv:'B',ty:'简答',src:'推测',
+ q:'解释中国对外直接投资的主要理论',
+ a:'①发展中国家投资理论：小规模技术、技术地方化、技术创新升级；\n②诱发要素组合理论：直接要素与间接要素共同驱动；\n③制度视角：政府政策、双边协定、金融支持；\n④跳板理论：通过并购获取战略资产，弥补后发劣势；\n⑤全球价值链视角：嵌入与攀升。\n共同点：不完全依赖垄断优势。'}
+
+);
+
+/* 刷新界面 */
+try{
+  if(typeof renderTree === 'function') renderTree();
+  if(typeof renderTabs === 'function') renderTabs();
+  if(typeof updateHeader === 'function') updateHeader();
+}catch(e){}
+console.log('[434] P0 第一批已入库：20 条，总数 ' + DATA.length);
+})();
+</script>
+<!-- ================= 评分/标红/例子/母子卡 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X || !X.C) return;
+if(X._score3) return; X._score3 = 1;
+
+/* ---------- 1. 必背术语表（出现在答案里就标红） ---------- */
+var TERMS = [
+'比较优势','绝对优势','机会成本','要素禀赋','要素价格均等化','里昂惕夫之谜','规模经济','产品生命周期',
+'产业内贸易','需求偏好相似','国家竞争优势','钻石模型','战略性贸易政策','幼稚产业保护','贸易条件','提供曲线',
+'相互需求','新新贸易理论','企业异质性','关税同盟','自由贸易区','关税配额','进口配额','配额租金','名义保护率',
+'有效保护率','倾销','反倾销','反补贴','保障措施','技术性贸易壁垒','绿色壁垒','贸易摩擦','知识产权','TRIPS',
+'337调查','贸易创造','贸易转移','最惠国待遇','国民待遇','普惠制','原产地规则','争端解决','区域经济一体化',
+'欧洲联盟','CPTPP','RCEP','一带一路','国际直接投资','外商直接投资','对外直接投资','绿地投资','跨国并购',
+'独资','合资','跨国公司','垄断优势','内部化','区位优势','OLI','折衷范式','国际生产折衷理论','转移定价',
+'避税港','返程投资','负面清单','小岛清','边际产业扩张','国际收支','经常账户','资本账户','金融账户','J曲线',
+'马歇尔-勒纳条件','弹性分析法','吸收分析法','货币分析法','国际储备','外汇储备','特别提款权','直接标价法',
+'间接标价法','即期汇率','远期汇率','升水','贴水','购买力平价','利率平价','套利','套汇','货币互换','外汇风险',
+'交易风险','折算风险','经济风险','远期结汇','外汇期货','外汇期权','金本位','布雷顿森林体系','牙买加体系',
+'特里芬难题','最优货币区','蒙代尔三角','米德冲突','欧洲货币市场','欧洲债券','国际债券','国际股票','金融衍生品',
+'国际金融危机','主权债务危机','金融创新','市场细分','目标市场','市场定位','产品标准化','产品差异化','渠道',
+'促销','供应链','牛鞭效应','准时制','外包','国际物流','国际会计','国际税收','国际财务管理','霍夫斯泰德',
+'文化维度','政治风险','法律环境','普通法系','大陆法系','商业伦理','PEST','关税'
+];
+
+function escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function markTerms(text){
+  var s = esc(text);
+  var found = [];
+  for(var i=0;i<TERMS.length;i++){ if(String(text).indexOf(TERMS[i])>=0) found.push(TERMS[i]); }
+  found.sort(function(a,b){ return b.length-a.length; });
+  if(!found.length) return s;
+  var re = new RegExp('(' + found.map(escRe).join('|') + ')','g');
+  return s.replace(re,'<mark class="mx-term">$1</mark>');
+}
+function egHTML(id){
+  try{
+    var ex = X.findEx && X.findEx(id);
+    if(!ex) return '';
+    var h = '';
+    if(ex.eg) h += esc(ex.eg);
+    if(ex.sc) h += '<div style="color:#8a6a2f;margin-top:4px">场景：' + esc(ex.sc) + '</div>';
+    if(ex.own) h += '<div style="margin-top:4px">我的例子：' + esc(ex.own) + '</div>';
+    if(!h) return '';
+    return '<div class="mx-eg"><b>通俗例子</b>' + h + '</div>';
+  }catch(e){ return ''; }
+}
+
+/* ---------- 2. 母子卡数据（先做两张样板） ---------- */
+var SUB = {
+  t02: [
+    {short:'内容', q:'比较优势理论的内容（模型与结论）',
+     a:'①假定：2×2×2 模型，两国、两产品、一种要素，技术给定、完全竞争、要素不流动。\n②核心：即使一国两种产品都处于绝对劣势，只要劣势程度不同，仍可按“两优取重、两劣取轻”专业化生产并贸易。\n③依据：机会成本差异，一国应生产机会成本较低的产品。\n④结果：两国产量增加，通过交换双方都获益；贸易条件介于两国国内交换比例之间。'},
+    {short:'评价', q:'比较优势理论的评价与局限',
+     a:'①理论意义：奠定国际贸易理论基石，解释了绝对优势无法解释的贸易基础。\n②局限：假设过严（完全竞争、要素不流动、技术不变、无运输成本、规模报酬不变）；是静态分析，忽略经济增长与技术变化；未解释产业内贸易；对贸易利益分配分析不足。\n③发展：H-O 理论、规模经济理论、产品生命周期理论等对其修正与扩展。'}
+  ],
+  t16: [
+    {short:'海关税则', q:'海关税则',
+     a:'海关税则是一国对进出口商品计征关税的规章和对应税、免税商品系统分类的目录表。\n内容：税号、商品名称、计税单位、税率。\n分类：单式税则（一个税号一个税率）与复式税则（一个税号多个税率，如最惠国税率、协定税率、普通税率）。\n作用：体现关税政策、便于海关征管、提供贸易统计口径。'},
+    {short:'从量税', q:'从量税',
+     a:'从量税是按商品的重量、数量、容量、长度、面积等计量单位为标准征收的关税。\n计算：税额＝商品数量×单位税额。\n优点：征管简便、不受价格波动影响、对低报价格有抑制作用。\n缺点：税负与价格脱节，价格上涨时保护作用下降；对高价值商品保护不足。\n与从价税比较：从价税按价格比例征收，税负随价格上升而增加。'}
+  ]
+};
+var MXSUB = {};
+
+function subOf(k){
+  var arr = SUB[k.id];
+  if(!arr) return null;
+  var i = MXSUB[k.id];
+  if(i == null) i = 0;
+  if(i < 0) return null;
+  return arr[i] || null;
+}
+function currentCard(){
+  try{ return DATA.find(function(x){ return x.id === UI.queue[UI.qi]; }); }catch(e){ return null; }
+}
+
+/* ---------- 3. 卡片：标红 + 例子 + 母子卡切换 ---------- */
+function decorate(){
+  var k = currentCard();
+  if(!k) return;
+  var qEl = document.querySelector('#fc .q');
+  var old = document.querySelector('#fc .mx-subs');
+  if(old) old.remove();
+
+  var sel = subOf(k);
+  if(qEl){
+    qEl.textContent = sel ? sel.q : k.q;
+    if(SUB[k.id]){
+      var wrap = document.createElement('div');
+      wrap.className = 'mx-subs';
+      SUB[k.id].forEach(function(s,i){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = (i+1) + ' ' + s.short;
+        if((MXSUB[k.id] == null ? 0 : MXSUB[k.id]) === i) b.className = 'on';
+        b.onclick = function(e){
+          e.stopPropagation();
+          MXSUB[k.id] = i;
+          UI.flipped = false;
+          decorate();
+        };
+        wrap.appendChild(b);
+      });
+      var fb = document.createElement('button');
+      fb.type = 'button'; fb.textContent = '完整原文';
+      fb.onclick = function(e){ e.stopPropagation(); MXSUB[k.id] = -1; UI.flipped = false; decorate(); };
+      wrap.appendChild(fb);
+      if(qEl.parentNode) qEl.parentNode.insertBefore(wrap, qEl.nextSibling);
+    }
+  }
+
+  var a = document.getElementById('ans');
+  if(!a) return;
+  if(UI.flipped){
+    var text = sel ? sel.a : k.a;
+    a.innerHTML = markTerms(text) +
+      '<div class="mx-legend">红色为必背术语</div>' + egHTML(k.id);
+  }else{
+    a.textContent = '（点击卡片或按空格查看答案）';
+  }
+}
+
+var oldRenderCard = window.renderCard;
+if(typeof oldRenderCard === 'function'){
+  window.renderCard = function(v){
+    var r = oldRenderCard.apply(this, arguments);
+    setTimeout(decorate, 0);
+    return r;
+  };
+}
+var oldFlip = window.flip;
+if(typeof oldFlip === 'function'){
+  window.flip = function(){
+    var r = oldFlip.apply(this, arguments);
+    setTimeout(decorate, 0);
+    return r;
+  };
+}
+var oldRenderDetail = window.renderDetail;
+if(typeof oldRenderDetail === 'function'){
+  window.renderDetail = function(v, k){
+    var r = oldRenderDetail.apply(this, arguments);
+    try{
+      var box = v.querySelector('.bodytext');
+      if(box) box.innerHTML = markTerms(k.a) + '<div class="mx-legend">红色为必背术语</div>' + egHTML(k.id);
+    }catch(e){}
+    return r;
+  };
+}
+
+/* ---------- 4. 按点给分 ---------- */
+var STOP = {};
+'的了是在和与及或为对以等这那其之而于由从到把被将则也都很更就还只我们你他它'.split('').forEach(function(c){ STOP[c] = 1; });
+
+function bgSet(s){
+  var seen = {}, out = [];
+  for(var i=0;i<s.length-1;i++){
+    if(STOP[s.charAt(i)] || STOP[s.charAt(i+1)]) continue;
+    var b = s.substr(i,2);
+    if(!seen[b]){ seen[b] = 1; out.push(b); }
+  }
+  return out;
+}
+function splitPoints(a){
+  return String(a||'').replace(/\r/g,'')
+    .split(/\n+|(?=[①②③④⑤⑥⑦⑧⑨])|；|;/)
+    .map(function(s){ return s.replace(/^[①②③④⑤⑥⑦⑧⑨]\s*/,'').trim(); })
+    .filter(function(s){ return s.length >= 6; });
+}
+function cardTerms(k){
+  var a = String(k.a||''), out = [];
+  for(var i=0;i<TERMS.length;i++){ if(a.indexOf(TERMS[i])>=0) out.push(TERMS[i]); }
+  return out;
+}
+
+X.score = function(user, k){
+  var u = X.norm(String(user||''));
+  var terms = cardTerms(k);
+  if(u.length < 8){
+    return {rate:0, hit:[], miss:terms, hasKw:!!terms.length, points:[]};
+  }
+  var pts = splitPoints(k.a), U = bgSet(u), hitPts = 0, details = [];
+  pts.forEach(function(p){
+    var R = bgSet(p), h = 0;
+    for(var i=0;i<R.length;i++){ if(U.indexOf(R[i]) >= 0) h++; }
+    var cov = R.length ? h / R.length : 0;
+    var ok = cov >= 0.42;
+    if(ok) hitPts++;
+    details.push({text:p.slice(0,50), ok:ok, cov:cov});
+  });
+  var pointRate = pts.length ? hitPts / pts.length : 0;
+
+  var th = [], tm = [];
+  terms.forEach(function(t){
+    if(u.indexOf(X.norm(t)) >= 0) th.push(t); else tm.push(t);
+  });
+  var termRate = terms.length ? th.length / terms.length : pointRate;
+  var rate = 0.6 * pointRate + 0.4 * termRate;
+
+  if(u.length < 20) rate = Math.min(rate, 0.35);
+  return {
+    rate: Math.min(1, Math.max(0, rate)),
+    hit: th, miss: tm, hasKw: !!terms.length,
+    points: details, pointRate: pointRate, termRate: termRate
+  };
+};
+
+/* 70% 以上 +2，50% 以上 +1 */
+X.gain = function(k, rate){
+  var gain = rate >= 0.7 ? 2 : (rate >= 0.5 ? 1 : 0);
+  try{
+    if(gain){ for(var i=0;i<gain;i++) answer(k.id, true); }
+    else answer(k.id, false);
+  }catch(e){}
+  var r = X.P.p[k.id] || (X.P.p[k.id] = {n:0,last:0,ok:0,bad:0});
+  r.last = Date.now();
+  if(gain) r.ok++; else r.bad++;
+  X.save();
+  try{ X.refreshDock(); X.refreshBadge(); }catch(e){}
+  return gain;
+};
+
+/* 结果页：标准表述也标红 */
+var oldFb = X.renderFb;
+if(typeof oldFb === 'function'){
+  X.renderFb = function(gain, r){
+    var res = oldFb.apply(this, arguments);
+    try{
+      var k = X.T.qs[X.T.i].kp;
+      var p = document.querySelector('.imx-ref p');
+      if(p) p.innerHTML = markTerms(k.a);
+    }catch(e){}
+    return res;
+  };
+}
+
+/* 提示文案同步成 70/50 */
+var oldQ = X.renderQ;
+if(typeof oldQ === 'function'){
+  X.renderQ = function(){
+    var res = oldQ.apply(this, arguments);
+    try{
+      var h = document.querySelector('.imx-hint');
+      if(h) h.textContent = '按点给分：必背术语命中 + 答案要点覆盖，≥70% 熟练度 +2，≥50% +1。';
+    }catch(e){}
+    return res;
+  };
+}
+
+/* ---------- 5. 样式 ---------- */
+var st = document.createElement('style');
+st.id = 'mxStyle';
+st.textContent = `
+.mx-term{background:#fff0f0;color:#c81e1e;font-weight:600;padding:0 2px;border-radius:3px}
+.mx-legend{margin-top:8px;font-size:11px;color:#a8b2c6}
+.mx-eg{margin-top:12px;padding:10px 12px;border:1px solid #ffe6c7;background:#fffaf1;border-radius:10px;font-size:13px;line-height:1.8;color:#5c4620}
+.mx-eg b{display:block;font-size:11px;color:#c07a10;margin-bottom:4px;letter-spacing:.05em}
+.mx-subs{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 2px}
+.mx-subs button{border:1px solid #dfe6f3;background:#fff;color:#5a6a86;border-radius:20px;padding:5px 10px;font-size:11.5px;line-height:1.2}
+.mx-subs button.on{background:#3665f3;border-color:#3665f3;color:#fff}
+`;
+document.head.appendChild(st);
+
+console.log('[434] 评分/标红/例子/母子卡 已生效');
+})();
+</script>
+<!-- ================= P1 补库 · 16 张 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+if(window.__IMX_P1) return;
+window.__IMX_P1 = 1;
+
+try{
+  for(var i=0;i<DATA.length;i++){
+    if(DATA[i] && DATA[i].id === 'pb01'){ console.log('[434] P1 已存在，跳过'); return; }
+  }
+}catch(e){}
+
+DATA.push(
+
+/* ---------- 世界市场价格 / 公司内贸易 ---------- */
+{id:'pb01',m:0,ch:'第5章 国际分工与世界市场',t:'世界市场价格',lv:'B',ty:'名解',src:'推测',
+ q:'世界市场价格',
+ a:'世界市场价格是世界市场上商品交换的价格，以国际价值为基础，受供求关系、竞争与垄断、汇率、贸易政策影响。\n①基础：国际价值由世界社会必要劳动时间决定；\n②形式：成交价格、参考价格、期货价格、拍卖价格；\n③与国内价格的区别：不受单一国家关税与管制的直接影响，但会通过贸易传导。'},
+
+{id:'pb02',m:0,ch:'第5章 国际分工与世界市场',t:'国际价值与世界市场价格的形成',lv:'B',ty:'简答',src:'推测',
+ q:'国际价值与世界市场价格的形成',
+ a:'①国际价值由“世界社会必要劳动时间”决定，是国际交换的基础；\n②世界市场价格围绕国际价值波动，受世界市场供求、竞争与垄断影响；\n③各国劳动生产率不同，国别价值与国际价值偏离，形成比较利益；\n④贸易政策、汇率、运输成本、信息不对称造成同种商品的价格差异。'},
+
+{id:'pb03',m:1,ch:'第3章 跨国公司',t:'公司内贸易',lv:'A',ty:'名解',src:'推测',
+ q:'公司内贸易',
+ a:'跨国公司内部母公司与子公司、子公司相互之间进行的跨境交易，包括中间产品、零部件、技术和服务。\n特点：\n①价格由转移定价决定，不完全受外部市场供求影响；\n②可绕过外部市场失灵，保护技术秘密；\n③是内部化优势的结果；\n④在国际贸易中占有较高比重。'},
+
+{id:'pb04',m:1,ch:'第3章 跨国公司',t:'公司内贸易的动因',lv:'B',ty:'简答',src:'推测',
+ q:'公司内贸易的动因',
+ a:'①内部化优势：降低交易成本、防止技术外溢；\n②保证中间产品质量与供应稳定；\n③利用转移定价转移利润、降低税负；\n④全球生产布局与价值链分工；\n⑤通过内部调拨规避关税与非关税壁垒。'},
+
+/* ---------- 政府行为与议价 ---------- */
+{id:'pb05',m:1,ch:'第4章 母国与东道国效应',t:'政府行为对 FDI 的影响',lv:'A',ty:'简答',src:'推测',
+ q:'政府行为对 FDI 的影响',
+ a:'①准入政策：负面清单、股权限制、审批与国家安全审查；\n②激励政策：税收优惠、补贴、土地与基础设施；\n③保护与限制：国有化、征收、外汇管制、业绩要求；\n④协定安排：双边投资协定、避免双重征税协定；\n⑤政治风险与政策不确定性影响选址、进入模式与投资规模。'},
+
+{id:'pb06',m:1,ch:'第4章 母国与东道国效应',t:'跨国公司与东道国政府的议价能力',lv:'A',ty:'论述',src:'推测',
+ q:'跨国公司与东道国政府的议价能力',
+ a:'①跨国公司筹码：资本、技术、管理经验、市场渠道、就业与出口贡献；\n②东道国筹码：市场准入、资源、劳动力、政策许可与基础设施；\n③替代性：其他投资者、其他投资地的可替代程度；\n④时间因素：谈判初期东道国筹码大；运营后跨国公司沉没成本高，议价力上升；\n⑤联盟与母国支持：行业协会、双边协定、国际组织。'},
+
+/* ---------- 国际金融市场 ---------- */
+{id:'pb07',m:2,ch:'第6章 国际金融市场',t:'国际货币市场及其工具',lv:'B',ty:'简答',src:'推测',
+ q:'国际货币市场及其工具',
+ a:'国际货币市场是期限在一年以内的短期资金融通市场。\n主要工具：\n①银行短期信贷；②商业票据；③银行承兑汇票；④大额可转让存单（CD）；⑤回购协议；⑥国库券。\n特点：期限短、流动性高、风险低、对利率敏感。'},
+
+{id:'pb08',m:2,ch:'第6章 国际金融市场',t:'国际股票市场',lv:'B',ty:'名解',src:'推测',
+ q:'国际股票市场',
+ a:'国际股票市场是跨国发行与交易股票的市场，包括外国股票市场与欧洲股票市场。\n功能：①为跨国企业融资；②分散风险；③价格发现；④促进资本国际流动。\n主要形式：境外上市、存托凭证（ADR/GDR）、国际股票基金。'},
+
+/* ---------- 金融危机 ---------- */
+{id:'pb09',m:2,ch:'第8章 国际金融危机',t:'金融创新的动因与影响',lv:'A',ty:'简答',src:'推测',
+ q:'金融创新的动因与影响',
+ a:'动因：\n①规避金融管制与税收；\n②汇率、利率波动带来的风险对冲需求；\n③竞争压力与技术进步；\n④全球化与客户需求变化。\n影响：\n①提高市场效率与流动性；\n②增加杠杆与复杂性；\n③加大监管难度与系统性风险；\n④推动金融衍生品发展。'},
+
+{id:'pb10',m:2,ch:'第8章 国际金融危机',t:'国际金融体系改革方向',lv:'A',ty:'简答',src:'推测',
+ q:'国际金融体系改革方向',
+ a:'①加强 IMF 的监督与危机救助能力；\n②改革国际储备体系，推动储备货币多元化；\n③加强宏观审慎监管与跨境政策协调；\n④完善主权债务重组机制；\n⑤提高发展中国家的话语权；\n⑥加强对影子银行与金融衍生品的监管。'},
+
+/* ---------- 国际财务管理 ---------- */
+{id:'pb11',m:3,ch:'第3章 国际会计与税收',t:'国际财务管理的目标与内容',lv:'A',ty:'简答',src:'推测',
+ q:'国际财务管理的目标与内容',
+ a:'目标：在全球化经营中实现企业价值最大化，同时控制汇率风险、税负与资金成本。\n主要内容：\n①外汇风险管理；②国际融资管理；③国际投资管理；④营运资本管理；⑤转移定价与税务筹划；⑥合并报表与业绩评价。'},
+
+{id:'pb12',m:3,ch:'第3章 国际会计与税收',t:'国际营运资本管理',lv:'B',ty:'简答',src:'推测',
+ q:'国际营运资本管理',
+ a:'①现金管理：集中管理、多币种账户、净额结算；\n②应收账款管理：信用政策、保理、福费廷；\n③存货管理：JIT、区域配送中心；\n④短期融资：内部资金调拨、当地借款、贸易融资。\n目标：降低资金占用与汇率风险，提高资金使用效率。'},
+
+/* ---------- 商务环境 ---------- */
+{id:'pb13',m:3,ch:'第4章 商务环境与文化',t:'普通法系与大陆法系的区别',lv:'B',ty:'简答',src:'推测',
+ q:'普通法系与大陆法系的区别',
+ a:'①法律渊源：普通法以判例为主，大陆法以成文法为主；\n②推理方式：普通法遵循先例，大陆法依条文演绎；\n③法官角色：普通法法官可造法，大陆法法官主要适用法律；\n④适用范围：普通法多见于英美及英联邦，大陆法多见于欧洲、中国等；\n⑤对国际商务的影响：合同解释、产权保护、争端解决方式不同。'},
+
+{id:'pb14',m:3,ch:'第4章 商务环境与文化',t:'国际商法及其渊源',lv:'B',ty:'名解',src:'推测',
+ q:'国际商法及其渊源',
+ a:'国际商法是调整跨国商事交易的法律规范总称。\n渊源：\n①国际条约与公约（如《联合国国际货物销售合同公约》）；\n②国际贸易惯例（如 Incoterms）；\n③国内法；\n④国际组织规则与示范法；\n⑤判例与仲裁裁决。\n作用：降低交易不确定性、统一规则、便利争端解决。'},
+
+/* ---------- 供应链 ---------- */
+{id:'pb15',m:3,ch:'第2章 供应链',t:'牛鞭效应',lv:'A',ty:'名解',src:'推测',
+ q:'牛鞭效应',
+ a:'供应链中需求信息沿下游向上游传递时被逐级放大的现象。\n原因：\n①需求预测与批量订货；②价格波动与促销；③提前期长；④短缺博弈；⑤库存策略。\n后果：库存积压、生产波动、成本上升。\n对策：信息共享、缩短提前期、供应商管理库存（VMI）、小批量多频次配送。'},
+
+{id:'pb16',m:3,ch:'第2章 供应链',t:'供应链风险',lv:'B',ty:'简答',src:'推测',
+ q:'供应链风险',
+ a:'①供应风险：断供、质量问题、供应商过度集中；\n②需求风险：需求波动、预测误差；\n③物流风险：运输中断、港口拥堵；\n④信息风险：信息失真、牛鞭效应；\n⑤政策与政治风险；\n⑥金融风险。\n管理：供应多元化、备份产能、库存缓冲、供应链可视化、合同与保险。'}
+
+);
+
+try{
+  if(typeof renderTree === 'function') renderTree();
+  if(typeof renderTabs === 'function') renderTabs();
+  if(typeof updateHeader === 'function') updateHeader();
+}catch(e){}
+console.log('[434] P1 已入库：16 条，总数 ' + DATA.length);
+})();
+</script>
+<!-- ================= 母子卡引擎 v2 + 9 张拆分 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._sub2) return; X._sub2 = 1;
+
+/* ---------- 术语表（与上一版一致） ---------- */
+var TERMS = [
+'比较优势','绝对优势','机会成本','要素禀赋','要素价格均等化','里昂惕夫之谜','规模经济','产品生命周期',
+'产业内贸易','需求偏好相似','国家竞争优势','钻石模型','战略性贸易政策','幼稚产业保护','贸易条件','提供曲线',
+'相互需求','新新贸易理论','企业异质性','关税同盟','自由贸易区','关税配额','进口配额','配额租金','名义保护率',
+'有效保护率','倾销','反倾销','反补贴','保障措施','技术性贸易壁垒','绿色壁垒','贸易摩擦','知识产权','TRIPS',
+'337调查','贸易创造','贸易转移','最惠国待遇','国民待遇','普惠制','原产地规则','争端解决','区域经济一体化',
+'欧洲联盟','CPTPP','RCEP','一带一路','国际直接投资','外商直接投资','对外直接投资','绿地投资','跨国并购',
+'独资','合资','跨国公司','垄断优势','内部化','区位优势','OLI','折衷范式','国际生产折衷理论','转移定价',
+'避税港','返程投资','负面清单','小岛清','边际产业扩张','国际收支','经常账户','资本账户','金融账户','J曲线',
+'马歇尔-勒纳条件','弹性分析法','吸收分析法','货币分析法','国际储备','外汇储备','特别提款权','直接标价法',
+'间接标价法','即期汇率','远期汇率','升水','贴水','购买力平价','利率平价','套利','套汇','货币互换','外汇风险',
+'交易风险','折算风险','经济风险','远期结汇','外汇期货','外汇期权','金本位','布雷顿森林体系','牙买加体系',
+'特里芬难题','最优货币区','蒙代尔三角','米德冲突','欧洲货币市场','欧洲债券','国际债券','国际股票','金融衍生品',
+'国际金融危机','主权债务危机','金融创新','市场细分','目标市场','市场定位','产品标准化','产品差异化','渠道',
+'促销','供应链','牛鞭效应','准时制','外包','国际物流','国际会计','国际税收','国际财务管理','霍夫斯泰德',
+'文化维度','政治风险','法律环境','普通法系','大陆法系','商业伦理','PEST','关税'
+];
+
+function escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g,function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+function markTerms(text){
+  var s = esc(text), found = [];
+  for(var i=0;i<TERMS.length;i++){ if(String(text).indexOf(TERMS[i])>=0) found.push(TERMS[i]); }
+  found.sort(function(a,b){ return b.length-a.length; });
+  if(!found.length) return s;
+  var re = new RegExp('(' + found.map(escRe).join('|') + ')','g');
+  return s.replace(re,'<mark class="mx-term">$1</mark>');
+}
+function egHTML(id){
+  try{
+    var ex = X.findEx && X.findEx(id);
+    if(!ex) return '';
+    var h = '';
+    if(ex.eg) h += esc(ex.eg);
+    if(ex.sc) h += '<div style="color:#8a6a2f;margin-top:4px">场景：' + esc(ex.sc) + '</div>';
+    if(ex.own) h += '<div style="margin-top:4px">我的例子：' + esc(ex.own) + '</div>';
+    if(!h) return '';
+    return '<div class="mx-eg"><b>通俗例子</b>' + h + '</div>';
+  }catch(e){ return ''; }
+}
+
+/* ---------- 全部母子卡 ---------- */
+var SUBS = {
+  t02: [
+    {short:'内容', q:'比较优势理论的内容（模型与结论）',
+     a:'①假定：2×2×2 模型，两国、两产品、一种要素，技术给定、完全竞争、要素不流动。\n②核心：即使一国两种产品都处于绝对劣势，只要劣势程度不同，仍可按“两优取重、两劣取轻”专业化生产并贸易。\n③依据：机会成本差异，一国应生产机会成本较低的产品。\n④结果：两国产量增加，通过交换双方都获益；贸易条件介于两国国内交换比例之间。'},
+    {short:'评价', q:'比较优势理论的评价与局限',
+     a:'①理论意义：奠定国际贸易理论基石，解释了绝对优势无法解释的贸易基础。\n②局限：假设过严（完全竞争、要素不流动、技术不变、无运输成本、规模报酬不变）；是静态分析，忽略经济增长与技术变化；未解释产业内贸易；对贸易利益分配分析不足。\n③发展：H-O 理论、规模经济理论、产品生命周期理论等对其修正与扩展。'}
+  ],
+  t16: [
+    {short:'海关税则', q:'海关税则',
+     a:'海关税则是一国对进出口商品计征关税的规章和对应税、免税商品系统分类的目录表。\n内容：税号、商品名称、计税单位、税率。\n分类：单式税则（一个税号一个税率）与复式税则（一个税号多个税率，如最惠国税率、协定税率、普通税率）。\n作用：体现关税政策、便于海关征管、提供贸易统计口径。'},
+    {short:'从量税', q:'从量税',
+     a:'从量税是按商品的重量、数量、容量、长度、面积等计量单位为标准征收的关税。\n计算：税额＝商品数量×单位税额。\n优点：征管简便、不受价格波动影响、对低报价格有抑制作用。\n缺点：税负与价格脱节，价格上涨时保护作用下降；对高价值商品保护不足。\n与从价税比较：从价税按价格比例征收，税负随价格上升而增加。'}
+  ],
+  t08: [
+    {short:'名义', q:'名义保护率',
+     a:'名义保护率＝（国内市场价格－国际市场价格）÷国际市场价格×100%。\n只考虑成品关税，反映关税对成品国内价格的抬高程度，不考虑投入品关税。'},
+    {short:'有效', q:'有效保护率',
+     a:'有效保护率＝（国内加工增值－国外加工增值）÷国外加工增值×100%。\n公式：ERP＝(t－a·ti)÷(1－a)，t 为成品名义税率，ti 为投入品名义税率，a 为投入品占成品价值的比例。\n它衡量关税对国内增值环节的实际保护程度。'},
+    {short:'计算', q:'名义/有效保护率的计算步骤',
+     a:'①确定成品名义税率 t 与投入品名义税率 ti；\n②确定投入品占成品价值的比例 a；\n③代入 ERP＝(t－a·ti)÷(1－a)；\n④与名义保护率比较。\n规律：成品税率越高、投入品税率越低、a 越大，有效保护率越高；当 ti>t 时，ERP 可能低于 t，甚至为负。'}
+  ],
+  i06: [
+    {short:'水平型', q:'水平型对外直接投资',
+     a:'在不同国家重复生产同类或相近产品，主要是为了绕过贸易壁垒、贴近当地市场、降低运输成本。\n特点：市场导向、复制型生产、可能在多国重复布局。'},
+    {short:'垂直型', q:'垂直型对外直接投资',
+     a:'按价值链把不同生产环节布局到不同国家，如研发在发达国家、制造在低成本国家、销售在东道国。\n特点：成本与资源导向、环节间互补、依赖物流与协调。'},
+    {short:'比较', q:'水平型与垂直型 FDI 的比较',
+     a:'①动机：水平型追求市场进入，垂直型追求效率与成本；\n②区位：水平型看重市场规模与壁垒，垂直型看重要素成本与资源；\n③风险：水平型易重复建设、竞争激烈；垂直型依赖供应链与物流；\n④管理：垂直型协调难度更高。'}
+  ],
+  f02: [
+    {short:'马歇尔', q:'马歇尔-勒纳条件',
+     a:'本币贬值改善贸易收支的条件：|Ex|＋|Em|＞1，即出口需求弹性与进口需求弹性之和大于 1。\n若弹性和小于 1，贬值反而使贸易收支恶化；等于 1 时不变。'},
+    {short:'J曲线', q:'J 曲线效应',
+     a:'本币贬值后，贸易收支先恶化、经过一段时间才改善，轨迹像字母 J。\n原因：短期需求刚性、合同与价格调整滞后、库存与生产周期、认知时滞。\n政策含义：贬值不是立即见效，不能只看短期数据。'},
+    {short:'政策', q:'马歇尔-勒纳条件与 J 曲线的政策含义',
+     a:'①贬值能否改善贸易收支取决于弹性条件；\n②即使满足条件，也存在时滞；\n③需配合紧缩政策抑制通胀；\n④注意贸易伙伴报复与竞争性贬值。'}
+  ],
+  f11: [
+    {short:'交易风险', q:'交易风险',
+     a:'在已达成交易但尚未结算期间，汇率变动使应收或应付的本币金额发生变化的风险。\n例：出口签约时 1 美元＝7 元，收款时 6.8 元，本币升值导致收入减少。'},
+    {short:'折算风险', q:'折算风险',
+     a:'跨国企业合并报表时，把外币资产、负债、收入折算成本币产生的账面损益。\n不影响现金流，但影响报表利润与财务指标。'},
+    {short:'经济风险', q:'经济风险',
+     a:'汇率变动通过影响企业未来现金流、成本与竞争力，导致企业长期价值变化的风险。\n影响是长期的、间接的，最难量化。'},
+    {short:'防范', q:'外汇风险的防范措施',
+     a:'①远期结汇/售汇；②外汇期货、期权；③货币互换；④自然对冲：收支币种与期限匹配；⑤计价货币选择；⑥提前或延期收付；⑦多样化经营与生产基地布局。'}
+  ],
+  o02: [
+    {short:'标准化', q:'产品标准化策略',
+     a:'在全球采用统一产品、品牌与营销组合。\n优点：规模经济、成本低、品牌形象一致、便于管理；\n缺点：忽视各国需求差异，可能水土不服。'},
+    {short:'差异化', q:'产品差异化策略',
+     a:'按各国市场调整产品、价格、渠道与促销。\n优点：贴近本地需求、提高接受度；\n缺点：成本高、协调难、规模优势弱。'},
+    {short:'选择', q:'标准化与差异化的选择依据',
+     a:'①产品性质：工业品更宜标准化，消费品更宜差异化；\n②文化差异大小；\n③成本压力；\n④竞争格局；\n⑤东道国法规与标准。'}
+  ],
+  f08: [
+    {short:'即期', q:'即期汇率',
+     a:'外汇买卖成交后两个营业日内办理交割的汇率。'},
+    {short:'远期', q:'远期汇率',
+     a:'买卖双方约定在未来某一日期交割的汇率。'},
+    {short:'升贴水', q:'升水、贴水与利率平价',
+     a:'远期汇率高于即期叫升水，低于即期叫贴水。\n升贴水率约等于两国利差（利率平价）；还受预期、供求、政策影响。'}
+  ],
+  t15: [
+    {short:'倾销', q:'倾销',
+     a:'一国产品以低于正常价值的价格出口到另一国，并对进口国产业造成损害。\n三要件：低价销售、损害、因果关系。\n类型：偶然性、掠夺性、持续性、隐蔽性。'},
+    {short:'外汇倾销', q:'外汇倾销',
+     a:'通过本币贬值降低出口商品的外币价格，扩大出口、限制进口。\n条件：①出口需求弹性大；②国内物价稳定；③不引发竞争性贬值与报复；④进口原料成本上升可控。'}
+  ],
+  t20: [
+    {short:'贸易创造', q:'贸易创造',
+     a:'关税同盟成立后，成员国之间取消关税，原来本国高成本生产被成员国低成本进口替代，产生新的贸易，福利增加。'},
+    {short:'贸易转移', q:'贸易转移',
+     a:'原来从非成员国低成本进口，结盟后改从成员国高成本进口，贸易方向转移，福利可能下降。'},
+    {short:'净效应', q:'贸易创造与贸易转移的净效应',
+     a:'净福利＝贸易创造收益－贸易转移损失。\n还要看动态效应：规模经济、竞争加剧、投资吸引、技术扩散。'}
+  ],
+  i11: [
+    {short:'独资', q:'国际独资企业',
+     a:'跨国公司在东道国设立全部由自己出资的企业，拥有 100% 股权。\n优点：控制力强、技术与利润独享；\n缺点：投入大、风险高、易受东道国限制。'},
+    {short:'合作', q:'国际合作企业',
+     a:'跨国公司与东道国企业按契约合作经营，不一定按股权分配，常见于资源开发、工程承包。\n特点：契约式、非股权、灵活；但控制力弱、易生纠纷。'},
+    {short:'比较', q:'独资与合作企业的比较',
+     a:'①股权：独资 100%，合作非股权；\n②控制：独资最强，合作较弱；\n③风险：独资自担，合作共担；\n④适用：独资适合技术密集、控制要求高；合作适合资源/工程类、政策限制多。'}
+  ]
+};
+
+var SEL = {};
+
+function currentCard(){
+  try{ return DATA.find(function(x){ return x.id === UI.queue[UI.qi]; }); }catch(e){ return null; }
+}
+function selOf(k){
+  var arr = SUBS[k.id];
+  if(!arr) return null;
+  var i = SEL[k.id] == null ? 0 : SEL[k.id];
+  if(i < 0) return null;
+  return arr[i] || null;
+}
+
+function decorate2(){
+  var k = currentCard();
+  if(!k) return;
+
+  var old = document.querySelector('#fc .mx-subs');
+  if(old) old.remove();
+
+  var qEl = document.querySelector('#fc .q');
+  var sel = selOf(k);
+  if(qEl){
+    qEl.textContent = sel ? sel.q : k.q;
+    if(SUBS[k.id]){
+      var wrap = document.createElement('div');
+      wrap.className = 'mx-subs';
+      SUBS[k.id].forEach(function(s,i){
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.textContent = (i+1) + ' ' + s.short;
+        if((SEL[k.id] == null ? 0 : SEL[k.id]) === i) b.className = 'on';
+        b.onclick = function(e){
+          e.stopPropagation();
+          SEL[k.id] = i;
+          UI.flipped = false;
+          decorate2();
+        };
+        wrap.appendChild(b);
+      });
+      var fb = document.createElement('button');
+      fb.type = 'button';
+      fb.textContent = '完整原文';
+      fb.onclick = function(e){
+        e.stopPropagation();
+        SEL[k.id] = -1;
+        UI.flipped = false;
+        decorate2();
+      };
+      wrap.appendChild(fb);
+      if(qEl.parentNode) qEl.parentNode.insertBefore(wrap, qEl.nextSibling);
+    }
+  }
+
+  var a = document.getElementById('ans');
+  if(!a) return;
+  if(UI.flipped){
+    var text = sel ? sel.a : k.a;
+    a.innerHTML = markTerms(text) + '<div class="mx-legend">红色为必背术语</div>' + egHTML(k.id);
+  }else{
+    a.textContent = '（点击卡片或按空格查看答案）';
+  }
+}
+
+/* 包在旧装饰之后执行，后者先画，前者覆盖 */
+var rc = window.renderCard;
+if(typeof rc === 'function'){
+  window.renderCard = function(v){
+    var r = rc.apply(this, arguments);
+    setTimeout(decorate2, 0);
+    return r;
+  };
+}
+var fl = window.flip;
+if(typeof fl === 'function'){
+  window.flip = function(){
+    var r = fl.apply(this, arguments);
+    setTimeout(decorate2, 0);
+    return r;
+  };
+}
+
+console.log('[434] 母子卡引擎 v2：共 ' + Object.keys(SUBS).length + ' 张');
+})();
+</script>
+<!-- ================= 自测题型选择 v2 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._quiz2) return; X._quiz2 = 1;
+
+var TKEY = 'imx434_qtypes';
+var TYPES = ['名解','简答','计算','论述','填空','选择','判断'];
+
+function getTypes(){
+  try{
+    var a = JSON.parse(localStorage.getItem(TKEY) || '[]');
+    if(Array.isArray(a) && a.length) return a.filter(function(t){ return TYPES.indexOf(t) >= 0; });
+  }catch(e){}
+  return ['名解','简答'];
+}
+function setTypes(a){
+  try{ localStorage.setItem(TKEY, JSON.stringify(a)); }catch(e){}
+}
+function shuffle(a){
+  var x = a.slice();
+  for(var i=x.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=x[i]; x[i]=x[j]; x[j]=t; }
+  return x;
+}
+function clip(s, n){
+  s = String(s||'').replace(/\n/g,' ');
+  return s.length > n ? s.slice(0,n) + '…' : s;
+}
+function termsIn(s){
+  var out = [];
+  try{
+    var T = ['比较优势','绝对优势','机会成本','要素禀赋','规模经济','产品生命周期','产业内贸易','贸易条件',
+      '关税','配额','倾销','反倾销','补贴','关税同盟','贸易创造','贸易转移','最惠国待遇','国民待遇',
+      '国际直接投资','绿地投资','跨国并购','跨国公司','内部化','区位优势','OLI','转移定价','国际收支',
+      '经常账户','资本账户','国际储备','汇率','即期汇率','远期汇率','升水','贴水','购买力平价','利率平价',
+      '套利','套汇','外汇风险','交易风险','折算风险','经济风险','布雷顿森林体系','牙买加体系','特里芬难题',
+      '特别提款权','欧洲货币市场','金融创新','市场细分','目标市场','市场定位','供应链','牛鞭效应'];
+    for(var i=0;i<T.length;i++){ if(String(s).indexOf(T[i]) >= 0) out.push(T[i]); }
+  }catch(e){}
+  return out;
+}
+
+/* ---------- 生成新题型 ---------- */
+function makeFill(k){
+  var terms = termsIn(k.a);
+  if(!terms.length) return null;
+  var t = terms[Math.floor(Math.random()*terms.length)];
+  var lines = String(k.a).split('\n');
+  var line = lines.filter(function(l){ return l.indexOf(t) >= 0; })[0] || lines[0];
+  var q = line.split(t).join('____');
+  if(q.indexOf('____') < 0) return null;
+  return {k:k, typ:'填空', q:'填空：' + q, a:t, g:{kind:'fill', term:t}};
+}
+function makeChoice(k){
+  var all = X.C.kps || [];
+  var same = all.filter(function(x){ return x.m === k.m && x.id !== k.id && x.a && String(x.a).length > 25; });
+  if(same.length < 3) return null;
+  var opts = [clip(k.a, 90)];
+  shuffle(same).slice(0,3).forEach(function(x){ opts.push(clip(x.a, 90)); });
+  var right = opts[0];
+  opts = shuffle(opts);
+  return {
+    k:k, typ:'选择',
+    q: /[？?]$/.test(String(k.q)) ? k.q : ('关于「' + k.t + '」，下列说法最准确的是：'),
+    a: right,
+    g:{kind:'choice', options:opts, correct:opts.indexOf(right)}
+  };
+}
+
+/* 判断题题库 */
+var JUDGE = [
+ {q:'比较优势理论认为，即使一国在两种产品上都具有绝对优势，也应专业化生产机会成本较低的产品。',ans:true,why:'比较优势依据机会成本，而非绝对成本。'},
+ {q:'要素禀赋论认为，一国应出口密集使用其稀缺要素的产品。',ans:false,why:'应出口密集使用丰裕要素的产品。'},
+ {q:'里昂惕夫之谜发现，美国出口商品的资本密集度低于进口替代品。',ans:true,why:'与 H-O 预测相反，故称谜。'},
+ {q:'规模经济是短期概念，指产量增加导致平均成本下降。',ans:false,why:'规模经济是长期概念，所有要素均可调整。'},
+ {q:'关税同盟成员国之间取消关税，对外实行共同关税。',ans:true,why:'这是关税同盟与自由贸易区的关键区别。'},
+ {q:'贸易转移一定会提高成员国福利。',ans:false,why:'贸易转移可能降低福利，净效应取决于创造与转移的比较。'},
+ {q:'最惠国待遇意味着给一国的优惠必须无条件给予所有成员。',ans:true,why:'WTO 最惠国待遇的核心。'},
+ {q:'国民待遇要求外国产品进入后享受与本国产品同等待遇。',ans:true,why:'国民待遇针对进口后的国内待遇。'},
+ {q:'反倾销税属于关税壁垒。',ans:true,why:'以关税形式实施，属于关税壁垒。'},
+ {q:'配额租金在任何情况下都归政府所有。',ans:false,why:'通常归配额持有者，除非政府公开拍卖。'},
+ {q:'有效保护率只考虑成品关税，不考虑投入品关税。',ans:false,why:'有效保护率必须考虑投入品关税。'},
+ {q:'OLI 范式认为，企业只有同时具备所有权、区位、内部化优势才应对外直接投资。',ans:true,why:'三者缺一，选择出口或许可。'},
+ {q:'绿地投资比跨国并购进入速度更快。',ans:false,why:'并购可快速获得现成产能与渠道，绿地建设周期长。'},
+ {q:'转移定价是跨国公司内部交易价格，可用来转移利润。',ans:true,why:'内部交易价格可调节各国子公司利润。'},
+ {q:'国际收支平衡表中，经常账户包括货物、服务、收益和经常转移。',ans:true,why:'这是经常账户的四个组成部分。'},
+ {q:'J 曲线说明本币贬值会立即改善贸易收支。',ans:false,why:'贬值初期先恶化，之后才改善。'},
+ {q:'购买力平价认为两国汇率由两国物价水平之比决定。',ans:true,why:'绝对购买力平价的基本结论。'},
+ {q:'利率平价认为两国利差会被远期汇率升贴水抵消。',ans:true,why:'否则存在套利机会。'},
+ {q:'特里芬难题指美元作为国际货币面临信心与清偿力的两难。',ans:true,why:'美元外流与币值稳定之间的矛盾。'},
+ {q:'固定汇率制下货币政策完全独立。',ans:false,why:'蒙代尔三角：固定汇率、资本流动、货币政策独立三者不可兼得。'},
+ {q:'欧洲货币市场是指在欧洲境内经营本币的市场。',ans:false,why:'指在发行国境外经营该货币的市场，如伦敦美元市场。'},
+ {q:'牛鞭效应指需求信息沿供应链向上游逐级放大。',ans:true,why:'需求信息失真导致上游波动更大。'},
+ {q:'产品标准化策略适合文化差异大的市场。',ans:false,why:'文化差异大更适合差异化策略。'},
+ {q:'国际财务管理只需要关注外汇风险。',ans:false,why:'还包括融资、投资、营运资本、税务筹划等。'}
+];
+
+/* ---------- 组卷 ---------- */
+function buildQs(kind, pool, types){
+  var total = kind === 'all' ? 20 : 10;
+  var bag = {};
+  types.forEach(function(t){
+    if(t === '判断'){
+      if(kind === 'all') bag[t] = shuffle(JUDGE).slice(0,6).map(function(j){
+        return {k:null, typ:'判断', q:j.q, a:j.ans ? '对' : '错', g:{kind:'judge', ans:j.ans, why:j.why}};
+      });
+      else bag[t] = [];
+    }else if(t === '填空'){
+      bag[t] = shuffle(pool).map(makeFill).filter(Boolean).slice(0,8);
+    }else if(t === '选择'){
+      bag[t] = shuffle(pool).map(makeChoice).filter(Boolean).slice(0,8);
+    }else{
+      var arr = pool.filter(function(k){ return String(k.ty||'').indexOf(t) >= 0; });
+      bag[t] = shuffle(arr).slice(0,8).map(function(k){
+        return {k:k, typ:t, q:k.q, a:k.a, g:null};
+      });
+    }
+  });
+
+  var out = [], guard = 0;
+  while(out.length < total && guard < 300){
+    var added = false;
+    for(var i=0;i<types.length && out.length<total;i++){
+      var t = types[i], arr = bag[t];
+      if(arr && arr.length){ out.push(arr.shift()); added = true; }
+    }
+    if(!added) break;
+    guard++;
+  }
+  return shuffle(out).slice(0, total);
+}
+
+/* ---------- 状态 ---------- */
+var TT = null;
+
+/* ---------- 入口 ---------- */
+X.openTest = function(){
+  X.openShell('wide');
+  X._panelKind = 'test';
+  var sel = getTypes();
+  var st = X.poolStage ? X.poolStage().length : 0;
+  var all = (X.C.kps || []).length;
+  var p = document.getElementById('imxPanel');
+
+  var h = '<div class="imx-h"><div><b>自测</b><div class="imx-sub">先勾题型，只抽你勾的</div></div>'
+    + '<button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body">';
+  h += '<div class="qt-types">';
+  TYPES.forEach(function(t){
+    var on = sel.indexOf(t) >= 0;
+    h += '<label class="qt-cb' + (on ? ' on' : '') + '"><input type="checkbox" value="' + t + '"' + (on ? ' checked' : '') + '>' + t + '</label>';
+  });
+  h += '</div>';
+  h += '<div class="imx-tip" style="margin-top:8px">阶段性自测只从近 7 天学过的考点抽；判断题只出现在综合自测。</div>';
+
+  h += '<div class="imx-task" style="padding:16px;align-items:flex-start;flex-direction:column;gap:8px;margin-top:14px">'
+    + '<b style="font-size:14px">阶段性自测</b>'
+    + '<div class="imx-sub" style="margin:0;line-height:1.6">从今日和近 7 天学过的考点里抽 10 题。</div>'
+    + '<div class="imx-sub" style="margin:0">当前可抽 <b style="color:#3665f3">' + st + '</b> 条</div>'
+    + '<button class="imx-btn" data-stage="1">开始阶段性自测</button></div>';
+
+  h += '<div class="imx-task" style="padding:16px;align-items:flex-start;flex-direction:column;gap:8px;margin-top:12px">'
+    + '<b style="font-size:14px">综合性自测</b>'
+    + '<div class="imx-sub" style="margin:0;line-height:1.6">跨四个模块抽 20 题，题型按你勾选的来。</div>'
+    + '<div class="imx-sub" style="margin:0">题库 <b style="color:#3665f3">' + all + '</b> 条</div>'
+    + '<button class="imx-btn" data-all="1">开始综合性自测</button></div>';
+  h += '</div>';
+  p.innerHTML = h;
+
+  p.querySelector('[data-x]').onclick = X.close;
+  // 勾选变化
+  var boxes = p.querySelectorAll('.qt-cb input');
+  for(var i=0;i<boxes.length;i++){
+    boxes[i].onchange = function(){
+      var arr = [];
+      var allBoxes = p.querySelectorAll('.qt-cb input');
+      for(var j=0;j<allBoxes.length;j++){ if(allBoxes[j].checked) arr.push(allBoxes[j].value); }
+      setTypes(arr);
+      for(var k=0;k<allBoxes.length;k++){
+        allBoxes[k].parentNode.className = 'qt-cb' + (allBoxes[k].checked ? ' on' : '');
+      }
+    };
+  }
+  p.querySelector('[data-stage]').onclick = function(){ start('stage'); };
+  p.querySelector('[data-all]').onclick = function(){ start('all'); };
+};
+
+function start(kind){
+  var types = getTypes();
+  if(!types.length){ X.toast('至少勾一个题型'); return; }
+  if(kind === 'stage' && types.length === 1 && types[0] === '判断'){
+    X.toast('阶段性自测不抽判断题，请再勾一个题型'); return;
+  }
+  var pool = kind === 'stage' ? (X.poolStage ? X.poolStage() : []) : (X.C.kps || []);
+  if(kind === 'stage' && pool.length < 3){ X.toast('最近学过的太少，先去今日任务台背几条'); return; }
+  var qs = buildQs(kind, pool, types);
+  if(!qs.length){ X.toast('这些题型暂时抽不出题'); return; }
+  TT = {kind:kind, types:types, qs:qs, i:0, gains:[], pick:-1};
+  renderQ();
+}
+
+/* ---------- 出题界面 ---------- */
+function renderQ(){
+  var it = TT.qs[TT.i], p = document.getElementById('imxPanel');
+  var pct = Math.round(TT.i / TT.qs.length * 100);
+  var h = '<div class="imx-h"><div><b>' + (TT.kind === 'all' ? '综合性自测' : '阶段性自测') + '</b>'
+    + '<div class="imx-sub">第 ' + (TT.i+1) + ' / ' + TT.qs.length + ' 题 · ' + it.typ + '</div></div>'
+    + '<button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-prog"><i style="width:' + pct + '%"></i></div>';
+  h += '<div class="imx-body" id="qtBody">';
+  h += '<div class="imx-qmeta"><span class="imx-tag">' + it.typ + '</span>'
+    + (it.k ? '<span class="imx-tag ghost">' + (X.mName ? X.mName(it.k) : '') + '</span><span class="imx-tag ghost">' + (it.k.lv||'') + '</span>' : '')
+    + '</div>';
+  h += '<div class="imx-q">' + X.esc(it.q) + '</div>';
+
+  if(it.g && it.g.kind === 'choice'){
+    h += '<div class="qt-opts">';
+    it.g.options.forEach(function(o,i){
+      h += '<button type="button" class="qt-opt" data-opt="' + i + '">' + String.fromCharCode(65+i) + '. ' + X.esc(o) + '</button>';
+    });
+    h += '</div>';
+  }else if(it.g && it.g.kind === 'judge'){
+    h += '<div class="qt-opts"><button type="button" class="qt-opt" data-tf="1">对</button>'
+      + '<button type="button" class="qt-opt" data-tf="0">错</button></div>';
+  }else if(it.g && it.g.kind === 'fill'){
+    h += '<input id="qtInput" class="imx-ta" style="min-height:48px" placeholder="填这个空…">';
+  }else{
+    h += '<textarea id="qtInput" class="imx-ta" placeholder="写关键词和要点…"></textarea>';
+  }
+
+  h += '<div class="imx-row"><button class="imx-btn" data-sub="1">提交</button>'
+    + '<button class="imx-btn ghost" data-skip="1">不会，跳过</button></div>';
+  h += '<div class="imx-hint">' + (it.typ === '判断' ? '判断对错，提交后看解析。' : '按点和必背术语给分，不要求原文。') + '</div>';
+  h += '</div>';
+  p.innerHTML = h;
+
+  p.querySelector('[data-x]').onclick = X.close;
+  TT.pick = -1;
+  var opts = p.querySelectorAll('[data-opt]');
+  for(var i=0;i<opts.length;i++){
+    opts[i].onclick = function(){
+      TT.pick = parseInt(this.getAttribute('data-opt'), 10);
+      for(var j=0;j<opts.length;j++) opts[j].className = 'qt-opt';
+      this.className = 'qt-opt on';
+    };
+  }
+  var tfs = p.querySelectorAll('[data-tf]');
+  for(var m=0;m<tfs.length;m++){
+    tfs[m].onclick = function(){
+      TT.pick = this.getAttribute('data-tf') === '1';
+      for(var n=0;n<tfs.length;n++) tfs[n].className = 'qt-opt';
+      this.className = 'qt-opt on';
+    };
+  }
+  p.querySelector('[data-sub]').onclick = function(){ judgeIt(false); };
+  p.querySelector('[data-skip]').onclick = function(){ judgeIt(true); };
+  var inp = document.getElementById('qtInput'); if(inp) inp.focus();
+}
+
+/* ---------- 判分 ---------- */
+function judgeIt(skip){
+  var it = TT.qs[TT.i];
+  var rate = 0, gain = 0, ok = false;
+
+  if(!skip){
+    if(it.g && it.g.kind === 'choice'){
+      if(TT.pick < 0){ X.toast('先选一个选项'); return; }
+      ok = TT.pick === it.g.correct; rate = ok ? 1 : 0;
+    }else if(it.g && it.g.kind === 'judge'){
+      if(typeof TT.pick !== 'boolean'){ X.toast('先选对或错'); return; }
+      ok = TT.pick === it.g.ans; rate = ok ? 1 : 0;
+    }else if(it.g && it.g.kind === 'fill'){
+      var v = document.getElementById('qtInput').value || '';
+      ok = X.norm(v).indexOf(X.norm(it.g.term)) >= 0 || X.norm(it.g.term).indexOf(X.norm(v)) >= 0 && X.norm(v).length >= 2;
+      rate = ok ? 1 : 0;
+    }else{
+      var txt = document.getElementById('qtInput').value || '';
+      var r = X.score(txt, it.k);
+      rate = r.rate;
+      it.res = r;
+    }
+  }
+
+  if(it.k && !skip) gain = X.gain(it.k, rate);
+  if(gain) { X.chord(); X.confetti(30); }
+  TT.gains.push({t: it.k ? (it.k.t || it.k.id) : ('判断题'), gain: gain, rate: rate});
+  renderFb(rate, gain, it, ok);
+}
+
+function renderFb(rate, gain, it, ok){
+  var p = document.getElementById('imxPanel');
+  var pct = Math.round(rate * 100);
+  var h = '<div class="imx-h"><div><b>本题结果</b><div class="imx-sub">' + it.typ + '</div></div>'
+    + '<button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body">';
+  h += '<div class="imx-fb"><div class="imx-rate">' + pct + '<small>%</small></div><div>'
+    + '<div style="font:700 14px/1.4 system-ui;color:' + (gain ? '#16894b' : (rate >= .5 ? '#d99400' : '#8a96ad')) + '">'
+    + (gain ? '熟练度 +' + gain : (rate >= .5 ? '部分正确' : '这次没过')) + '</div>'
+    + '<div class="imx-sub">' + (it.typ === '选择' || it.typ === '判断' ? '客观题：答对得分，答错不得分' : '按点与术语给分') + '</div></div></div>';
+
+  if(it.g && it.g.kind === 'choice'){
+    h += '<div class="imx-ref"><label>正确答案</label><p>' + String.fromCharCode(65 + it.g.correct) + '. ' + X.esc(it.g.options[it.g.correct]) + '</p></div>';
+  }else if(it.g && it.g.kind === 'judge'){
+    h += '<div class="imx-ref"><label>正确答案</label><p>' + (it.g.ans ? '对' : '错') + '</p></div>';
+    h += '<div class="imx-ref"><label>解析</label><p>' + X.esc(it.g.why) + '</p></div>';
+  }else if(it.g && it.g.kind === 'fill'){
+    h += '<div class="imx-ref"><label>答案</label><p>' + X.esc(it.g.term) + '</p></div>';
+  }else{
+    var k = it.k;
+    h += '<div class="imx-ref"><label>标准表述</label><p>' + X.esc(k.a) + '</p></div>';
+    var ex = X.findEx && X.findEx(k.id);
+    if(ex && (ex.eg || ex.sc)){
+      h += '<div class="mx-eg"><b>通俗例子</b>' + X.esc(ex.eg || '') + (ex.sc ? '<div style="color:#8a6a2f;margin-top:4px">场景：' + X.esc(ex.sc) + '</div>' : '') + '</div>';
+    }
+  }
+
+  h += '<div class="imx-row"><button class="imx-btn" data-next="1">'
+    + (TT.i + 1 >= TT.qs.length ? '看结算' : '下一题') + '</button></div>';
+  h += '</div>';
+  p.innerHTML = h;
+  p.querySelector('[data-x]').onclick = X.close;
+  p.querySelector('[data-next]').onclick = function(){
+    TT.i++;
+    if(TT.i >= TT.qs.length) finish(); else renderQ();
+  };
+}
+
+/* ---------- 结算 ---------- */
+function finish(){
+  var n = TT.qs.length, sum = 0;
+  TT.gains.forEach(function(g){ sum += g.rate; });
+  var avg = n ? sum / n : 0;
+  var rate = Math.round(avg * 100);
+  var rank = avg >= .85 ? 'S' : (avg >= .7 ? 'A' : (avg >= .55 ? 'B' : 'C'));
+  var ups = TT.gains.filter(function(g){ return g.gain > 0; });
+  var enc = rank === 'S' ? '这组很稳，保持这个手感。'
+    : rank === 'A' ? '框架立住了，把漏点补上就是满分。'
+    : rank === 'B' ? '方向对，关键术语还要再准一点。'
+    : '先回今日任务台过一遍标准表述，明天再测。';
+  var p = document.getElementById('imxPanel');
+  var h = '<div class="imx-h"><div><b>' + (TT.kind === 'all' ? '综合性自测 · 结算' : '阶段性自测 · 结算') + '</b>'
+    + '<div class="imx-sub">' + n + ' 题 · 平均得分率</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body imx-result">';
+  h += '<div class="imx-stamp rank' + rank + '">' + rank + '</div>';
+  h += '<div class="imx-big" id="qtBig">0%</div>';
+  h += '<div class="imx-enc">' + enc + '</div>';
+  h += '<div class="imx-sec">本次升级 <em>' + ups.length + '</em> 个考点</div>';
+  if(ups.length){
+    ups.forEach(function(g){ h += '<div class="imx-up"><span>' + X.esc(g.t) + '</span><b>熟练度 +' + g.gain + '</b></div>'; });
+  }else{
+    h += '<div class="imx-empty">这组没有考点升级，先补漏再测</div>';
+  }
+  h += '<div class="imx-row" style="justify-content:center"><button class="imx-btn" data-again="1">再来一组</button>'
+    + '<button class="imx-btn ghost" data-x="1">关闭</button></div></div>';
+  p.innerHTML = h;
+
+  var xs = p.querySelectorAll('[data-x]');
+  for(var i=0;i<xs.length;i++) xs[i].onclick = X.close;
+  p.querySelector('[data-again]').onclick = function(){ start(TT.kind); };
+
+  var big = document.getElementById('qtBig'), cur = 0;
+  var timer = setInterval(function(){
+    cur += Math.max(1, Math.round(rate / 24));
+    if(cur >= rate){ cur = rate; clearInterval(timer); }
+    big.textContent = cur + '%';
+  }, 28);
+
+  X.chord(); X.confetti(80);
+  setTimeout(function(){ X.confetti(50, window.innerWidth*.3, window.innerHeight*.42); }, 260);
+  setTimeout(function(){ X.confetti(50, window.innerWidth*.7, window.innerHeight*.42); }, 460);
+  try{ X.refreshBadge(); X.refreshDock(); }catch(e){}
+}
+
+/* ---------- 样式 ---------- */
+var st = document.createElement('style');
+st.id = 'qtStyle';
+st.textContent = `
+.qt-types{display:flex;flex-wrap:wrap;gap:8px}
+.qt-cb{display:inline-flex;align-items:center;gap:6px;border:1px solid #dfe6f3;background:#fff;color:#5a6a86;border-radius:20px;padding:7px 12px;font-size:13px;cursor:pointer}
+.qt-cb.on{background:#eef3ff;border-color:#3665f3;color:#3665f3}
+.qt-cb input{width:auto;height:auto;margin:0}
+.qt-opts{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.qt-opt{text-align:left;border:1px solid #dfe6f3;background:#fff;color:#33415c;border-radius:11px;padding:12px 14px;font-size:13.5px;line-height:1.6}
+.qt-opt.on{border-color:#3665f3;background:#eef3ff;color:#22304d}
+`;
+document.head.appendChild(st);
+
+console.log('[434] 自测题型 v2 已生效');
+})();
+</script>
+<!-- ================= AI 助教（DeepSeek / OpenAI 兼容） ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._ai) return; X._ai = 1;
+
+var CFGKEY = 'imx434_ai_cfg';
+var CALLKEY = 'imx434_ai_calls';
+var SYNCKEY = 'imx434_sync_cfg';
+
+function loadCfg(){
+  try{ return JSON.parse(localStorage.getItem(CFGKEY) || '{}') || {}; }catch(e){ return {}; }
+}
+function saveCfg(c){ try{ localStorage.setItem(CFGKEY, JSON.stringify(c)); }catch(e){} }
+
+function b64enc(str){
+  var bytes = new TextEncoder().encode(str), bin = '';
+  for(var i=0;i<bytes.length;i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+function b64dec(s){
+  var bin = atob(String(s||'').replace(/\s/g,''));
+  var bytes = new Uint8Array(bin.length);
+  for(var i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+function syncCfg(){
+  try{ return JSON.parse(localStorage.getItem(SYNCKEY) || '{}') || {}; }catch(e){ return {}; }
+}
+
+/* ---------- ai.json 跟随私有仓库同步 ---------- */
+async function pullAI(){
+  if(localStorage.getItem(CFGKEY)) return;
+  var s = syncCfg();
+  if(!s.repo || !s.token) return;
+  try{
+    var url = 'https://api.github.com/repos/' + s.repo + '/contents/ai.json?ref=' + encodeURIComponent(s.branch||'main');
+    var r = await fetch(url, {headers:{'Authorization':'Bearer '+s.token,'Accept':'application/vnd.github+json'},cache:'no-store'});
+    if(!r.ok) return;
+    var j = await r.json();
+    var o = JSON.parse(b64dec(j.content) || '{}');
+    if(o && o.key){ localStorage.setItem(CFGKEY, JSON.stringify(o)); }
+  }catch(e){}
+}
+async function pushAI(){
+  var c = loadCfg(), s = syncCfg();
+  if(!c.sync || !c.key || !s.repo || !s.token) return;
+  try{
+    var base = 'https://api.github.com/repos/' + s.repo + '/contents/ai.json';
+    var get = await fetch(base + '?ref=' + encodeURIComponent(s.branch||'main'), {headers:{'Authorization':'Bearer '+s.token,'Accept':'application/vnd.github+json'},cache:'no-store'});
+    var sha = null;
+    if(get.ok){ var g = await get.json(); sha = g.sha; }
+    var body = {message:'ai config',content:b64enc(JSON.stringify(c)),branch:s.branch||'main'};
+    if(sha) body.sha = sha;
+    await fetch(base,{method:'PUT',headers:{'Authorization':'Bearer '+s.token,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)});
+  }catch(e){}
+}
+
+/* ---------- 调用 ---------- */
+function todayCount(){
+  try{
+    var o = JSON.parse(localStorage.getItem(CALLKEY) || '{}');
+    if(o.date !== X.today()) return 0;
+    return o.n || 0;
+  }catch(e){ return 0; }
+}
+function addCount(){
+  try{
+    var o = JSON.parse(localStorage.getItem(CALLKEY) || '{}');
+    if(o.date !== X.today()) o = {date:X.today(), n:0};
+    o.n = (o.n||0) + 1;
+    localStorage.setItem(CALLKEY, JSON.stringify(o));
+  }catch(e){}
+}
+async function chat(messages, maxTokens){
+  var c = loadCfg();
+  if(!c.key) throw new Error('还没填 API Key');
+  if(todayCount() >= (c.limit || 60)) throw new Error('今天调用次数到上限了（可在设置里改）');
+
+  var base = (c.proxy || c.base || 'https://api.deepseek.com/v1').replace(/\/+$/,'');
+  var url = /\/chat\/completions$/.test(base) ? base : base + '/chat/completions';
+
+  var ctrl = new AbortController();
+  var timer = setTimeout(function(){ ctrl.abort(); }, 60000);
+  try{
+    var r = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer ' + c.key},
+      body: JSON.stringify({
+        model: c.model || 'deepseek-chat',
+        messages: messages,
+        temperature: 0.3,
+        max_tokens: maxTokens || 800,
+        stream: false
+      }),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    if(!r.ok){
+      var t = await r.text();
+      throw new Error('API ' + r.status + '：' + String(t).slice(0,140));
+    }
+    var j = await r.json();
+    addCount();
+    return j.choices[0].message.content;
+  }catch(e){
+    clearTimeout(timer);
+    if(e.name === 'AbortError') throw new Error('请求超时');
+    if(e instanceof TypeError) throw new Error('直连失败：多半是浏览器跨域限制，需要填代理地址');
+    throw e;
+  }
+}
+function parseJSON(s){
+  try{ return JSON.parse(s); }catch(e){}
+  var m = String(s).match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+  if(m){ try{ return JSON.parse(m[0]); }catch(e){} }
+  throw new Error('AI 返回格式看不懂');
+}
+
+/* ---------- 当前卡片 ---------- */
+function currentCard(){
+  try{ return DATA.find(function(x){ return x.id === UI.queue[UI.qi]; }); }catch(e){ return null; }
+}
+
+/* ---------- 弹窗外壳 ---------- */
+function panel(html){
+  X.openShell('wide');
+  X._panelKind = 'ai';
+  document.getElementById('imxPanel').innerHTML = html;
+}
+
+/* ---------- 主菜单 ---------- */
+X.openAI = function(){
+  var c = loadCfg();
+  var has = !!c.key;
+  var h = '<div class="imx-h"><div><b>AI 助教</b><div class="imx-sub">'
+    + (has ? ('已配置 · ' + (c.model||'deepseek-chat')) : '还没配置 API')
+    + '</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body">';
+  h += '<button class="imx-btn" data-act="grade" style="width:100%;margin-bottom:8px">批改当前这张卡</button>';
+  h += '<button class="imx-btn" data-act="gen" style="width:100%;margin-bottom:8px">对当前卡出 3 道变式题</button>';
+  h += '<button class="imx-btn" data-act="summary" style="width:100%;margin-bottom:8px">生成今日总结</button>';
+  h += '<button class="imx-btn ghost" data-act="settings" style="width:100%">AI 设置</button>';
+  h += '<div class="imx-tip" style="margin-top:10px">只在你点按钮时调用；每次只发当前题目、答案和你的作答，不发整个题库。</div>';
+  h += '</div>';
+  panel(h);
+  document.querySelector('#imxPanel [data-x]').onclick = X.close;
+  var acts = document.querySelectorAll('#imxPanel [data-act]');
+  for(var i=0;i<acts.length;i++){
+    acts[i].onclick = function(){
+      var a = this.getAttribute('data-act');
+      if(a === 'settings') aiSettings();
+      else if(a === 'grade') aiGrade();
+      else if(a === 'gen') aiGen();
+      else if(a === 'summary') aiSummary();
+    };
+  }
+};
+
+/* ---------- 设置 ---------- */
+function aiSettings(){
+  var c = loadCfg();
+  var h = '<div class="imx-h"><div><b>AI 设置</b><div class="imx-sub">OpenAI 兼容接口</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body">';
+  h += '<label class="ai-lb">API 地址</label><input class="ai-in" id="aiBase" placeholder="https://api.deepseek.com/v1" value="' + X.esc(c.base || 'https://api.deepseek.com/v1') + '">';
+  h += '<label class="ai-lb">模型</label><input class="ai-in" id="aiModel" placeholder="deepseek-chat" value="' + X.esc(c.model || 'deepseek-chat') + '">';
+  h += '<label class="ai-lb">API Key</label><input class="ai-in" id="aiKey" type="password" placeholder="sk-… 只存本机" value="' + X.esc(c.key || '') + '">';
+  h += '<label class="ai-lb">代理地址（可选，直连失败时填）</label><input class="ai-in" id="aiProxy" placeholder="https://你的worker.workers.dev" value="' + X.esc(c.proxy || '') + '">';
+  h += '<label class="ai-lb">每日调用上限</label><input class="ai-in" id="aiLimit" type="number" value="' + (c.limit || 60) + '">';
+  h += '<label class="ai-ck"><input type="checkbox" id="aiSync"' + (c.sync ? ' checked' : '') + '> 把配置同步到其他设备（存私有仓库 ai.json）</label>';
+  h += '<div class="imx-row"><button class="imx-btn" data-save="1">保存</button>'
+    + '<button class="imx-btn ghost" data-test="1">测试连接</button>'
+    + '<button class="imx-btn ghost" data-back="1">返回</button></div>';
+  h += '<div class="imx-tip" id="aiMsg" style="margin-top:10px"></div>';
+  h += '</div>';
+  panel(h);
+  document.querySelector('#imxPanel [data-x]').onclick = X.close;
+  document.querySelector('#imxPanel [data-back]').onclick = X.openAI;
+  document.querySelector('#imxPanel [data-save]').onclick = function(){
+    var nc = {
+      base: document.getElementById('aiBase').value.trim(),
+      model: document.getElementById('aiModel').value.trim() || 'deepseek-chat',
+      key: document.getElementById('aiKey').value.trim(),
+      proxy: document.getElementById('aiProxy').value.trim(),
+      limit: parseInt(document.getElementById('aiLimit').value,10) || 60,
+      sync: document.getElementById('aiSync').checked
+    };
+    saveCfg(nc);
+    pushAI();
+    document.getElementById('aiMsg').textContent = '已保存';
+    setTimeout(X.openAI, 400);
+  };
+  document.querySelector('#imxPanel [data-test]').onclick = async function(){
+    var msg = document.getElementById('aiMsg');
+    msg.textContent = '测试中…';
+    try{
+      saveCfg({
+        base: document.getElementById('aiBase').value.trim(),
+        model: document.getElementById('aiModel').value.trim() || 'deepseek-chat',
+        key: document.getElementById('aiKey').value.trim(),
+        proxy: document.getElementById('aiProxy').value.trim(),
+        limit: parseInt(document.getElementById('aiLimit').value,10) || 60,
+        sync: document.getElementById('aiSync').checked
+      });
+      var r = await chat([{role:'user',content:'只回复两个字：可用'}], 20);
+      msg.textContent = '连接成功：' + r.trim();
+    }catch(e){
+      msg.textContent = '失败：' + e.message;
+    }
+  };
+}
+
+/* ---------- 批改 ---------- */
+function aiGrade(){
+  var c = loadCfg();
+  if(!c.key){ aiSettings(); return; }
+  var k = currentCard();
+  if(!k){ X.toast('先打开一张卡再批改'); return; }
+
+  var h = '<div class="imx-h"><div><b>AI 批改</b><div class="imx-sub">' + X.esc(k.t||'') + '</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body">';
+  h += '<div class="imx-q">' + X.esc(k.q || ('请解释：' + k.t)) + '</div>';
+  h += '<textarea class="imx-ta" id="aiAns" placeholder="写你的答案，AI 按点判分…"></textarea>';
+  h += '<div class="imx-row"><button class="imx-btn" data-run="1">提交批改</button><button class="imx-btn ghost" data-back="1">返回</button></div>';
+  h += '<div id="aiOut" style="margin-top:12px"></div>';
+  h += '</div>';
+  panel(h);
+  document.querySelector('#imxPanel [data-x]').onclick = X.close;
+  document.querySelector('#imxPanel [data-back]').onclick = X.openAI;
+
+  document.querySelector('#imxPanel [data-run]').onclick = async function(){
+    var ans = document.getElementById('aiAns').value.trim();
+    if(!ans){ X.toast('先写答案'); return; }
+    var out = document.getElementById('aiOut');
+    out.innerHTML = '<div class="imx-tip">AI 批改中…</div>';
+    try{
+      var sys = '你是434国际商务考研阅卷老师。严格但按点给分，允许同义表达。只输出JSON，不要markdown，不要解释。';
+      var user = '题目：' + (k.q||k.t) + '\n标准答案：' + k.a + '\n学生答案：' + ans +
+        '\n请输出JSON：{"score":0到100的整数,"hit":["踩到的点"],"miss":["漏掉的点"],"comment":"不超过60字的建议"}';
+      var txt = await chat([{role:'system',content:sys},{role:'user',content:user}], 700);
+      var o = parseJSON(txt);
+      var score = Math.max(0, Math.min(100, parseInt(o.score,10) || 0));
+      var gain = score >= 70 ? 2 : (score >= 50 ? 1 : 0);
+      var hh = '<div class="imx-fb"><div class="imx-rate">' + score + '<small>分</small></div>'
+        + '<div><div style="font:700 14px/1.4 system-ui;color:' + (score>=70?'#16894b':'#8a96ad') + '">'
+        + (gain ? '建议熟练度 +' + gain : '这次没到升级线') + '</div>'
+        + '<div class="imx-sub">AI 语义判分</div></div></div>';
+      if(o.hit && o.hit.length) hh += '<div class="imx-sec">踩到的点</div><div class="imx-chips">' + o.hit.map(function(t){ return '<span class="imx-chip">' + X.esc(t) + '</span>'; }).join('') + '</div>';
+      if(o.miss && o.miss.length) hh += '<div class="imx-sec">漏掉的点</div><div class="imx-chips">' + o.miss.map(function(t){ return '<span class="imx-chip miss">' + X.esc(t) + '</span>'; }).join('') + '</div>';
+      if(o.comment) hh += '<div class="imx-ref"><label>建议</label><p>' + X.esc(o.comment) + '</p></div>';
+      hh += '<div class="imx-row"><button class="imx-btn" id="aiAdopt">采用这个分数</button></div>';
+      out.innerHTML = hh;
+      document.getElementById('aiAdopt').onclick = function(){
+        if(!gain){ X.toast('不到 50 分，不升级'); return; }
+        X.gain(k, score/100);
+        X.chord(); X.confetti(40);
+        X.toast('已按 AI 分数升级');
+      };
+    }catch(e){
+      out.innerHTML = '<div class="imx-ref"><label>失败</label><p>' + X.esc(e.message) + '</p></div>';
+    }
+  };
+}
+
+/* ---------- 变式题 ---------- */
+async function aiGen(){
+  var c = loadCfg();
+  if(!c.key){ aiSettings(); return; }
+  var k = currentCard();
+  if(!k){ X.toast('先打开一张卡'); return; }
+  var h = '<div class="imx-h"><div><b>变式题</b><div class="imx-sub">' + X.esc(k.t||'') + '</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body"><div id="aiOut"><div class="imx-tip">出题中…</div></div>'
+    + '<div class="imx-row"><button class="imx-btn ghost" data-back="1">返回</button></div></div>';
+  panel(h);
+  document.querySelector('#imxPanel [data-x]').onclick = X.close;
+  document.querySelector('#imxPanel [data-back]').onclick = X.openAI;
+  try{
+    var sys = '你是434国际商务考研命题老师。只输出JSON数组，不要markdown。';
+    var user = '考点：' + (k.t||'') + '\n标准表述：' + k.a +
+      '\n请出3道不同题型的变式题（选择、简答、案例各一道），覆盖这个考点。' +
+      '输出：[{"type":"选择","q":"题干","a":"答案","points":["要点1","要点2"]}]';
+    var txt = await chat([{role:'system',content:sys},{role:'user',content:user}], 1000);
+    var arr = parseJSON(txt);
+    if(!Array.isArray(arr)) arr = arr.items || [];
+    var out = '';
+    arr.forEach(function(q,i){
+      out += '<div class="imx-ref" style="margin-top:10px"><label>' + X.esc(q.type||('题'+(i+1))) + '</label>'
+        + '<p><b>Q：</b>' + X.esc(q.q||'') + '</p>'
+        + '<p style="margin-top:6px"><b>A：</b>' + X.esc(q.a||'') + '</p>'
+        + (q.points && q.points.length ? '<p style="margin-top:6px;color:#8a96ad">要点：' + q.points.map(X.esc).join('；') + '</p>' : '')
+        + '</div>';
+    });
+    document.getElementById('aiOut').innerHTML = out || '<div class="imx-empty">没生成出来，再试一次</div>';
+  }catch(e){
+    document.getElementById('aiOut').innerHTML = '<div class="imx-ref"><label>失败</label><p>' + X.esc(e.message) + '</p></div>';
+  }
+}
+
+/* ---------- 今日总结 ---------- */
+async function aiSummary(){
+  var c = loadCfg();
+  if(!c.key){ aiSettings(); return; }
+  var s = null; try{ s = Store.state; }catch(e){}
+  var kp = (s && s.kp) ? s.kp : {};
+  var learned = 0, weak = 0;
+  Object.keys(kp).forEach(function(id){
+    if(kp[id] && kp[id].seen > 0){ learned++; if((kp[id].m||0) <= 2) weak++; }
+  });
+  var t = X.buildTasks ? X.buildTasks() : {due:[],fresh:[],done:[]};
+  var data = {
+    date: X.today(),
+    今日到期复习: t.due.length,
+    今日新学: t.fresh.length,
+    今日已完成: (t.done||[]).length,
+    累计学过: learned,
+    薄弱考点数: weak,
+    错题数: (s && s.wrong) ? s.wrong.length : 0
+  };
+  var h = '<div class="imx-h"><div><b>今日总结</b><div class="imx-sub">AI 根据统计生成</div></div><button class="imx-x" data-x="1">×</button></div>';
+  h += '<div class="imx-body"><div id="aiOut"><div class="imx-tip">生成中…</div></div>'
+    + '<div class="imx-row"><button class="imx-btn ghost" data-back="1">返回</button></div></div>';
+  panel(h);
+  document.querySelector('#imxPanel [data-x]').onclick = X.close;
+  document.querySelector('#imxPanel [data-back]').onclick = X.openAI;
+  try{
+    var sys = '你是434国际商务考研学习教练。说话具体、不空泛，不闲聊。';
+    var user = '这是学生今天的数据：' + JSON.stringify(data) +
+      '\n请写：①今天完成了什么；②最薄弱的2个点（结合数据推测，不要编造具体考点名）；③明天先做什么。' +
+      '总字数不超过160字，分三行，不要客套。';
+    var txt = await chat([{role:'system',content:sys},{role:'user',content:user}], 500);
+    document.getElementById('aiOut').innerHTML = '<div class="imx-ref"><label>今日总结</label><p style="white-space:pre-wrap">' + X.esc(txt) + '</p></div>';
+  }catch(e){
+    document.getElementById('aiOut').innerHTML = '<div class="imx-ref"><label>失败</label><p>' + X.esc(e.message) + '</p></div>';
+  }
+}
+
+/* ---------- 入口按钮 ---------- */
+function addEntry(){
+  var dock = document.getElementById('imxDock');
+  if(dock && !document.getElementById('imxAIDock')){
+    var b = document.createElement('button');
+    b.id = 'imxAIDock'; b.textContent = 'AI';
+    b.onclick = function(e){ e.stopPropagation(); X.openAI(); };
+    dock.appendChild(b);
+  }
+  if(window.IMXM && IMXM.sheet && IMXM.sheet.open && !IMXM.sheet._aiWrapped){
+    var o = IMXM.sheet.open;
+    IMXM.sheet.open = function(){
+      o.apply(IMXM.sheet, arguments);
+      setTimeout(function(){
+        var body = document.querySelector('#imxSheet .ibody');
+        if(body && !document.getElementById('imxAISheet')){
+          var bb = document.createElement('button');
+          bb.className = 'ibtn'; bb.id = 'imxAISheet'; bb.textContent = 'AI 助教';
+          var tip = body.querySelector('.itip');
+          if(tip) body.insertBefore(bb, tip); else body.appendChild(bb);
+          bb.onclick = function(){ IMXM.sheet.close(); X.openAI(); };
+        }
+      }, 0);
+    };
+    IMXM.sheet._aiWrapped = 1;
+  }
+}
+
+var st = document.createElement('style');
+st.textContent = `
+.ai-lb{display:block;margin:10px 0 4px;font-size:12px;color:#5a6a86}
+.ai-in{width:100%;box-sizing:border-box;height:42px;border:1px solid #dfe6f3;border-radius:10px;padding:0 10px;font-size:15px;outline:none}
+.ai-in:focus{border-color:#3665f3}
+.ai-ck{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#33415c;margin-top:12px}
+.ai-ck input{width:auto;height:auto}
+`;
+document.head.appendChild(st);
+
+addEntry();
+setTimeout(pullAI, 1500);
+
+console.log('[434] AI 助教已加载');
+})();
+</script>
+<!-- ================= AI 严厉模式 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._strict) return; X._strict = 1;
+
+var KEY = 'imx434_strict';
+
+var STRICT =
+'【严厉模式】你是严厉的考研教练。学生没完成任务、拖延、找借口或答得差时，直接批评，指出偷懒和逃避，语气强硬，不要安慰、不要客套、不要“加油”这类空话。' +
+'只批评行为和结果，不做人身侮辱。每次批评之后，必须给一个立刻能执行的具体动作。' +
+'如果今日已完成 < 今日到期复习 + 今日新学，先严厉指出未完成，完成率低于 50% 要更重；如果一题没做，直接点明这是在逃避。' +
+'批改时：低于 50 分指出基础不牢、必须重背；低于 30 分指出这个水平上考场就是送分。';
+
+/* 包一层 fetch：只改 /chat/completions 的 system 提示 */
+var rawFetch = window.fetch;
+if(typeof rawFetch === 'function' && !rawFetch.__strict){
+  window.fetch = function(input, init){
+    try{
+      var url = typeof input === 'string' ? input : ((input && input.url) || '');
+      if(url.indexOf('/chat/completions') >= 0 && init && init.body && typeof init.body === 'string'){
+        var on = localStorage.getItem(KEY) !== 'off';
+        if(on){
+          var b = JSON.parse(init.body);
+          if(b && b.messages && b.messages.length){
+            var hasSys = false;
+            b.messages = b.messages.map(function(m){
+              if(m && m.role === 'system'){
+                hasSys = true;
+                return {role:'system', content: m.content + '\n' + STRICT};
+              }
+              return m;
+            });
+            if(!hasSys) b.messages.unshift({role:'system', content:STRICT});
+          }
+          init = Object.assign({}, init, {body: JSON.stringify(b)});
+        }
+      }
+    }catch(e){}
+    return rawFetch.call(this, input, init);
+  };
+  window.fetch.__strict = 1;
+}
+
+/* 在 AI 面板底部加开关 */
+function injectStrict(){
+  var body = document.querySelector('#imxPanel .imx-body');
+  if(!body || document.getElementById('imxStrict')) return;
+  var lab = document.createElement('label');
+  lab.className = 'ai-ck';
+  lab.style.marginTop = '14px';
+  lab.innerHTML = '<input type="checkbox" id="imxStrict"> 严厉模式（完不成任务会被直接批评）';
+  body.appendChild(lab);
+
+  var cb = document.getElementById('imxStrict');
+  cb.checked = localStorage.getItem(KEY) !== 'off';
+  cb.onchange = function(){
+    localStorage.setItem(KEY, cb.checked ? 'on' : 'off');
+    X.toast(cb.checked ? '严厉模式已开启' : '严厉模式已关闭');
+  };
+}
+
+if(typeof X.openAI === 'function' && !X.openAI.__strict){
+  var oldOpen = X.openAI;
+  X.openAI = function(){
+    var r = oldOpen.apply(this, arguments);
+    setTimeout(injectStrict, 0);
+    return r;
+  };
+  X.openAI.__strict = 1;
+}
+
+console.log('[434] 严厉模式已加载');
+})();
+</script>
