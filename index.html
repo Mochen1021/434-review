@@ -6190,3 +6190,1874 @@ if(typeof X.openAI === 'function' && !X.openAI.__strict){
 console.log('[434] 严厉模式已加载');
 })();
 </script>
+<!-- ================= 修复 1-3：AI 精批 + 每日封顶 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._fixA) return; X._fixA = 1;
+
+var DKEY = 'imx434_daily';
+
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+}
+function loadDaily(){
+  try{
+    var o = JSON.parse(localStorage.getItem(DKEY) || '{}');
+    if(o.date !== todayStr()) o = {date: todayStr(), pass:{}, gain:{}};
+    o.pass = o.pass || {}; o.gain = o.gain || {};
+    return o;
+  }catch(e){ return {date: todayStr(), pass:{}, gain:{}}; }
+}
+function saveDaily(o){ try{ localStorage.setItem(DKEY, JSON.stringify(o)); }catch(e){} }
+function isPassed(id){ return !!loadDaily().pass[id]; }
+function isGained(id){ return !!loadDaily().gain[id]; }
+
+/* ---------- 今日任务 / 阶段池：达标过的今天不再出现 ---------- */
+var oldBT = X.buildTasks;
+if(typeof oldBT === 'function'){
+  X.buildTasks = function(){
+    var t = oldBT.apply(this, arguments);
+    var p = loadDaily();
+    var keep = function(k){ return !p.pass[k.id]; };
+    t.due = (t.due || []).filter(keep);
+    t.fresh = (t.fresh || []).filter(keep);
+    return t;
+  };
+}
+var oldPS = X.poolStage;
+if(typeof oldPS === 'function'){
+  X.poolStage = function(){
+    var a = oldPS.apply(this, arguments) || [];
+    var p = loadDaily();
+    return a.filter(function(k){ return !p.pass[k.id]; });
+  };
+}
+
+/* ---------- 每天每卡只加一次熟练度；达标记 pass ---------- */
+var oldGain = X.gain;
+if(typeof oldGain === 'function'){
+  X.gain = function(k, rate){
+    var p = loadDaily();
+    var g = 0;
+    if(!p.gain[k.id]){
+      g = oldGain.apply(this, arguments);
+      p.gain[k.id] = 1;
+    }
+    if(rate >= 0.7) p.pass[k.id] = 1;
+    saveDaily(p);
+    try{ X.refreshDock(); X.refreshBadge(); }catch(e){}
+    if(p.pass[k.id]){
+      try{ if(typeof route === 'function' && UI.tab === 'today') route('today'); }catch(e){}
+    }
+    return g;
+  };
+}
+
+/* ---------- 捕获自测里最后一次文字作答 ---------- */
+var LAST = null;
+var oldScore = X.score;
+if(typeof oldScore === 'function'){
+  X.score = function(user, k){
+    LAST = {k:k, user:String(user||'')};
+    return oldScore.apply(this, arguments);
+  };
+}
+
+/* ---------- AI 调用（复用已有配置） ---------- */
+function aiCfg(){
+  try{ return JSON.parse(localStorage.getItem('imx434_ai_cfg') || '{}') || {}; }catch(e){ return {}; }
+}
+function parseJSON(s){
+  try{ return JSON.parse(s); }catch(e){}
+  var m = String(s).match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+  if(m){ try{ return JSON.parse(m[0]); }catch(e){} }
+  throw new Error('AI 返回格式看不懂');
+}
+async function aiChat(messages, maxTokens){
+  var c = aiCfg();
+  if(!c.key) throw new Error('还没配置 AI，去「AI → 设置」填 Key');
+  var base = (c.proxy || c.base || 'https://api.deepseek.com/v1').replace(/\/+$/,'');
+  var url = /\/chat\/completions$/.test(base) ? base : base + '/chat/completions';
+  var r = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer ' + c.key},
+    body: JSON.stringify({
+      model: c.model || 'deepseek-chat',
+      messages: messages,
+      temperature: 0.2,
+      max_tokens: maxTokens || 700,
+      stream: false
+    })
+  });
+  if(!r.ok){
+    var t = await r.text();
+    throw new Error('API ' + r.status + '：' + String(t).slice(0,120));
+  }
+  var j = await r.json();
+  return j.choices[0].message.content;
+}
+
+/* ---------- 在自测结果页插「AI 精批」 ---------- */
+function addAIButton(p){
+  var row = p.querySelector('.imx-row');
+  if(!row || document.getElementById('imxAIBtn')) return;
+  if(!LAST || !LAST.k || !LAST.user) return;
+
+  var b = document.createElement('button');
+  b.className = 'imx-btn ghost';
+  b.id = 'imxAIBtn';
+  b.textContent = 'AI 精批';
+  b.style.marginRight = '8px';
+
+  var box = document.createElement('div');
+  box.id = 'aiBox';
+
+  row.insertBefore(b, row.firstChild);
+  row.parentNode.insertBefore(box, row.nextSibling);
+
+  if(isPassed(LAST.k.id)){
+    b.disabled = true;
+    b.textContent = '今天已达标';
+  }
+
+  b.onclick = async function(){
+    if(b.disabled) return;
+    b.disabled = true;
+    b.textContent = 'AI 批改中…';
+    box.innerHTML = '<div class="imx-tip">AI 正在按点判分…</div>';
+    try{
+      var sys = '你是434国际商务考研阅卷老师。严格但按点给分，允许同义表达。只输出JSON，不要markdown，不要解释。';
+      var user = '题目：' + (LAST.k.q || LAST.k.t) + '\n标准答案：' + LAST.k.a + '\n学生答案：' + LAST.user +
+        '\n输出JSON：{"score":0到100的整数,"hit":["踩到的点"],"miss":["漏掉的点"],"comment":"不超过60字的建议"}';
+      var txt = await aiChat([{role:'system',content:sys},{role:'user',content:user}], 700);
+      var o = parseJSON(txt);
+      var score = Math.max(0, Math.min(100, parseInt(o.score,10) || 0));
+
+      var h = '<div class="imx-fb"><div class="imx-rate">' + score + '<small>分</small></div>'
+        + '<div><div style="font:700 14px/1.4 system-ui;color:' + (score>=70?'#16894b':'#8a96ad') + '">'
+        + (score>=70 ? '达到今日分数线' : '还没到 70') + '</div>'
+        + '<div class="imx-sub">AI 语义判分</div></div></div>';
+      if(o.hit && o.hit.length){
+        h += '<div class="imx-sec">踩到的点</div><div class="imx-chips">'
+          + o.hit.map(function(t){ return '<span class="imx-chip">' + X.esc(t) + '</span>'; }).join('') + '</div>';
+      }
+      if(o.miss && o.miss.length){
+        h += '<div class="imx-sec">漏掉的点</div><div class="imx-chips">'
+          + o.miss.map(function(t){ return '<span class="imx-chip miss">' + X.esc(t) + '</span>'; }).join('') + '</div>';
+      }
+      if(o.comment) h += '<div class="imx-ref"><label>建议</label><p>' + X.esc(o.comment) + '</p></div>';
+
+      h += '<div class="imx-row"><button class="imx-btn" id="aiAdopt2">'
+        + (isPassed(LAST.k.id) ? '今天已达标' : '采用 AI 分数') + '</button></div>';
+
+      box.innerHTML = h;
+      var ab = document.getElementById('aiAdopt2');
+      if(isPassed(LAST.k.id)){
+        ab.disabled = true;
+      }else{
+        ab.onclick = function(){
+          ab.disabled = true;
+          ab.textContent = isPassed(LAST.k.id) ? '今天已达标' : '已采用';
+          X.gain(LAST.k, score/100);
+          try{ X.chord(); X.confetti(36); }catch(e){}
+          X.toast(score >= 70 ? '今天这一张已封顶' : '已记录，今天不再重复加分');
+          b.textContent = '今天已达标';
+          b.disabled = true;
+        };
+      }
+      b.textContent = 'AI 已批改';
+    }catch(e){
+      box.innerHTML = '<div class="imx-ref"><label>失败</label><p>' + X.esc(e.message) + '</p></div>';
+      b.disabled = false;
+      b.textContent = '重试 AI 精批';
+    }
+  };
+}
+
+var mo = new MutationObserver(function(){
+  var p = document.getElementById('imxPanel');
+  if(!p) return;
+  // 新题出现时清掉上一题的作答
+  if(p.querySelector('.imx-q') && !p.querySelector('.imx-rate')){ LAST = null; return; }
+  if(p.querySelector('.imx-rate') && p.querySelector('[data-next]')) addAIButton(p);
+});
+mo.observe(document.body, {childList:true, subtree:true});
+
+/* ---------- AI 菜单里去掉「批改当前这张卡」 ---------- */
+if(typeof X.openAI === 'function' && !X.openAI.__fixA){
+  var oldOpen = X.openAI;
+  X.openAI = function(){
+    var r = oldOpen.apply(this, arguments);
+    setTimeout(function(){
+      var b = document.querySelector('#imxPanel [data-act="grade"]');
+      if(b) b.remove();
+    }, 0);
+    return r;
+  };
+  X.openAI.__fixA = 1;
+}
+
+console.log('[434] AI 精批进自测 + 每日封顶 已生效');
+})();
+</script>
+<!-- ================= 子卡自测 + 母卡汇总 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._subTest) return; X._subTest = 1;
+
+/* ---------- 11 张母卡的子点 ---------- */
+var SUBS = {
+  t02: [
+    {short:'内容', q:'比较优势理论的内容（模型与结论）',
+     a:'①假定：2×2×2 模型，两国、两产品、一种要素，技术给定、完全竞争、要素不流动。\n②核心：即使一国两种产品都处于绝对劣势，只要劣势程度不同，仍可按“两优取重、两劣取轻”专业化生产并贸易。\n③依据：机会成本差异，一国应生产机会成本较低的产品。\n④结果：两国产量增加，通过交换双方都获益；贸易条件介于两国国内交换比例之间。'},
+    {short:'评价', q:'比较优势理论的评价与局限',
+     a:'①理论意义：奠定国际贸易理论基石，解释了绝对优势无法解释的贸易基础。\n②局限：假设过严（完全竞争、要素不流动、技术不变、无运输成本、规模报酬不变）；是静态分析，忽略经济增长与技术变化；未解释产业内贸易；对贸易利益分配分析不足。\n③发展：H-O 理论、规模经济理论、产品生命周期理论等对其修正与扩展。'}
+  ],
+  t16: [
+    {short:'海关税则', q:'海关税则',
+     a:'海关税则是一国对进出口商品计征关税的规章和对应税、免税商品系统分类的目录表。\n内容：税号、商品名称、计税单位、税率。\n分类：单式税则与复式税则。\n作用：体现关税政策、便于海关征管、提供贸易统计口径。'},
+    {short:'从量税', q:'从量税',
+     a:'从量税是按商品的重量、数量、容量、长度、面积等计量单位为标准征收的关税。\n计算：税额＝商品数量×单位税额。\n优点：征管简便、不受价格波动影响、抑制低报价格。\n缺点：税负与价格脱节，保护作用随价格上涨下降。'}
+  ],
+  t08: [
+    {short:'名义', q:'名义保护率',
+     a:'名义保护率＝（国内市场价格－国际市场价格）÷国际市场价格×100%。\n只考虑成品关税，反映关税对成品国内价格的抬高程度。'},
+    {short:'有效', q:'有效保护率',
+     a:'有效保护率＝（国内加工增值－国外加工增值）÷国外加工增值×100%。\n公式：ERP＝(t－a·ti)÷(1－a)。\n衡量关税对国内增值环节的实际保护程度。'},
+    {short:'计算', q:'名义/有效保护率的计算步骤',
+     a:'①确定成品税率 t 与投入品税率 ti；\n②确定投入品占成品价值比例 a；\n③代入 ERP＝(t－a·ti)÷(1－a)；\n④与名义保护率比较。\n规律：t 越高、ti 越低、a 越大，有效保护率越高。'}
+  ],
+  i06: [
+    {short:'水平型', q:'水平型对外直接投资',
+     a:'在不同国家重复生产同类产品，为绕过贸易壁垒、贴近市场、降低运输成本。\n特点：市场导向、复制型生产。'},
+    {short:'垂直型', q:'垂直型对外直接投资',
+     a:'按价值链把不同环节布局到不同国家。\n特点：成本与资源导向、环节互补、依赖物流协调。'},
+    {short:'比较', q:'水平型与垂直型 FDI 的比较',
+     a:'①动机：水平型追求市场，垂直型追求效率；\n②区位：水平型看市场与壁垒，垂直型看要素成本；\n③风险：水平型易重复建设，垂直型依赖供应链；\n④管理：垂直型协调更难。'}
+  ],
+  f02: [
+    {short:'马歇尔', q:'马歇尔-勒纳条件',
+     a:'本币贬值改善贸易收支的条件：|Ex|＋|Em|＞1。\n弹性和小于 1，贬值反而恶化；等于 1 时不变。'},
+    {short:'J曲线', q:'J 曲线效应',
+     a:'贬值后贸易收支先恶化、后改善，轨迹像 J。\n原因：需求刚性、合同与价格调整滞后、库存与生产周期。'},
+    {short:'政策', q:'马歇尔-勒纳条件与 J 曲线的政策含义',
+     a:'①贬值效果取决于弹性条件；\n②存在时滞；\n③需配合紧缩政策抑制通胀；\n④注意贸易伙伴报复。'}
+  ],
+  f11: [
+    {short:'交易风险', q:'交易风险',
+     a:'已达成交易但未结算期间，汇率变动使应收/应付本币金额变化的风险。'},
+    {short:'折算风险', q:'折算风险',
+     a:'合并报表时外币项目折算成本币产生的账面损益，不影响现金流。'},
+    {short:'经济风险', q:'经济风险',
+     a:'汇率变动通过影响未来现金流、成本与竞争力，导致企业长期价值变化。'},
+    {short:'防范', q:'外汇风险的防范措施',
+     a:'①远期结汇/售汇；②期货、期权；③货币互换；④自然对冲；⑤计价货币选择；⑥提前或延期收付。'}
+  ],
+  o02: [
+    {short:'标准化', q:'产品标准化策略',
+     a:'全球统一产品、品牌与营销。\n优点：规模经济、成本低、形象一致；缺点：忽视本地差异。'},
+    {short:'差异化', q:'产品差异化策略',
+     a:'按各国市场调整产品与营销。\n优点：贴近需求；缺点：成本高、协调难。'},
+    {short:'选择', q:'标准化与差异化的选择依据',
+     a:'①产品性质；②文化差异；③成本压力；④竞争格局；⑤东道国法规。'}
+  ],
+  f08: [
+    {short:'即期', q:'即期汇率',
+     a:'外汇买卖成交后两个营业日内办理交割的汇率。'},
+    {short:'远期', q:'远期汇率',
+     a:'买卖双方约定在未来某一日期交割的汇率。'},
+    {short:'升贴水', q:'升水、贴水与利率平价',
+     a:'远期高于即期叫升水，低于即期叫贴水。\n升贴水率约等于两国利差。'}
+  ],
+  t15: [
+    {short:'倾销', q:'倾销',
+     a:'以低于正常价值的价格出口，并对进口国产业造成损害。\n三要件：低价销售、损害、因果关系。'},
+    {short:'外汇倾销', q:'外汇倾销',
+     a:'通过本币贬值降低出口外币价格，扩大出口。\n条件：需求弹性大、国内物价稳定、不引发报复。'}
+  ],
+  t20: [
+    {short:'贸易创造', q:'贸易创造',
+     a:'关税同盟成立后，本国高成本生产被成员国低成本进口替代，产生新贸易，福利增加。'},
+    {short:'贸易转移', q:'贸易转移',
+     a:'原来从非成员国低成本进口，结盟后改从成员国高成本进口，福利可能下降。'},
+    {short:'净效应', q:'贸易创造与贸易转移的净效应',
+     a:'净福利＝贸易创造收益－贸易转移损失。\n还要看规模经济、竞争、投资等动态效应。'}
+  ],
+  i11: [
+    {short:'独资', q:'国际独资企业',
+     a:'拥有 100% 股权。\n优点：控制力强、技术与利润独享；缺点：投入大、风险高。'},
+    {short:'合作', q:'国际合作企业',
+     a:'按契约合作经营，非股权。\n特点：灵活；但控制力弱、易生纠纷。'},
+    {short:'比较', q:'独资与合作企业的比较',
+     a:'①股权：独资 100%，合作非股权；②控制：独资强；③风险：独资自担；④适用：技术密集选独资，资源工程选合作。'}
+  ]
+};
+
+/* ---------- 把子点作为独立卡片加入题库 ---------- */
+function findCard(id){
+  for(var i=0;i<DATA.length;i++){ if(DATA[i].id === id) return DATA[i]; }
+  return null;
+}
+var added = 0;
+Object.keys(SUBS).forEach(function(pid){
+  var p = findCard(pid);
+  if(!p) return;
+  p.ty = '母卡';
+  SUBS[pid].forEach(function(s, i){
+    var id = pid + 's' + (i + 1);
+    if(findCard(id)) return;
+    DATA.push({
+      id: id, m: p.m, ch: p.ch,
+      t: (p.t || pid) + '·' + s.short,
+      lv: p.lv, ty: '简答', src: '子卡',
+      q: s.q, a: s.a,
+      parent: pid, subIndex: i
+    });
+    added++;
+  });
+});
+try{
+  if(typeof renderTree === 'function') renderTree();
+  if(typeof renderTabs === 'function') renderTabs();
+  if(typeof updateHeader === 'function') updateHeader();
+}catch(e){}
+
+/* ---------- 今日台不出现母卡（只出现子卡） ---------- */
+var oldBT = X.buildTasks;
+if(typeof oldBT === 'function'){
+  X.buildTasks = function(){
+    var t = oldBT.apply(this, arguments);
+    var keep = function(k){ return k.ty !== '母卡'; };
+    t.due = (t.due || []).filter(keep);
+    t.fresh = (t.fresh || []).filter(keep);
+    return t;
+  };
+}
+
+/* ---------- 子卡答完后，汇总母卡 ---------- */
+function updateParent(pid){
+  var subs = SUBS[pid];
+  if(!subs) return;
+  var st = null; try{ st = Store.state; }catch(e){}
+  if(!st || !st.kp) return;
+  var sum = 0, n = 0, seen = 0;
+  subs.forEach(function(s, i){
+    var x = st.kp[pid + 's' + (i + 1)];
+    if(x){ sum += (x.m || 0); n++; if(x.seen) seen++; }
+  });
+  var avg = n ? sum / n : 0;
+  var p = st.kp[pid] || (st.kp[pid] = {m:0,seen:0,ok:0,err:0,due:0,last:0});
+  p.m = Math.max(p.m || 0, Math.round(avg));
+  p.seen = Math.max(p.seen || 0, seen > 0 ? 1 : 0);
+  try{ save(); }catch(e){}
+  try{ X.refreshBadge(); }catch(e){}
+}
+
+var oldGain = X.gain;
+if(typeof oldGain === 'function'){
+  X.gain = function(k, rate){
+    var g = oldGain.apply(this, arguments);
+    if(k && k.parent) updateParent(k.parent);
+    return g;
+  };
+}
+
+/* ---------- 卡片上显示每个子点的百分比 ---------- */
+function pctOf(id){
+  try{
+    var s = Store.state.kp[id];
+    return Math.round(((s && s.m) || 0) / 6 * 100);
+  }catch(e){ return 0; }
+}
+function parentPct(pid){
+  var subs = SUBS[pid]; if(!subs) return 0;
+  var sum = 0;
+  subs.forEach(function(s, i){ sum += pctOf(pid + 's' + (i + 1)); });
+  return Math.round(sum / subs.length);
+}
+function decorateAgg(){
+  var id = null;
+  try{ id = UI.queue[UI.qi]; }catch(e){}
+  if(!SUBS[id]) return;
+  var chips = document.querySelector('#fc .mx-subs');
+  if(!chips) return;
+
+  var btns = chips.querySelectorAll('button');
+  SUBS[id].forEach(function(s, i){
+    var b = btns[i];
+    if(b && !b.querySelector('.mx-pct')){
+      var sp = document.createElement('span');
+      sp.className = 'mx-pct';
+      sp.textContent = ' ' + pctOf(id + 's' + (i + 1)) + '%';
+      b.appendChild(sp);
+    }
+  });
+
+  var agg = document.querySelector('#fc .mx-agg');
+  if(!agg){
+    agg = document.createElement('div');
+    agg.className = 'mx-agg';
+    chips.parentNode.insertBefore(agg, chips.nextSibling);
+  }
+  agg.textContent = '母卡掌握：' + parentPct(id) + '%';
+}
+
+var tid = null;
+var mo = new MutationObserver(function(){
+  clearTimeout(tid);
+  tid = setTimeout(decorateAgg, 80);
+});
+mo.observe(document.body, {childList:true, subtree:true});
+
+/* ---------- 样式 ---------- */
+var st = document.createElement('style');
+st.textContent = `
+.mx-pct{font-size:10px;color:#8a96ad;margin-left:2px}
+.mx-agg{margin:-2px 0 10px;font-size:11px;color:#3665f3;font-weight:600}
+`;
+document.head.appendChild(st);
+
+console.log('[434] 子卡自测已加入：' + added + ' 张，母卡按子点汇总');
+})();
+</script>
+<!-- ================= 思维导图页 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._map) return; X._map = 1;
+
+var NS = 'http://www.w3.org/2000/svg';
+var CN = ['国贸','投资','金融','运营'];
+
+/* ---------- 样式 ---------- */
+var st = document.createElement('style');
+st.textContent = `
+.mm-wrap{position:relative;height:calc(100vh - 180px);min-height:420px;border:1px solid #e5e8f0;border-radius:14px;overflow:hidden;background:radial-gradient(circle at 30% 20%,#ffffff,#f7f9ff 70%);touch-action:none}
+.mm-svg{width:100%;height:100%;display:block;cursor:grab;user-select:none}
+.mm-svg.dragging{cursor:grabbing}
+.mm-bar{position:absolute;left:12px;top:12px;display:flex;gap:6px;z-index:2}
+.mm-bar button{border:1px solid #dfe6f3;background:rgba(255,255,255,.94);color:#33415c;border-radius:9px;padding:7px 10px;font-size:12px;font-weight:600}
+.mm-bar button:active{background:#eef3ff}
+.mm-tip{position:absolute;right:12px;bottom:10px;font-size:10.5px;color:#8a96ad;background:rgba(255,255,255,.85);padding:4px 8px;border-radius:8px}
+.mm-title{position:absolute;left:14px;bottom:10px;font-size:11px;color:#a8b2c6}
+@media(max-width:900px){.mm-wrap{height:calc(100vh - 150px)}}
+`;
+document.head.appendChild(st);
+
+/* ---------- 建树 ---------- */
+function buildTree(){
+  var mods = [0,1,2,3].map(function(i){
+    return {label:CN[i], type:'mod', m:i, children:[], x:0, y:0, depth:0};
+  });
+  var chapterMap = {}, byId = {};
+  var i, k;
+
+  for(i=0;i<DATA.length;i++){
+    k = DATA[i];
+    if(k.parent) continue;
+    var mod = mods[k.m || 0];
+    if(!mod) continue;
+    var ck = (k.m||0) + '|' + k.ch;
+    var ch = chapterMap[ck];
+    if(!ch){
+      ch = {label:k.ch, type:'ch', children:[], x:0, y:0, depth:1};
+      chapterMap[ck] = ch;
+      mod.children.push(ch);
+    }
+    var node = {label:k.t||k.id, type:'card', id:k.id, children:[], x:0, y:0, depth:2};
+    ch.children.push(node);
+    byId[k.id] = node;
+  }
+
+  for(i=0;i<DATA.length;i++){
+    k = DATA[i];
+    if(!k.parent) continue;
+    var p = byId[k.parent];
+    if(!p) continue;
+    p.children.push({label:k.t||k.id, type:'sub', id:k.id, children:[], x:0, y:0, depth:3});
+  }
+
+  return mods.filter(function(m){ return m.children.length; });
+}
+
+/* ---------- 每个页面实例 ---------- */
+function makeMap(root){
+  if(!root || root.querySelector('.mm-wrap')) return;
+
+  var mods = buildTree();
+  var curDepth = 1;
+  var k = 0.6, tx = 30, ty = 30;
+  var svg, world, W = 800, H = 520;
+
+  var html = '<div class="mm-wrap">'
+    + '<div class="mm-bar">'
+    + '<button data-z="in">＋</button>'
+    + '<button data-z="out">－</button>'
+    + '<button data-z="reset">复位</button>'
+    + '</div>'
+    + '<div class="mm-title">434 知识框架</div>'
+    + '<div class="mm-tip">滚轮 / 双指缩放 · 拖动平移 · 点节点展开或进卡</div>'
+    + '<svg class="mm-svg"></svg>'
+    + '</div>';
+  root.innerHTML = html;
+
+  svg = root.querySelector('.mm-svg');
+
+  function gap(d){ return d === 0 ? 92 : (d === 1 ? 44 : (d === 2 ? 30 : 26)); }
+  function nodeW(d){ return d === 0 ? 132 : (d === 1 ? 150 : (d === 2 ? 176 : 186)); }
+  function nodeH(d){ return d === 0 ? 40 : (d === 1 ? 30 : (d === 2 ? 25 : 23)); }
+  function fontSize(d){ return d === 0 ? 18 : (d === 1 ? 14 : (d === 2 ? 12 : 11)); }
+
+  function layout(n, depth, maxDepth){
+    n.depth = depth;
+    n.x = depth * 255;
+    var kids = (depth < maxDepth) ? (n.children || []) : [];
+    if(!kids.length){
+      n.y = cursor;
+      cursor += gap(depth);
+    }else{
+      var first = null, last = null;
+      kids.forEach(function(c){
+        layout(c, depth+1, maxDepth);
+        if(first === null) first = c.y;
+        last = c.y;
+      });
+      n.y = (first + last) / 2;
+    }
+  }
+  var cursor = 0;
+
+  function trunc(s, d){
+    var max = d === 0 ? 6 : (d === 1 ? 12 : (d === 2 ? 14 : 16));
+    s = String(s || '');
+    return s.length > max ? s.slice(0, max) + '…' : s;
+  }
+
+  function draw(){
+    cursor = 20;
+    var maxDepth = curDepth;
+    mods.forEach(function(m){ layout(m, 0, maxDepth); });
+
+    svg.innerHTML = '';
+    world = document.createElementNS(NS, 'g');
+    svg.appendChild(world);
+
+    // 连线
+    function links(n){
+      var kids = (n.depth < maxDepth) ? (n.children || []) : [];
+      kids.forEach(function(c){
+        var x1 = n.x + nodeW(n.depth), y1 = n.y;
+        var x2 = c.x, y2 = c.y;
+        var p = document.createElementNS(NS, 'path');
+        p.setAttribute('d', 'M' + x1 + ',' + y1 + ' C' + (x1+80) + ',' + y1 + ' ' + (x2-80) + ',' + y2 + ' ' + x2 + ',' + y2);
+        p.setAttribute('fill', 'none');
+        p.setAttribute('stroke', 'rgba(120,140,180,.35)');
+        p.setAttribute('stroke-width', '1.4');
+        world.appendChild(p);
+        links(c);
+      });
+    }
+    mods.forEach(links);
+
+    // 节点
+    function drawNode(n){
+      var d = n.depth;
+      var w = nodeW(d), h = nodeH(d);
+      var g = document.createElementNS(NS, 'g');
+      g.setAttribute('transform', 'translate(' + n.x + ',' + (n.y - h/2) + ')');
+      g.style.cursor = (n.type === 'card' || n.type === 'sub') ? 'pointer' : 'zoom-in';
+
+      var r = document.createElementNS(NS, 'rect');
+      r.setAttribute('width', w);
+      r.setAttribute('height', h);
+      r.setAttribute('rx', d === 0 ? 10 : 7);
+      r.setAttribute('fill', d === 0 ? ['#eef3ff','#eafaf0','#fff7e6','#f5efff'][n.m || 0] : '#ffffff');
+      r.setAttribute('stroke', d === 0 ? ['#3665f3','#16a34a','#d97706','#8b5cf6'][n.m || 0] : '#dfe6f3');
+      r.setAttribute('stroke-width', d === 0 ? '1.6' : '1');
+      r.setAttribute('filter', 'drop-shadow(0 1px 2px rgba(20,35,80,.06))');
+
+      var t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', 9);
+      t.setAttribute('y', h/2 + 4);
+      t.setAttribute('font-size', fontSize(d));
+      t.setAttribute('font-weight', d <= 1 ? '700' : '500');
+      t.setAttribute('fill', d === 0 ? ['#2b4bcc','#14803d','#b26a00','#6d3bd1'][n.m || 0] : '#33415c');
+      t.textContent = trunc(n.label, d);
+
+      g.appendChild(r);
+      g.appendChild(t);
+      g.addEventListener('click', function(e){
+        e.stopPropagation();
+        if(moved) return;
+        onNode(n);
+      });
+      world.appendChild(g);
+    }
+
+    function walk(n){
+      drawNode(n);
+      if(n.depth < maxDepth) (n.children||[]).forEach(walk);
+    }
+    mods.forEach(walk);
+
+    apply();
+  }
+
+  function apply(){
+    if(world) world.setAttribute('transform', 'translate(' + tx + ',' + ty + ') scale(' + k + ')');
+  }
+
+  function clampK(v){ return Math.max(0.22, Math.min(2.8, v)); }
+
+  function depthFor(v){
+    if(v >= 1.35) return 3;
+    if(v >= 0.95) return 2;
+    if(v >= 0.50) return 1;
+    return 0;
+  }
+
+  function setK(nv, cx, cy){
+    nv = clampK(nv);
+    if(cx == null){ cx = (svg.clientWidth || W) / 2; cy = (svg.clientHeight || H) / 2; }
+    var wx = (cx - tx) / k, wy = (cy - ty) / k;
+    k = nv;
+    var want = depthFor(k);
+    if(want !== curDepth){
+      curDepth = want;
+      draw();
+    }
+    tx = cx - wx * k;
+    ty = cy - wy * k;
+    apply();
+  }
+
+  function focus(n){
+    var nk = Math.max(k, 1.0);
+    if(n.depth + 1 > curDepth){ curDepth = n.depth + 1; draw(); }
+    k = clampK(nk);
+    tx = (svg.clientWidth || W) / 2 - n.x * k;
+    ty = (svg.clientHeight || H) / 2 - n.y * k;
+    apply();
+  }
+
+  function onNode(n){
+    if(n.type === 'mod' || n.type === 'ch'){
+      if(n.type === 'mod'){ curDepth = 1; draw(); }
+      else { curDepth = 2; draw(); }
+      focus(n);
+    }else{
+      try{ if(typeof startCard === 'function') startCard(n.id); }catch(e){}
+    }
+  }
+
+  /* ---------- 缩放 / 拖动 / 双指 ---------- */
+  var pointers = {}, dragging = false, moved = false, lastX = 0, lastY = 0, pinchDist = 0;
+
+  function dist2(){
+    var ids = Object.keys(pointers);
+    if(ids.length < 2) return 0;
+    var a = pointers[ids[0]], b = pointers[ids[1]];
+    return Math.sqrt(Math.pow(a.x-b.x,2) + Math.pow(a.y-b.y,2));
+  }
+
+  svg.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var rect = svg.getBoundingClientRect();
+    var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    setK(k * Math.exp(-e.deltaY * 0.0012), mx, my);
+  }, {passive:false});
+
+  svg.addEventListener('pointerdown', function(e){
+    try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+    pointers[e.pointerId] = {x:e.clientX, y:e.clientY};
+    var ids = Object.keys(pointers);
+    if(ids.length === 1){
+      dragging = true; moved = false;
+      lastX = e.clientX; lastY = e.clientY;
+      svg.classList.add('dragging');
+    }else if(ids.length === 2){
+      pinchDist = dist2();
+    }
+  });
+
+  svg.addEventListener('pointermove', function(e){
+    if(!pointers[e.pointerId]) return;
+    pointers[e.pointerId] = {x:e.clientX, y:e.clientY};
+    var ids = Object.keys(pointers);
+    if(ids.length === 1 && dragging){
+      var dx = e.clientX - lastX, dy = e.clientY - lastY;
+      if(Math.abs(dx) + Math.abs(dy) > 2) moved = true;
+      tx += dx; ty += dy;
+      lastX = e.clientX; lastY = e.clientY;
+      apply();
+    }else if(ids.length === 2){
+      var d = dist2();
+      if(pinchDist > 0){
+        var rect = svg.getBoundingClientRect();
+        var a = pointers[ids[0]], b = pointers[ids[1]];
+        var mx = (a.x + b.x)/2 - rect.left;
+        var my = (a.y + b.y)/2 - rect.top;
+        setK(k * (d / pinchDist), mx, my);
+      }
+      pinchDist = d;
+      moved = true;
+    }
+  });
+
+  function up(e){
+    delete pointers[e.pointerId];
+    if(!Object.keys(pointers).length){
+      dragging = false;
+      pinchDist = 0;
+      svg.classList.remove('dragging');
+    }
+  }
+  svg.addEventListener('pointerup', up);
+  svg.addEventListener('pointercancel', up);
+
+  /* ---------- 按钮 ---------- */
+  var bar = root.querySelector('.mm-bar');
+  bar.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-z]') : null;
+    if(!b) return;
+    var z = b.getAttribute('data-z');
+    if(z === 'in') setK(k * 1.25);
+    else if(z === 'out') setK(k / 1.25);
+    else{
+      curDepth = 1; k = 0.6; tx = 30; ty = 20; draw();
+      tx = 30; ty = 20; apply();
+    }
+  });
+
+  draw();
+  tx = 30; ty = 20; apply();
+}
+
+/* ---------- 注册成标签页 ---------- */
+try{
+  if(typeof MOUNT_PLUGIN === 'function'){
+    MOUNT_PLUGIN({
+      id: 'map',
+      title: '导图',
+      tab: true,
+      mount: function(root){ makeMap(root); }
+    });
+    if(typeof renderTabs === 'function') renderTabs();
+  }else{
+    addDock();
+  }
+}catch(e){
+  addDock();
+}
+
+/* ---------- 兜底：注册失败时放一个悬浮入口 ---------- */
+function addDock(){
+  var dock = document.getElementById('imxDock');
+  if(!dock || document.getElementById('imxMapBtn')) return;
+  var b = document.createElement('button');
+  b.id = 'imxMapBtn';
+  b.textContent = '导图';
+  b.onclick = function(e){
+    e.stopPropagation();
+    X.openShell('wide');
+    X._panelKind = 'map';
+    var p = document.getElementById('imxPanel');
+    p.innerHTML = '<div class="imx-h"><b>知识框架</b><button class="imx-x" data-x="1">×</button></div>'
+      + '<div class="imx-body" style="padding:0"><div id="imxMapRoot"></div></div>';
+    p.querySelector('[data-x]').onclick = X.close;
+    makeMap(document.getElementById('imxMapRoot'));
+  };
+  dock.appendChild(b);
+}
+
+console.log('[434] 思维导图已加载');
+})();
+</script>
+<!-- ================= 导图搜索 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._mapSearch) return; X._mapSearch = 1;
+
+var st = document.createElement('style');
+st.textContent = `
+.mm-search{position:absolute;left:12px;top:58px;z-index:4;width:270px;max-width:calc(100% - 24px)}
+.mm-search input{width:100%;box-sizing:border-box;height:36px;border:1px solid #dfe6f3;border-radius:10px;padding:0 10px;font-size:13px;background:rgba(255,255,255,.96);outline:none;box-shadow:0 4px 16px rgba(20,35,80,.06)}
+.mm-search input:focus{border-color:#3665f3}
+.mm-results{margin-top:6px;background:#fff;border:1px solid #e5e8f0;border-radius:10px;box-shadow:0 12px 30px rgba(20,35,80,.14);max-height:260px;overflow:auto;display:none}
+.mm-results.on{display:block}
+.mm-result{display:flex;align-items:center;gap:8px;padding:9px 10px;border-bottom:1px solid #f2f5fa;cursor:pointer}
+.mm-result:last-child{border-bottom:0}
+.mm-result:hover{background:#f5f8ff}
+.mm-result b{font-size:12.5px;color:#22304d;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mm-result i{font-style:normal;font-size:10px;color:#8a96ad;white-space:nowrap}
+.mm-result em{font-style:normal;font-size:10px;padding:1px 5px;border-radius:4px;background:#eef3ff;color:#3665f3;white-space:nowrap}
+.mm-empty{padding:10px;font-size:11px;color:#9aa6bd;text-align:center}
+`;
+document.head.appendChild(st);
+
+function buildIndex(){
+  var idx = [];
+  for(var i=0;i<DATA.length;i++){
+    var k = DATA[i];
+    idx.push({
+      id: k.id,
+      title: k.t || k.id,
+      ch: k.ch || '',
+      q: k.q || '',
+      type: k.parent ? '子卡' : (k.ty === '母卡' ? '母卡' : (k.ty || '考点')),
+      lv: k.lv || ''
+    });
+  }
+  return idx;
+}
+
+function inject(){
+  var wrap = document.querySelector('.mm-wrap');
+  if(!wrap || wrap.querySelector('.mm-search')) return;
+
+  var box = document.createElement('div');
+  box.className = 'mm-search';
+  box.innerHTML = '<input type="search" placeholder="搜考点：比较优势 / 配额 / 套利…">'
+    + '<div class="mm-results"></div>';
+  wrap.appendChild(box);
+
+  var input = box.querySelector('input');
+  var list = box.querySelector('.mm-results');
+  var index = buildIndex();
+  var timer = null;
+
+  function clearHighlight(){
+    var texts = wrap.querySelectorAll('.mm-svg text');
+    for(var i=0;i<texts.length;i++){
+      var g = texts[i].parentNode;
+      g.style.opacity = '';
+      var r = g.querySelector('rect');
+      if(r){ r.setAttribute('stroke', r.getAttribute('data-stroke') || r.getAttribute('stroke')); }
+    }
+  }
+
+  function highlight(q){
+    clearHighlight();
+    if(!q) return;
+    var texts = wrap.querySelectorAll('.mm-svg text');
+    var any = false;
+    for(var i=0;i<texts.length;i++){
+      var g = texts[i].parentNode;
+      var r = g.querySelector('rect');
+      if(r && !r.getAttribute('data-stroke')) r.setAttribute('data-stroke', r.getAttribute('stroke'));
+      if(texts[i].textContent.indexOf(q) >= 0){
+        any = true;
+        g.style.opacity = 1;
+        if(r){ r.setAttribute('stroke', '#e2680b'); r.setAttribute('stroke-width', '2.2'); }
+      }else{
+        g.style.opacity = 0.22;
+      }
+    }
+    return any;
+  }
+
+  function render(q){
+    q = (q || '').trim();
+    if(!q){ list.classList.remove('on'); list.innerHTML = ''; highlight(''); return; }
+
+    var hits = [];
+    for(var i=0;i<index.length;i++){
+      var it = index[i];
+      if(it.title.indexOf(q) >= 0 || it.ch.indexOf(q) >= 0 || it.q.indexOf(q) >= 0){
+        hits.push(it);
+      }
+      if(hits.length >= 20) break;
+    }
+
+    highlight(q);
+
+    if(!hits.length){
+      list.innerHTML = '<div class="mm-empty">没找到</div>';
+      list.classList.add('on');
+      return;
+    }
+
+    var h = '';
+    hits.forEach(function(it, i){
+      h += '<div class="mm-result" data-i="' + i + '">'
+        + '<em>' + it.type + '</em>'
+        + '<b>' + X.esc(it.title) + '</b>'
+        + '<i>' + X.esc(it.ch.replace(/^第\d+章\s*/, '')) + '</i>'
+        + '</div>';
+    });
+    list.innerHTML = h;
+    list.classList.add('on');
+
+    var rows = list.querySelectorAll('.mm-result');
+    for(var j=0;j<rows.length;j++){
+      rows[j].onclick = function(){
+        var it = hits[parseInt(this.getAttribute('data-i'), 10)];
+        input.value = '';
+        list.classList.remove('on');
+        clearHighlight();
+        try{ X.close(); }catch(e){}
+        setTimeout(function(){
+          try{ if(typeof startCard === 'function') startCard(it.id); }catch(e){}
+        }, 60);
+      };
+    }
+  }
+
+  input.oninput = function(){
+    var v = this.value;
+    clearTimeout(timer);
+    timer = setTimeout(function(){ render(v); }, 120);
+  };
+  input.onkeydown = function(e){
+    if(e.key === 'Escape'){ this.value = ''; render(''); this.blur(); }
+  };
+}
+
+/* 导图可能被重复挂载，监听 DOM 变化 */
+var mo = new MutationObserver(function(){ inject(); });
+mo.observe(document.body, {childList:true, subtree:true});
+setTimeout(inject, 300);
+setTimeout(inject, 1200);
+
+console.log('[434] 导图搜索已加载');
+})();
+</script>
+<!-- ================= 导图 v2：按模块分簇 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._map2) return; X._map2 = 1;
+
+var NS = 'http://www.w3.org/2000/svg';
+var CN = ['国贸','投资','金融','运营'];
+var MKEY = 'imx434_mapmod';
+
+/* 去掉旧导图插件，再注册新的同 id */
+try{
+  if(window.Registry && Registry.mods){
+    for(var i=Registry.mods.length-1;i>=0;i--){
+      if(Registry.mods[i].id === 'map') Registry.mods.splice(i,1);
+    }
+  }
+}catch(e){}
+
+var st = document.createElement('style');
+st.textContent = `
+.mm-mods{position:absolute;right:12px;top:12px;z-index:4;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:62%}
+.mm-mods button{border:1px solid #dfe6f3;background:rgba(255,255,255,.94);color:#5a6a86;border-radius:16px;padding:5px 9px;font-size:11px;font-weight:600}
+.mm-mods button.on{background:#3665f3;border-color:#3665f3;color:#fff}
+.mm-mods .all{background:#f5f7fb}
+.mm-mods .all.on{background:#22304d;border-color:#22304d;color:#fff}
+@media(max-width:520px){.mm-mods{max-width:calc(100% - 24px);top:48px;left:12px;right:auto;justify-content:flex-start}.mm-search{top:92px !important}}
+`;
+document.head.appendChild(st);
+
+function makeMap2(root){
+  if(!root) return;
+  root.innerHTML = '<div class="mm-wrap">'
+    + '<div class="mm-bar"><button data-z="in">＋</button><button data-z="out">－</button><button data-z="reset">复位</button></div>'
+    + '<div class="mm-mods"></div>'
+    + '<div class="mm-title">434 知识框架</div>'
+    + '<div class="mm-tip">滚轮 / 双指缩放 · 拖动平移 · 点节点展开或进卡</div>'
+    + '<svg class="mm-svg"></svg>'
+    + '</div>';
+
+  var wrap = root.querySelector('.mm-wrap');
+  var svg = root.querySelector('.mm-svg');
+  var modsBar = root.querySelector('.mm-mods');
+
+  var mode = localStorage.getItem(MKEY);
+  if(mode !== 'all' && !(mode >= '0' && mode <= '3')) mode = '0';
+  mode = (mode === 'all') ? 'all' : parseInt(mode, 10);
+
+  var depth = mode === 'all' ? 0 : 1;
+  var k = mode === 'all' ? 1 : 0.85;
+  var tx = 30, ty = 20;
+  var treeCache = {};
+  var world = null;
+
+  /* ---------- 建树 ---------- */
+  function buildModule(mi){
+    var rootNode = {label:CN[mi], type:'mod', m:mi, children:[], x:0, y:0, depth:0};
+    var cmap = {}, byId = {};
+
+    for(var i=0;i<DATA.length;i++){
+      var kk = DATA[i];
+      if(kk.parent || (kk.m||0) !== mi) continue;
+      var ch = cmap[kk.ch];
+      if(!ch){
+        ch = {label:kk.ch, type:'ch', children:[], x:0, y:0, depth:1};
+        cmap[kk.ch] = ch; rootNode.children.push(ch);
+      }
+      var node = {label:kk.t||kk.id, type:'card', id:kk.id, children:[], x:0, y:0, depth:2};
+      ch.children.push(node); byId[kk.id] = node;
+    }
+    for(var j=0;j<DATA.length;j++){
+      var sub = DATA[j];
+      if(!sub.parent) continue;
+      var p = byId[sub.parent];
+      if(!p) continue;
+      p.children.push({label:sub.t||sub.id, type:'sub', id:sub.id, children:[], x:0, y:0, depth:3});
+    }
+    return rootNode;
+  }
+
+  function counts(mi){
+    var n = 0;
+    for(var i=0;i<DATA.length;i++){
+      if(!DATA[i].parent && (DATA[i].m||0) === mi && DATA[i].ty !== '母卡') n++;
+    }
+    return n;
+  }
+
+  /* ---------- 尺寸 ---------- */
+  function gap(d){ return d === 0 ? 90 : (d === 1 ? 46 : (d === 2 ? 30 : 26)); }
+  function nodeW(d){ return d === 0 ? 140 : (d === 1 ? 160 : (d === 2 ? 176 : 186)); }
+  function nodeH(d){ return d === 0 ? 42 : (d === 1 ? 31 : (d === 2 ? 25 : 23)); }
+  function fs(d){ return d === 0 ? 18 : (d === 1 ? 14 : (d === 2 ? 12 : 11)); }
+  function trunc(s, d){
+    var max = d === 0 ? 7 : (d === 1 ? 13 : (d === 2 ? 14 : 16));
+    s = String(s || '');
+    return s.length > max ? s.slice(0, max) + '…' : s;
+  }
+
+  var cursor = 0;
+  function layout(n, d, maxD){
+    n.depth = d;
+    n.x = d * 250;
+    var kids = d < maxD ? (n.children || []) : [];
+    if(!kids.length){ n.y = cursor; cursor += gap(d); }
+    else{
+      var first = null, last = null;
+      for(var i=0;i<kids.length;i++){
+        layout(kids[i], d+1, maxD);
+        if(first === null) first = kids[i].y;
+        last = kids[i].y;
+      }
+      n.y = (first + last) / 2;
+    }
+  }
+
+  /* ---------- 绘制 ---------- */
+  function apply(){ if(world) world.setAttribute('transform','translate('+tx+','+ty+') scale('+k+')'); }
+
+  function rect(g, w, h, fill, stroke, rx, sw){
+    var r = document.createElementNS(NS, 'rect');
+    r.setAttribute('width', w); r.setAttribute('height', h);
+    r.setAttribute('rx', rx); r.setAttribute('fill', fill);
+    r.setAttribute('stroke', stroke); r.setAttribute('stroke-width', sw || 1);
+    r.setAttribute('filter','drop-shadow(0 1px 2px rgba(20,35,80,.06))');
+    g.appendChild(r);
+  }
+  function text(g, s, x, y, size, weight, color){
+    var t = document.createElementNS(NS, 'text');
+    t.setAttribute('x', x); t.setAttribute('y', y);
+    t.setAttribute('font-size', size); t.setAttribute('font-weight', weight || '500');
+    t.setAttribute('fill', color || '#33415c');
+    t.textContent = s;
+    g.appendChild(t);
+  }
+
+  function drawAll(){
+    var pos = [[10,10],[300,10],[10,190],[300,190]];
+    var palette = [['#eef3ff','#3665f3'],['#eafaf0','#16a34a'],['#fff7e6','#d97706'],['#f5efff','#8b5cf6']];
+    for(var i=0;i<4;i++){
+      (function(mi){
+        var x = pos[mi][0], y = pos[mi][1];
+        var g = document.createElementNS(NS, 'g');
+        g.setAttribute('transform','translate('+x+','+y+')');
+        g.style.cursor='pointer';
+        rect(g, 250, 140, palette[mi][0], palette[mi][1], 14, 1.6);
+        text(g, CN[mi], 18, 40, 24, '700', palette[mi][1]);
+        text(g, counts(mi) + ' 个考点', 18, 78, 13, '500', '#5a6a86');
+        text(g, '点击展开 →', 18, 108, 11, '500', '#8a96ad');
+        g.addEventListener('click', function(){ setMode(mi); });
+        world.appendChild(g);
+      })(i);
+    }
+  }
+
+  function drawModule(){
+    var mi = mode;
+    var tree = treeCache[mi] || (treeCache[mi] = buildModule(mi));
+    cursor = 20;
+    layout(tree, 0, depth);
+
+    function links(n){
+      var kids = n.depth < depth ? (n.children || []) : [];
+      for(var i=0;i<kids.length;i++){
+        var c = kids[i];
+        var x1 = n.x + nodeW(n.depth), y1 = n.y, x2 = c.x, y2 = c.y;
+        var p = document.createElementNS(NS, 'path');
+        p.setAttribute('d','M'+x1+','+y1+' C'+(x1+80)+','+y1+' '+(x2-80)+','+y2+' '+x2+','+y2);
+        p.setAttribute('fill','none');
+        p.setAttribute('stroke','rgba(120,140,180,.35)');
+        p.setAttribute('stroke-width','1.4');
+        world.appendChild(p);
+        links(c);
+      }
+    }
+    links(tree);
+
+    function node(n){
+      var d = n.depth;
+      var w = nodeW(d), h = nodeH(d);
+      var g = document.createElementNS(NS, 'g');
+      g.setAttribute('transform','translate('+n.x+','+(n.y-h/2)+')');
+      g.style.cursor = (n.type === 'card' || n.type === 'sub') ? 'pointer' : 'zoom-in';
+
+      var pal = [['#eef3ff','#3665f3'],['#eafaf0','#16a34a'],['#fff7e6','#d97706'],['#f5efff','#8b5cf6']][mi];
+      if(d === 0){ rect(g,w,h,pal[0],pal[1],10,1.6); text(g,n.label,9,h/2+6,fs(0),'700',pal[1]); }
+      else{ rect(g,w,h,'#fff','#dfe6f3',7,1); text(g,trunc(n.label,d),9,h/2+4,fs(d),d===1?'700':'500','#33415c'); }
+
+      g.addEventListener('click', function(e){
+        e.stopPropagation();
+        if(moved) return;
+        onNode(n);
+      });
+      world.appendChild(g);
+
+      if(d < depth) (n.children||[]).forEach(node);
+    }
+    node(tree);
+  }
+
+  function draw(){
+    svg.innerHTML = '';
+    world = document.createElementNS(NS, 'g');
+    svg.appendChild(world);
+    if(mode === 'all') drawAll(); else drawModule();
+    apply();
+  }
+
+  /* ---------- 交互 ---------- */
+  var moved = false;
+  function onNode(n){
+    if(mode === 'all') return;
+    if(n.type === 'mod'){ setMode('all'); return; }
+    if(n.type === 'ch'){
+      if(depth < 2){ depth = 2; draw(); }
+      center(n);
+      return;
+    }
+    try{ if(typeof startCard === 'function') startCard(n.id); }catch(e){}
+  }
+  function center(n){
+    k = Math.max(k, 0.95);
+    tx = (svg.clientWidth || 800)/2 - n.x*k;
+    ty = (svg.clientHeight || 520)/2 - n.y*k;
+    apply();
+  }
+
+  function setMode(m){
+    mode = m;
+    localStorage.setItem(MKEY, String(m));
+    renderMods();
+    if(m === 'all'){ depth = 0; k = 1; tx = 30; ty = 20; draw(); }
+    else{ depth = 1; k = 0.85; tx = 30; ty = 20; draw(); }
+  }
+
+  function renderMods(){
+    var h = '<button data-m="all" class="all' + (mode === 'all' ? ' on' : '') + '">全部</button>';
+    for(var i=0;i<4;i++){
+      h += '<button data-m="' + i + '"' + (mode === i ? ' class="on"' : '') + '>' + CN[i] + '</button>';
+    }
+    modsBar.innerHTML = h;
+  }
+  modsBar.addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-m]') : null;
+    if(!b) return;
+    var m = b.getAttribute('data-m');
+    setMode(m === 'all' ? 'all' : parseInt(m, 10));
+  });
+
+  function clampK(v){ return Math.max(0.25, Math.min(2.8, v)); }
+  function depthFor(v){
+    if(v >= 1.35) return 3;
+    if(v >= 0.95) return 2;
+    return 1;
+  }
+  function setK(nv, cx, cy){
+    nv = clampK(nv);
+    if(cx == null){ cx = (svg.clientWidth||800)/2; cy = (svg.clientHeight||520)/2; }
+    var wx = (cx - tx) / k, wy = (cy - ty) / k;
+    k = nv;
+    if(mode !== 'all'){
+      var want = depthFor(k);
+      if(want !== depth){ depth = want; draw(); }
+    }
+    tx = cx - wx*k; ty = cy - wy*k;
+    apply();
+  }
+
+  svg.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var r = svg.getBoundingClientRect();
+    setK(k * Math.exp(-e.deltaY * 0.0012), e.clientX - r.left, e.clientY - r.top);
+  }, {passive:false});
+
+  var pointers = {}, dragging = false, lastX = 0, lastY = 0, pinch = 0;
+  function dist(){
+    var ids = Object.keys(pointers);
+    if(ids.length < 2) return 0;
+    var a = pointers[ids[0]], b = pointers[ids[1]];
+    return Math.sqrt(Math.pow(a.x-b.x,2)+Math.pow(a.y-b.y,2));
+  }
+  svg.addEventListener('pointerdown', function(e){
+    try{ svg.setPointerCapture(e.pointerId); }catch(err){}
+    pointers[e.pointerId] = {x:e.clientX,y:e.clientY};
+    var ids = Object.keys(pointers);
+    if(ids.length === 1){ dragging = true; moved = false; lastX = e.clientX; lastY = e.clientY; svg.classList.add('dragging'); }
+    else if(ids.length === 2){ pinch = dist(); }
+  });
+  svg.addEventListener('pointermove', function(e){
+    if(!pointers[e.pointerId]) return;
+    pointers[e.pointerId] = {x:e.clientX,y:e.clientY};
+    var ids = Object.keys(pointers);
+    if(ids.length === 1 && dragging){
+      var dx = e.clientX-lastX, dy = e.clientY-lastY;
+      if(Math.abs(dx)+Math.abs(dy) > 2) moved = true;
+      tx += dx; ty += dy; lastX = e.clientX; lastY = e.clientY; apply();
+    }else if(ids.length === 2){
+      var d = dist();
+      if(pinch > 0){
+        var r = svg.getBoundingClientRect();
+        var a = pointers[ids[0]], b = pointers[ids[1]];
+        setK(k*(d/pinch), (a.x+b.x)/2 - r.left, (a.y+b.y)/2 - r.top);
+      }
+      pinch = d; moved = true;
+    }
+  });
+  function up(e){
+    delete pointers[e.pointerId];
+    if(!Object.keys(pointers).length){ dragging = false; pinch = 0; svg.classList.remove('dragging'); }
+  }
+  svg.addEventListener('pointerup', up);
+  svg.addEventListener('pointercancel', up);
+
+  root.querySelector('.mm-bar').addEventListener('click', function(e){
+    var b = e.target.closest ? e.target.closest('[data-z]') : null;
+    if(!b) return;
+    var z = b.getAttribute('data-z');
+    if(z === 'in') setK(k*1.25);
+    else if(z === 'out') setK(k/1.25);
+    else{
+      tx = 30; ty = 20;
+      k = mode === 'all' ? 1 : 0.85;
+      depth = mode === 'all' ? 0 : 1;
+      draw();
+    }
+  });
+
+  renderMods();
+  draw();
+  tx = 30; ty = 20; apply();
+}
+
+/* ---------- 注册 ---------- */
+try{
+  if(typeof MOUNT_PLUGIN === 'function'){
+    MOUNT_PLUGIN({
+      id: 'map',
+      title: '导图',
+      tab: true,
+      mount: function(root){ makeMap2(root); }
+    });
+    if(typeof renderTabs === 'function') renderTabs();
+    try{ if(typeof UI !== 'undefined' && UI.tab === 'plugin:map') route('plugin:map'); }catch(e){}
+  }
+}catch(e){ console.warn('[434] 导图注册失败', e); }
+
+console.log('[434] 导图 v2（模块分簇）已加载');
+})();
+</script>
+<!-- ================= 计算题判分 + 综合自测过滤 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._calcFix) return; X._calcFix = 1;
+
+var DKEY = 'imx434_daily';
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+}
+function daily(){
+  try{
+    var o = JSON.parse(localStorage.getItem(DKEY) || '{}');
+    if(o.date !== todayStr()) o = {date:todayStr(), pass:{}, gain:{}};
+    o.pass = o.pass || {}; o.gain = o.gain || {};
+    return o;
+  }catch(e){ return {date:todayStr(), pass:{}, gain:{}}; }
+}
+
+/* ---------- 1. 修回 t08 计算子卡 ---------- */
+for(var i=0;i<DATA.length;i++){
+  if(DATA[i].id === 't08s3') DATA[i].ty = '计算';
+  if(DATA[i].ty === '母卡' && !DATA[i].ty0) DATA[i].ty0 = '母卡';
+}
+try{ if(typeof renderTree === 'function') renderTree(); }catch(e){}
+
+/* ---------- 2. 计算题判分 ---------- */
+function nums(s){
+  var m = String(s || '').match(/-?\d+(?:\.\d+)?/g) || [];
+  var out = [];
+  for(var i=0;i<m.length;i++){
+    var n = parseFloat(m[i]);
+    if(isNaN(n)) continue;
+    if(n >= 1900 && n <= 2100) continue; // 年份不算
+    out.push(n);
+  }
+  return out;
+}
+function calcScore(user, k){
+  var ref = nums(k.a || '');
+  var usr = nums(user || '');
+  if(!ref.length) return null;
+
+  var hit = [], miss = [];
+  ref.forEach(function(n){
+    var ok = false;
+    for(var i=0;i<usr.length;i++){
+      var tol = Math.max(0.01, Math.abs(n) * 0.01);
+      if(Math.abs(usr[i] - n) <= tol){ ok = true; break; }
+    }
+    if(ok) hit.push(String(n)); else miss.push(String(n));
+  });
+
+  var tokens = ['=', '÷', '×', '%', '/'];
+  var f = 0;
+  tokens.forEach(function(t){ if(String(user).indexOf(t) >= 0) f++; });
+  var formulaRate = f / tokens.length;
+  var numericRate = hit.length / ref.length;
+
+  var rate = 0.6 * numericRate + 0.4 * formulaRate;
+  if(String(user).replace(/\s/g,'').length < 6) rate = 0;
+
+  return {
+    rate: Math.min(1, Math.max(0, rate)),
+    hit: hit, miss: miss, hasKw: true,
+    calc: true, numericRate: numericRate, formulaRate: formulaRate
+  };
+}
+
+var oldScore = X.score;
+if(typeof oldScore === 'function'){
+  X.score = function(user, k){
+    var normal = oldScore.apply(this, arguments); // 保留 LAST 捕获
+    if(k && (k.ty === '计算' || k.ty0 === '计算')){
+      var r = calcScore(user, k);
+      if(r) return r;
+    }
+    return normal;
+  };
+}
+
+/* ---------- 3. 综合自测过滤今天已过的卡 ---------- */
+document.addEventListener('click', function(e){
+  var b = e.target && e.target.closest ? e.target.closest('#imxPanel [data-all]') : null;
+  if(!b) return;
+
+  var p = daily();
+  var desc = Object.getOwnPropertyDescriptor(X.C, 'kps');
+  try{
+    Object.defineProperty(X.C, 'kps', {
+      configurable: true,
+      get: function(){
+        return (DATA || []).filter(function(k){
+          return k.ty !== '母卡' && !p.pass[k.id];
+        });
+      }
+    });
+  }catch(err){}
+
+  setTimeout(function(){
+    try{ if(desc) Object.defineProperty(X.C, 'kps', desc); }catch(err){}
+  }, 0);
+}, true);
+
+console.log('[434] 计算题判分 + 综合自测过滤 已生效');
+})();
+</script>
+<!-- ================= P2 补库 · 10 张 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+if(window.__IMX_P2) return;
+window.__IMX_P2 = 1;
+
+try{
+  for(var i=0;i<DATA.length;i++){
+    if(DATA[i] && DATA[i].id === 'pc01'){ console.log('[434] P2 已存在，跳过'); return; }
+  }
+}catch(e){}
+
+DATA.push(
+
+/* ---------- 贸易统计 ---------- */
+{id:'pc01',m:0,ch:'第5章 国际分工与世界市场',t:'国际贸易值与国际贸易量',lv:'B',ty:'名解',src:'推测',
+ q:'国际贸易值与国际贸易量',
+ a:'国际贸易值：以货币表示的贸易金额，通常按 FOB 出口价统计，受价格变动影响。\n国际贸易量：按不变价格计算的贸易值，剔除价格变动，反映实际贸易规模；常用价格指数平减。\n区别：贸易值受价格影响，贸易量反映实物规模；比较不同时期规模时应看贸易量。'},
+
+{id:'pc02',m:0,ch:'第5章 国际分工与世界市场',t:'贸易差额',lv:'B',ty:'名解',src:'推测',
+ q:'贸易差额',
+ a:'一定时期内一国出口总额与进口总额之差。\n出口大于进口为贸易顺差，反之为逆差，相等为贸易平衡。\n影响：顺差增加外汇储备、可能引发贸易摩擦；逆差消耗储备、带来本币贬值压力。\n注意：贸易差额不等于国际收支差额。'},
+
+/* ---------- 区域一体化 ---------- */
+{id:'pc03',m:0,ch:'第4章 区域一体化与 WTO',t:'区域经济一体化的形式',lv:'A',ty:'简答',src:'推测',
+ q:'区域经济一体化的主要形式',
+ a:'按一体化程度由低到高：\n①优惠贸易安排；\n②自由贸易区：成员间取消关税，对外各自保留；\n③关税同盟：内部零关税，对外统一关税；\n④共同市场：再加要素自由流动；\n⑤经济联盟：再加统一经济政策；\n⑥完全经济一体化：统一政策与主权让渡。'},
+
+{id:'pc04',m:0,ch:'第4章 区域一体化与 WTO',t:'欧洲联盟',lv:'A',ty:'简答',src:'推测',
+ q:'欧洲联盟（EU）',
+ a:'区域经济一体化的高级形式。\n进程：1951 年煤钢共同体→1957 年《罗马条约》→1993 年《马斯特里赫特条约》生效成立欧盟→1999 年欧元启动、2002 年流通。\n特征：关税同盟、共同市场、经济与货币联盟；共同农业、竞争、贸易政策；机构包括欧盟委员会、理事会、欧洲议会、欧洲法院。\n挑战：主权让渡、成员国发展不平衡、危机冲击。'},
+
+{id:'pc05',m:0,ch:'第4章 区域一体化与 WTO',t:'CPTPP',lv:'B',ty:'名解',src:'推测',
+ q:'CPTPP',
+ a:'全面与进步跨太平洋伙伴关系协定。2018 年签署，11 个成员；美国退出 TPP 后由其余成员改写而成。\n内容：关税减让、服务贸易、投资、知识产权、劳工、环境、国有企业、数字经济等，标准较高。\n影响：重塑亚太区域贸易规则与供应链；中国已于 2021 年正式申请加入。'},
+
+/* ---------- 服务与技术贸易 ---------- */
+{id:'pc06',m:0,ch:'第3章 货物与服务贸易',t:'国际劳务合作',lv:'B',ty:'名解',src:'推测',
+ q:'国际劳务合作',
+ a:'一国向另一国提供劳务的经济活动，包括对外承包工程、劳务输出、技术咨询与设计等。\n主要形式：国际工程承包、劳务派遣、技术服务。\n作用：增加外汇收入、缓解就业压力、促进技术交流。\n挑战：签证与劳工政策、文化差异、汇率与安全风险。'},
+
+{id:'pc07',m:0,ch:'第3章 货物与服务贸易',t:'国际工程承包',lv:'B',ty:'简答',src:'推测',
+ q:'国际工程承包',
+ a:'通过国际招标承接国外工程项目的活动。\n形式：总包、分包、交钥匙工程、BOT/PPP。\n特点：周期长、金额大、风险多（政治、汇率、合同、施工）。\n合同类型：总价合同、单价合同、成本加酬金合同。'},
+
+{id:'pc08',m:0,ch:'第3章 货物与服务贸易',t:'跨境电商',lv:'B',ty:'名解',src:'推测',
+ q:'跨境电子商务',
+ a:'分 B2B 与 B2C。主要模式：保税备货、直邮、海外仓。\n特点：小额、高频、碎片化、直接面向消费者。\n政策：跨境电商综合试验区、清单管理、税收优惠。\n挑战：国际物流、支付结算、通关监管、退换货、数据合规。'},
+
+/* ---------- 关税制度 ---------- */
+{id:'pc09',m:0,ch:'第2章 贸易政策与壁垒',t:'完税价格',lv:'B',ty:'名解',src:'推测',
+ q:'完税价格',
+ a:'海关据以计征关税的价格。\n进口完税价格以成交价格为基础；不能确定时，依次使用相同货物成交价、类似货物成交价、倒扣价格、计算价格、合理方法。\n出口完税价格以成交价格为基础，扣除出口关税等因素。'},
+
+{id:'pc10',m:0,ch:'第2章 贸易政策与壁垒',t:'原产地规则',lv:'A',ty:'简答',src:'推测',
+ q:'原产地规则',
+ a:'确定货物原产国的规则。\n标准：①完全获得；②实质性改变，包括税则归类改变、增值百分比、特定加工工序。\n作用：关税优惠、贸易统计、反倾销与配额管理。\n区域协定中的原产地规则会直接影响供应链布局与优惠利用率。'}
+
+);
+
+try{
+  if(typeof renderTree === 'function') renderTree();
+  if(typeof renderTabs === 'function') renderTabs();
+  if(typeof updateHeader === 'function') updateHeader();
+}catch(e){}
+console.log('[434] P2 已入库：10 条，总数 ' + DATA.length);
+})();
+</script>
+<!-- ================= 强模型 + 周报 + 错因诊断 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._aiPro) return; X._aiPro = 1;
+
+var AI = 'imx434_ai_cfg';
+
+function load(){
+  try{ return JSON.parse(localStorage.getItem(AI) || '{}') || {}; }catch(e){ return {}; }
+}
+function save(c){ try{ localStorage.setItem(AI, JSON.stringify(c)); }catch(e){} }
+
+/* ---------- 1. 迁移过期模型名 ---------- */
+(function migrate(){
+  var c = load();
+  var changed = false;
+  if(!c.base){ c.base = 'https://api.deepseek.com/v1'; changed = true; }
+  if(!c.model || c.model === 'deepseek-chat' || c.model === 'deepseek-reasoner'){
+    c.model = 'deepseek-v4-pro';
+    changed = true;
+  }
+  if(changed) save(c);
+})();
+
+/* ---------- 2. 调用 ---------- */
+function parseJSON(s){
+  try{ return JSON.parse(s); }catch(e){}
+  var m = String(s).match(/\{[\s\S]*\}|\[[\s\S]*\]/);
+  if(m){ try{ return JSON.parse(m[0]); }catch(e){} }
+  throw new Error('AI 返回格式看不懂');
+}
+async function chat(messages, maxTokens){
+  var c = load();
+  if(!c.key) throw new Error('还没配置 API Key');
+  var base = (c.proxy || c.base || 'https://api.deepseek.com/v1').replace(/\/+$/,'');
+  var url = /\/chat\/completions$/.test(base) ? base : base + '/chat/completions';
+
+  var ctrl = new AbortController();
+  var timer = setTimeout(function(){ ctrl.abort(); }, 120000);
+  try{
+    var r = await fetch(url, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer ' + c.key},
+      body: JSON.stringify({
+        model: c.model || 'deepseek-v4-pro',
+        messages: messages,
+        temperature: 0.3,
+        max_tokens: maxTokens || 1600,
+        stream: false
+      }),
+      signal: ctrl.signal
+    });
+    clearTimeout(timer);
+    if(!r.ok){
+      var t = await r.text();
+      throw new Error('API ' + r.status + '：' + String(t).slice(0,160));
+    }
+    var j = await r.json();
+    var msg = j.choices && j.choices[0] && j.choices[0].message;
+    return msg ? (msg.content || msg.reasoning_content || '') : '';
+  }catch(e){
+    clearTimeout(timer);
+    if(e.name === 'AbortError') throw new Error('请求超时（强模型可能较慢，稍后再试）');
+    if(e instanceof TypeError) throw new Error('直连失败：多半是浏览器跨域，需要填代理地址');
+    throw e;
+  }
+}
+
+/* ---------- 3. 统计 ---------- */
+function findCard(id){
+  for(var i=0;i<DATA.length;i++){ if(DATA[i].id === id) return DATA[i]; }
+  return null;
+}
+function weekStats(){
+  var s = null; try{ s = Store.state; }catch(e){}
+  var logs = (s && s.log) ? s.log : [];
+  var from = Date.now() - 7*86400000;
+  var week = logs.filter(function(l){ return l && l.t >= from; });
+
+  var total = week.length;
+  var ok = 0, byDay = {}, wrong = {};
+  week.forEach(function(l){
+    if(l.ok) ok++;
+    var d = new Date(l.t);
+    var key = (d.getMonth()+1) + '/' + d.getDate();
+    byDay[key] = (byDay[key] || 0) + 1;
+    if(!l.ok) wrong[l.id] = (wrong[l.id] || 0) + 1;
+  });
+
+  var weak = Object.keys(wrong).sort(function(a,b){ return wrong[b]-wrong[a]; }).slice(0,8).map(function(id){
+    var k = findCard(id);
+    return {id:id, title:k ? k.t : id, times: wrong[id]};
+  });
+
+  return {
+    total: total,
+    correctRate: total ? Math.round(ok/total*100) : 0,
+    days: byDay,
+    weak: weak,
+    wrongTotal: total - ok
+  };
+}
+
+/* ---------- 4. 周报 / 错因 ---------- */
+function report(mode){
+  var c = load();
+  if(!c.key){ X.toast('先去 AI → 设置填 Key'); return; }
+  var st = weekStats();
+
+  X.openShell('wide');
+  X._panelKind = 'ai';
+  var p = document.getElementById('imxPanel');
+  p.innerHTML = '<div class="imx-h"><div><b>' + (mode === 'week' ? '本周周报' : '错因诊断') + '</b>'
+    + '<div class="imx-sub">模型：' + X.esc(c.model || 'deepseek-v4-pro') + '</div></div>'
+    + '<button class="imx-x" data-x="1">×</button></div>'
+    + '<div class="imx-body"><div id="aiRep"><div class="imx-tip">AI 分析中…</div></div>'
+    + '<div class="imx-row"><button class="imx-btn ghost" data-back="1">返回 AI</button></div></div>';
+  p.querySelector('[data-x]').onclick = X.close;
+  p.querySelector('[data-back]').onclick = X.openAI;
+
+  var data = {
+    统计区间: '最近7天',
+    总作答次数: st.total,
+    正确率: st.correctRate + '%',
+    每日作答: st.days,
+    错误次数: st.wrongTotal,
+    反复错的考点: st.weak
+  };
+
+  var sys = '你是434国际商务考研学习教练。说话具体、不空泛，不闲聊。只输出纯文本，不要markdown。';
+  var user;
+  if(mode === 'week'){
+    user = '这是学生最近7天的数据：' + JSON.stringify(data) +
+      '\n请写一份周报，分五段，每段一行：' +
+      '\n1. 本周完成了多少、正确率如何；' +
+      '\n2. 最薄弱的三个考点（只能用“反复错的考点”里的名字，不要编造）；' +
+      '\n3. 这三类错误分别更像概念混淆、记不牢、还是不会用；' +
+      '\n4. 下周每天先做什么（具体到动作，不要“多复习”这种空话）；' +
+      '\n5. 一句严厉的提醒（如果正确率低于60%或作答次数少于20，要更重）。';
+  }else{
+    user = '这是学生最近7天反复错的考点：' + JSON.stringify(st.weak) +
+      '\n请做错因诊断，分四段：' +
+      '\n1. 把每个考点归到“概念混淆 / 记忆不牢 / 不会应用 / 审题问题”中的一类；' +
+      '\n2. 每类给一个典型表现；' +
+      '\n3. 给出对应的纠正动作（背什么、做什么题、怎么自测）；' +
+      '\n4. 下周优先处理哪三个。' +
+      '\n不要编造没有给出的考点。';
+  }
+
+  chat([{role:'system',content:sys},{role:'user',content:user}], 1800).then(function(txt){
+    document.getElementById('aiRep').innerHTML =
+      '<div class="imx-ref"><label>' + (mode === 'week' ? '本周周报' : '错因诊断') + '</label>'
+      + '<p style="white-space:pre-wrap">' + X.esc(txt) + '</p></div>';
+  }).catch(function(e){
+    document.getElementById('aiRep').innerHTML =
+      '<div class="imx-ref"><label>失败</label><p>' + X.esc(e.message) + '</p></div>';
+  });
+}
+
+/* ---------- 5. 在 AI 面板里加模型选择和周报入口 ---------- */
+function inject(){
+  var body = document.querySelector('#imxPanel .imx-body');
+  if(!body) return;
+  if(!body.querySelector('[data-act="gen"]')) return; // 只在 AI 主菜单
+  if(document.getElementById('aiModelRow')) return;
+
+  var c = load();
+  var row = document.createElement('div');
+  row.id = 'aiModelRow';
+  row.style.marginTop = '10px';
+  row.innerHTML = '<div class="ai-lb" style="margin-top:0">模型</div>'
+    + '<div style="display:flex;gap:6px">'
+    + '<select id="aiModelSel" class="ai-in" style="flex:1;height:40px">'
+    + '<option value="deepseek-v4-pro">DeepSeek V4 Pro（强，推荐）</option>'
+    + '<option value="deepseek-flash">DeepSeek V4.1 Flash（快）</option>'
+    + '</select>'
+    + '<button class="imx-btn ghost" id="aiModelRefresh" style="flex:none;padding:0 10px;font-size:12px">刷新</button>'
+    + '</div>';
+
+  var tip = body.querySelector('.imx-tip');
+  if(tip) body.insertBefore(row, tip); else body.appendChild(row);
+
+  var sel = document.getElementById('aiModelSel');
+  var known = ['deepseek-v4-pro','deepseek-flash'];
+  if(known.indexOf(c.model || '') < 0 && c.model){
+    var opt = document.createElement('option');
+    opt.value = c.model; opt.textContent = c.model;
+    sel.appendChild(opt);
+  }
+  sel.value = c.model || 'deepseek-v4-pro';
+  sel.onchange = function(){
+    var nc = load(); nc.model = this.value; save(nc);
+    X.toast('已切换模型：' + this.value);
+  };
+
+  document.getElementById('aiModelRefresh').onclick = async function(){
+    var btn = this;
+    btn.disabled = true; btn.textContent = '…';
+    try{
+      var cc = load();
+      var base = (cc.proxy || cc.base || 'https://api.deepseek.com/v1').replace(/\/+$/,'');
+      var url = /\/models$/.test(base) ? base : base + '/models';
+      var r = await fetch(url, {headers:{'Authorization':'Bearer ' + cc.key}});
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      var j = await r.json();
+      var ids = (j.data || []).map(function(m){ return m.id; }).filter(Boolean);
+      if(!ids.length) throw new Error('没有返回模型');
+      var keep = sel.value;
+      sel.innerHTML = '';
+      ids.forEach(function(id){
+        var o = document.createElement('option');
+        o.value = id; o.textContent = id;
+        sel.appendChild(o);
+      });
+      sel.value = ids.indexOf(keep) >= 0 ? keep : ids[0];
+      var nc = load(); nc.model = sel.value; save(nc);
+      X.toast('已找到 ' + ids.length + ' 个模型');
+    }catch(e){
+      X.toast('拉取失败：' + e.message);
+    }
+    btn.disabled = false; btn.textContent = '刷新';
+  };
+
+  var extra = document.createElement('div');
+  extra.style.display = 'flex';
+  extra.style.gap = '8px';
+  extra.style.marginTop = '8px';
+  extra.innerHTML = '<button class="imx-btn ghost" id="aiWeek" style="flex:1">本周周报</button>'
+    + '<button class="imx-btn ghost" id="aiDiag" style="flex:1">错因诊断</button>';
+  body.appendChild(extra);
+
+  document.getElementById('aiWeek').onclick = function(){ report('week'); };
+  document.getElementById('aiDiag').onclick = function(){ report('diag'); };
+}
+
+/* 包一层：AI 面板渲染后注入 */
+if(typeof X.openAI === 'function' && !X.openAI.__aiPro){
+  var oldOpen = X.openAI;
+  X.openAI = function(){
+    var r = oldOpen.apply(this, arguments);
+    setTimeout(inject, 0);
+    return r;
+  };
+  X.openAI.__aiPro = 1;
+}
+
+console.log('[434] 强模型 + 周报 + 错因诊断 已加载');
+})();
+</script>
+<!-- ================= 修进度口径 + 综合自测稳定过滤 ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._fix13) return; X._fix13 = 1;
+
+var DKEY = 'imx434_daily';
+function todayStr(){
+  var d = new Date();
+  return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2);
+}
+function daily(){
+  try{
+    var o = JSON.parse(localStorage.getItem(DKEY) || '{}');
+    if(o.date !== todayStr()) o = {date:todayStr(), pass:{}, gain:{}};
+    o.pass = o.pass || {}; o.gain = o.gain || {};
+    return o;
+  }catch(e){ return {date:todayStr(), pass:{}, gain:{}}; }
+}
+
+/* ---------- 1. 统计口径：母卡不计，只算子卡/普通卡 ---------- */
+function fixedStats(){
+  var st = null; try{ st = Store.state; }catch(e){}
+  var kp = (st && st.kp) ? st.kp : {};
+  var log = (st && st.log) ? st.log : [];
+  var cn = ['国贸','投资','金融','运营'];
+
+  var total = 0, mastered = 0, learning = 0, weak = 0, untouched = 0, seen = 0;
+  var byMod = [0,1,2,3].map(function(){ return {total:0, mastered:0}; });
+  var byLv = {S:{t:0,m:0}, A:{t:0,m:0}, B:{t:0,m:0}, C:{t:0,m:0}};
+
+  for(var i=0;i<DATA.length;i++){
+    var k = DATA[i];
+    if(!k || k.ty === '母卡') continue;
+
+    var s = kp[k.id] || {};
+    total++;
+
+    var mi = k.m || 0;
+    if(byMod[mi]) byMod[mi].total++;
+    if(byLv[k.lv]) byLv[k.lv].t++;
+
+    if((s.m || 0) >= 5 || s.star){
+      mastered++;
+      if(byMod[mi]) byMod[mi].mastered++;
+      if(byLv[k.lv]) byLv[k.lv].m++;
+    }else if((s.seen || 0) > 0){
+      learning++;
+    }else{
+      untouched++;
+    }
+    if((s.err || 0) > 0) weak++;
+    if((s.seen || 0) > 0) seen++;
+  }
+
+  var right = 0;
+  for(var j=0;j<log.length;j++){ if(log[j] && log[j].ok) right++; }
+  var acc = log.length ? Math.round(right / log.length * 100) : 0;
+
+  return {
+    total: total, mastered: mastered, learning: learning,
+    weak: weak, untouched: untouched, seen: seen,
+    acc: acc, byMod: byMod, byLv: byLv,
+    attempts: log.length
+  };
+}
+
+/* 替换核心 stats，顶部进度条 / 数据页都会用新口径 */
+try{ window.stats = fixedStats; }catch(e){}
+
+/* 第一轮徽章和轮次面板用的 X.progress 也重算 */
+X.progress = function(){
+  var st = null; try{ st = Store.state; }catch(e){}
+  var kp = (st && st.kp) ? st.kp : {};
+  var cn = ['国贸','投资','金融','运营'];
+  var total = 0, r1 = 0, solid = 0, mod = {};
+
+  for(var i=0;i<DATA.length;i++){
+    var k = DATA[i];
+    if(!k || k.ty === '母卡') continue;
+    total++;
+
+    var s = kp[k.id] || {};
+    var name = cn[k.m] || '其他';
+    if(!mod[name]) mod[name] = {all:0, done:0};
+    mod[name].all++;
+
+    if((s.seen || 0) > 0){ r1++; mod[name].done++; }
+    solid += Math.min((s.m || 0) / 6, 1);
+  }
+
+  var t = total || 1;
+  return {total: total, r1: r1, p1: r1 / t, solid: solid / t, mod: mod};
+};
+
+/* ---------- 2. 综合自测：常驻过滤器，不再每次临时换 getter ---------- */
+var origDesc = null;
+try{ origDesc = Object.getOwnPropertyDescriptor(X.C, 'kps'); }catch(e){}
+
+var testFiltering = false;
+try{
+  Object.defineProperty(X.C, 'kps', {
+    configurable: true,
+    get: function(){
+      var list = [];
+      try{
+        list = origDesc && origDesc.get ? origDesc.get() : DATA;
+      }catch(e){ list = DATA; }
+
+      if(!testFiltering) return list;
+
+      var p = daily();
+      return (list || []).filter(function(k){
+        return k && k.ty !== '母卡' && !p.pass[k.id];
+      });
+    }
+  });
+}catch(e){}
+
+document.addEventListener('click', function(e){
+  var b = e.target && e.target.closest ? e.target.closest('#imxPanel [data-all]') : null;
+  if(!b) return;
+  testFiltering = true;
+  setTimeout(function(){ testFiltering = false; }, 0);
+}, true);
+
+/* ---------- 3. 刷新显示 ---------- */
+try{ if(typeof updateHeader === 'function') updateHeader(); }catch(e){}
+try{ if(X.refreshBadge) X.refreshBadge(); }catch(e){}
+try{ if(X.refreshDock) X.refreshDock(); }catch(e){}
+
+console.log('[434] 进度口径已修正，母卡不再重复计数');
+})();
+</script>
