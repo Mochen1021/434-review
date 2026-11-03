@@ -8061,3 +8061,120 @@ try{ if(X.refreshDock) X.refreshDock(); }catch(e){}
 console.log('[434] 进度口径已修正，母卡不再重复计数');
 })();
 </script>
+<!-- ================= 修复 AI 精批“格式看不懂” ================= -->
+<!-- 贴在文件最末尾 -->
+<script>
+(function(){
+'use strict';
+var X = window.IMX434;
+if(!X) return;
+if(X._aiFix2) return; X._aiFix2 = 1;
+
+function normContent(msg){
+  if(!msg) return '';
+  var c = msg.content;
+  if(Array.isArray(c)){
+    c = c.map(function(p){ return (p && (p.text || p.content)) || ''; }).join('');
+  }
+  c = String(c == null ? '' : c);
+  var r = String(msg.reasoning_content || '');
+
+  if(!c.trim() && r) c = r;
+  c = c.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+  if(c.indexOf('{') < 0 && c.indexOf('[') < 0 && r){
+    c = r.replace(/```json/gi, '').replace(/```/g, '').trim();
+  }
+  return c;
+}
+
+var rawFetch = window.fetch;
+if(typeof rawFetch === 'function' && !rawFetch.__aiFix2){
+  window.fetch = async function(input, init){
+    var url = typeof input === 'string' ? input : ((input && input.url) || '');
+    var isChat = url.indexOf('/chat/completions') >= 0;
+
+    if(isChat && init && typeof init.body === 'string'){
+      try{
+        var b = JSON.parse(init.body);
+        if(!b.max_tokens || b.max_tokens < 3000) b.max_tokens = 4000;
+        init = Object.assign({}, init, {body: JSON.stringify(b)});
+      }catch(e){}
+    }
+
+    var res = await rawFetch.call(this, input, init);
+    if(!isChat || !res || !res.ok) return res;
+
+    try{
+      var clone = res.clone();
+      var j = await clone.json();
+      var msg = j && j.choices && j.choices[0] && j.choices[0].message;
+
+      if(msg){
+        var c = normContent(msg);
+        msg.content = c;
+        j._imx_content = c;
+
+        try{
+          localStorage.setItem('imx434_ai_last', JSON.stringify({
+            t: Date.now(),
+            model: j.model || '',
+            finish: (j.choices[0].finish_reason || ''),
+            content: c
+          }));
+        }catch(e){}
+        try{ console.log('[434][AI raw]', c); }catch(e){}
+      }
+
+      return new Response(JSON.stringify(j), {
+        status: 200,
+        headers: {'Content-Type': 'application/json'}
+      });
+    }catch(e){
+      return res;
+    }
+  };
+  window.fetch.__aiFix2 = 1;
+}
+
+/* 在 AI 面板里加“查看上次原始返回” */
+function injectView(){
+  var body = document.querySelector('#imxPanel .imx-body');
+  if(!body || document.getElementById('aiLastBtn')) return;
+  if(!body.querySelector('[data-act="gen"]')) return;
+
+  var b = document.createElement('button');
+  b.className = 'imx-btn ghost';
+  b.id = 'aiLastBtn';
+  b.style.width = '100%';
+  b.style.marginTop = '8px';
+  b.textContent = '查看上次 AI 原始返回';
+  b.onclick = function(){
+    var raw = '';
+    try{ raw = JSON.parse(localStorage.getItem('imx434_ai_last') || '{}').content || ''; }catch(e){}
+    X.openShell('wide');
+    var p = document.getElementById('imxPanel');
+    p.innerHTML = '<div class="imx-h"><b>上次 AI 原始返回</b><button class="imx-x" data-x="1">×</button></div>'
+      + '<div class="imx-body"><div class="imx-ref"><p style="white-space:pre-wrap;font-size:12px">'
+      + X.esc(raw || '还没有记录') + '</p></div>'
+      + '<div class="imx-row"><button class="imx-btn ghost" data-back="1">返回 AI</button></div></div>';
+    p.querySelector('[data-x]').onclick = X.close;
+    p.querySelector('[data-back]').onclick = X.openAI;
+  };
+  body.appendChild(b);
+}
+
+if(typeof X.openAI === 'function' && !X.openAI.__aiFix2){
+  var oldOpen = X.openAI;
+  X.openAI = function(){
+    var r = oldOpen.apply(this, arguments);
+    setTimeout(injectView, 0);
+    return r;
+  };
+  X.openAI.__aiFix2 = 1;
+}
+
+console.log('[434] AI 返回格式修复已加载');
+})();
+</script>
+
